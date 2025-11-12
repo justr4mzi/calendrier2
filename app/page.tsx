@@ -166,6 +166,7 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
       </div>
       <p className="text-center text-sm text-gray-500 mt-2 pb-2">Appuie sur le carré avec la flèche (Partager) puis "Sur l'écran d'accueil"</p>
     </div>
+    
   </div>
 );
 
@@ -279,6 +280,7 @@ const PasswordHint = ({ onClose }: { onClose: () => void }) => (
       <p className="text-gray-500 text-sm mt-4 mb-6">(PS : Pas de majuscule au mot de passe)</p>
       <button onClick={onClose} className="bg-rose-500 text-white py-2 px-6 rounded-xl font-semibold hover:bg-rose-600 transition-all">J'ai compris</button>
     </div>
+    
   </div>
 );
 
@@ -802,6 +804,8 @@ export default function Home() {
   const isPlayingMusic = isAuthenticated && playMusic;
 
   // === RENDU UNIQUE: on garde LofiPlayer monté une seule fois, et on affiche les vues/modales par-dessus ===
+  // Note: J'ai retiré le commentaire multi-ligne qui était mal interprété par le compilateur
+  // juste avant le return.
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-pink-100 to-purple-200 relative overflow-hidden transition-all duration-1000">
       <MobileAppMeta /> {/* INCLUSION DU COMPOSANT META DANS LA RACINE */}
@@ -1056,7 +1060,7 @@ export default function Home() {
                           month: 'short'
                         }) : '...'}
                       </span>
-                      {day.isSpecial && <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />} {/* L'élément Sparkles corrigé ici */}
+                      {day.isSpecial && <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />} {/* CORRECTION: Retrait du title */}
                     </div>
                   </button>
                 );
