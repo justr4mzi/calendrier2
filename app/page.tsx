@@ -792,21 +792,18 @@ export default function Home() {
   
   // Fonction pour gérer le zoom sur la page du jour
   const handleDayPhotoZoom = (e: React.MouseEvent, photoUrl: string | null) => {
-    e.stopPropagation();
-    if (photoUrl) {
-        setZoomedPhoto(photoUrl);
-    }
-  };
+  e.stopPropagation();
+  if (photoUrl) {
+    setZoomedPhoto(photoUrl);  // ← BONNE INDENTATION (2 espaces)
+  }
+};
 
   const progress = (foundDays.length / CALENDAR_DATA.length) * 100;
 
-  // La musique joue si isAuthenticated est true et playMusic est true.
-  const isPlayingMusic = isAuthenticated && playMusic;
+  // La musique joue si isAuthenticated est true et playMusic est true.
+  const isPlayingMusic = isAuthenticated && playMusic;
 
-  // === RENDU UNIQUE: on garde LofiPlayer monté une seule fois, et on affiche les vues/modales par-dessus ===
-  // Note: J'ai retiré le commentaire multi-ligne qui était mal interprété par le compilateur
-  // juste avant le return.
-  return (
+  return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-pink-100 to-purple-200 relative overflow-hidden transition-all duration-1000">
       <MobileAppMeta /> {/* INCLUSION DU COMPOSANT META DANS LA RACINE */}
       <BubblesBackground />
@@ -857,7 +854,7 @@ export default function Home() {
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de l'Après</span>
-              </span>
+              </h1>
               {/* Correction: Ajout de mt-2 pour séparer le titre de la phrase */}
               <p className="text-gray-600 italic mt-2">Pour ma Déborah ❤️</p>
             </div>
@@ -976,7 +973,7 @@ export default function Home() {
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
               <span className="text-6xl block title-fix-span-top mt-2">Calendrier</span>
               <span className="text-6xl block">de l'Après</span>
-            </span>
+            </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
               className="text-rose-600 font-semibold text-xl mt-4 cursor-pointer hover:scale-105 transition-transform" 
@@ -1099,7 +1096,7 @@ export default function Home() {
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4">
                   <span className="text-2xl font-bold text-white">{selectedDay.day}</span>
-                </div>
+                  </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 capitalize">
                   {isClient && new Date(selectedDay.date + 'T00:00:00+01:00').toLocaleDateString('fr-FR', {
                     weekday: 'long', day: 'numeric', month: 'long'
