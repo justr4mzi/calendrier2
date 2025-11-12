@@ -2,29 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { setLogLevel } from 'firebase/firestore';
-
-// Configuration Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDTI9JDOKSU2gtNOY6ct7yv8Liey892fkk", // Ta clé réelle (laisse la tienne si elle est différente ici)
-  authDomain: "calendrier-deborah-8f47b.firebaseapp.com",
-  projectId: "calendrier-deborah-8f47b",
-  storageBucket: "calendrier-deborah-8f47b.appspot.com",
-  messagingSenderId: "666646643143",
-  appId: "1:666646643143:web:378d444a1417553f0ed3ec",
-  measurementId: "G-VF9FZFZFM6"
-};
-
-// L'ID de l'application
-const appId = 'calendrier-deborah-v1'; 
-const initialAuthToken = null;
-
-// Initialisation des services Firebase
-let db: any;
-let auth: any;
+// Les imports Firebase ont été supprimés
 
 // === PWA / MOBILE CONFIGURATION ===
 const MobileAppMeta = () => (
@@ -456,9 +434,8 @@ export default function Home() {
   const [showDeborahAnimation, setShowDeborahAnimation] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
   const [showMemoryGame, setShowMemoryGame] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
+  // CLEANUP: suppression des variables Firebase inutiles
   const [isDataReady, setIsDataReady] = useState(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
   const [buttonOpacity, setButtonOpacity] = useState(1);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
@@ -466,9 +443,34 @@ export default function Home() {
 
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
-  const userSaveKey = 'found_days';
+  const LOCAL_STORAGE_KEY = 'calendrier_deborah_found'; // Nouvelle clé pour localStorage
 
-  // === BLOQUAGE ZOOM IOS ===
+  // === NOUVEAU: CHARGEMENT DE LOCAL STORAGE (runs once) ===
+  useEffect(() => {
+    if (!isClient) return;
+    try {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setFoundDays(parsed);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load state from localStorage:", e);
+    }
+    // Marque les données comme prêtes, remplaçant le rôle de Firebase
+    setIsDataReady(true);
+  }, [isClient]);
+
+  // === NOUVEAU: SAUVEGARDE VERS LOCAL STORAGE (runs on change) ===
+  useEffect(() => {
+    if (foundDays.length > 0) {
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(foundDays));
+    }
+  }, [foundDays]);
+
+  // === GESTION BLOQUAGE ZOOM IOS ===
   useEffect(() => {
     const handleGesture = (e: Event) => e.preventDefault();
     let lastTouchEnd = 0;
@@ -540,95 +542,8 @@ export default function Home() {
 
   useEffect(() => { setIsClient(true); }, []);
 
-  // === GESTION DU TIMEOUT DE CHARGEMENT ===
-  useEffect(() => {
-    if (!isDataReady) {
-      const timer = setTimeout(() => {
-        setLoadingTimeout(true);
-      }, 3000); 
-      return () => clearTimeout(timer);
-    } else {
-      setLoadingTimeout(false);
-    }
-  }, [isDataReady]);
 
-  // === FIREBASE SETUP (MODIFIÉ POUR SYNCHRO PC/SAFARI) ===
-  // === FIREBASE SETUP (MODIFICATION ANTI-BLOCAGE) ===
-useEffect(() => {
-    if (!isClient) return;
-    
-    // Si la config n'est pas là, on arrête
-    if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
-        console.error("Firebase config is missing or empty.");
-        setIsDataReady(true); 
-        return;
-    }
-
-    try {
-        const app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-        setLogLevel('debug');
-
-        // On démarre l'écoute après l'authentification
-        const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                // Tente de se connecter anonymement si non connecté
-                await signInAnonymously(auth).catch(e => {
-                    console.error("Firebase Sign In Anonymously Failed:", e);
-                    setIsDataReady(true);
-                    return;
-                });
-            }
-
-            // ID FIXE POUR SYNCHRO
-            const sharedSessionId = "session-unique-deborah"; 
-            setUserId(sharedSessionId);
-
-            // On écoute le dossier partagé
-            const docRef = doc(db, `artifacts/${appId}/users/${sharedSessionId}/found_days`, userSaveKey);
-
-            const unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const foundDaysFromFirestore = (data?.days || []) as number[];
-                    setFoundDays(foundDaysFromFirestore);
-                } 
-                setIsDataReady(true); // On est prêt, que les données existent ou non
-            }, (error) => {
-                console.error("Erreur Firebase:", error);
-                setIsDataReady(true); 
-            });
-
-            return () => {
-                // Nettoyage lors du démontage du composant
-                unsubscribeSnapshot();
-            };
-        });
-
-        return () => unsubscribeAuth();
-
-    } catch (e) {
-        console.error("Firebase Initialization Failed:", e);
-        setIsDataReady(true); 
-    }
-}, [isClient]); // Dépendance minimale
-  // === SAUVEGARDE DES DONNÉES VERS FIRESTORE ===
-  useEffect(() => {
-    if (!isDataReady || !userId || !db) return;
-
-    const saveToFirestore = async () => {
-      try {
-        // On écrit bien dans le dossier partagé (userId contient maintenant l'ID fixe)
-        const docRef = doc(db, `artifacts/${appId}/users/${userId}/found_days`, userSaveKey);
-        await setDoc(docRef, { days: foundDays, lastUpdate: new Date().toISOString() });
-      } catch {}
-    };
-
-    saveToFirestore();
-  }, [foundDays, isDataReady, userId]);
-
-  // === OPACITÉ BOUTON SCROLL ===
+  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -702,14 +617,13 @@ useEffect(() => {
     setIsAuthenticated(false); setIsAdmin(false); setCode(''); setFoundDays([]); setPlayMusic(false);
     setFailedAttempts(0);
     setLoginError(null);
-    if (auth) {
-      auth.signOut();
-    }
+    // CLEANUP: Suppression de auth.signOut()
   };
 
   const handleResetAdmin = () => {
     if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression ? Cette action réinitialise la base de données.")) {
       setFoundDays([]);
+      // CLEANUP: suppression de la sauvegarde firebase; le useEffect LocalStorage s'en chargera
     }
   };
 
@@ -1189,7 +1103,8 @@ useEffect(() => {
         </>
       )}
 
-      {!isDataReady && !loadingTimeout && (
+      {/* Loader qui remplace !isDataReady */}
+      {!isDataReady && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
           <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
           <p className="text-gray-700 font-semibold mt-4">Chargement des données...</p>
