@@ -553,61 +553,66 @@ export default function Home() {
   }, [isDataReady]);
 
   // === FIREBASE SETUP (MODIFIÉ POUR SYNCHRO PC/SAFARI) ===
-  useEffect(() => {
-    if (!isClient || !firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+  // === FIREBASE SETUP (MODIFICATION ANTI-BLOCAGE) ===
+useEffect(() => {
+    if (!isClient) return;
+    
+    // Si la config n'est pas là, on arrête
+    if (!firebaseConfig || Object.keys(firebaseConfig).length === 0) {
+        console.error("Firebase config is missing or empty.");
         setIsDataReady(true); 
         return;
     }
 
     try {
-      const app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
-      auth = getAuth(app);
-      setLogLevel('debug');
-      
-      const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
-        // 1. Authentification Anonyme (nécessaire pour les droits)
-        if (!user) {
-          if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
-          } else {
-            await signInAnonymously(auth);
-          }
-        }
-        
-        // 2. MODIFICATION ICI : ID FIXE POUR SYNCHRO
-        // Au lieu de générer un ID aléatoire, on utilise un ID partagé
-        const sharedSessionId = "session-unique-deborah"; 
-        setUserId(sharedSessionId);
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+        auth = getAuth(app);
+        setLogLevel('debug');
 
-        // 3. On écoute le dossier partagé
-        const docRef = doc(db, `artifacts/${appId}/users/${sharedSessionId}/found_days`, userSaveKey);
+        // On démarre l'écoute après l'authentification
+        const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                // Tente de se connecter anonymement si non connecté
+                await signInAnonymously(auth).catch(e => {
+                    console.error("Firebase Sign In Anonymously Failed:", e);
+                    setIsDataReady(true);
+                    return;
+                });
+            }
 
-        const unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            const foundDaysFromFirestore = (data?.days || []) as number[];
-            setFoundDays(foundDaysFromFirestore);
-          } 
-          // On ne remet pas à zéro si vide pour éviter d'écraser par erreur
-          setIsDataReady(true); 
-        }, (error) => {
-          console.error("Erreur Firebase:", error);
-          setIsDataReady(true); 
+            // ID FIXE POUR SYNCHRO
+            const sharedSessionId = "session-unique-deborah"; 
+            setUserId(sharedSessionId);
+
+            // On écoute le dossier partagé
+            const docRef = doc(db, `artifacts/${appId}/users/${sharedSessionId}/found_days`, userSaveKey);
+
+            const unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const foundDaysFromFirestore = (data?.days || []) as number[];
+                    setFoundDays(foundDaysFromFirestore);
+                } 
+                setIsDataReady(true); // On est prêt, que les données existent ou non
+            }, (error) => {
+                console.error("Erreur Firebase:", error);
+                setIsDataReady(true); 
+            });
+
+            return () => {
+                // Nettoyage lors du démontage du composant
+                unsubscribeSnapshot();
+            };
         });
 
-        return () => {
-          unsubscribeSnapshot();
-        };
-      });
+        return () => unsubscribeAuth();
 
-      return () => unsubscribeAuth();
-
-    } catch {
-      setIsDataReady(true); 
+    } catch (e) {
+        console.error("Firebase Initialization Failed:", e);
+        setIsDataReady(true); 
     }
-  }, [isClient]);
-
+}, [isClient]); // Dépendance minimale
   // === SAUVEGARDE DES DONNÉES VERS FIRESTORE ===
   useEffect(() => {
     if (!isDataReady || !userId || !db) return;
