@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// Les imports Firebase ont été supprimés
 
 // === PWA / MOBILE CONFIGURATION ===
 const MobileAppMeta = () => (
@@ -197,7 +196,7 @@ const CALENDAR_DATA = [
   { date: "2026-01-01", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Bac D", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2026-01-02", day: 17, letter: "LETTRE DU JOUR 17", hint: "Bac A", gift: "Photo #8", giftMessage: "MESSAGE CADEAU JOUR 17", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2026-01-03", day: 18, letter: "LETTRE DU JOUR 18", hint: "Bac B", gift: "Canette IZEM Cerise", giftMessage: "MESSAGE CADEAU IZEM", keywords: ["canette", "boisson", "ism", "izem", "cerise"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-04", day: 19, letter: "LETTRE DU JOUR 19", hint: "Bac A", gift: "Photo #9", giftMessage: "MESSAGE CADEAU JOUR 19", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-12-05", day: 19, letter: "LETTRE DU JOUR 19", hint: "Bac A", gift: "Photo #9", giftMessage: "MESSAGE CADEAU JOUR 19", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-12-05", day: 20, letter: "LETTRE DU JOUR 20", hint: "Bac D", gift: "Maillot de foot", giftMessage: "MESSAGE CADEAU MAILLOT", keywords: ["maillot", "foot", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2026-01-06", day: 21, letter: "LETTRE DU JOUR 21 (TON RETOUR)", hint: "Bac C", gift: "Visionneuse Photo", giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE", keywords: ["photo", "visionneuse", "viewer"], hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null },
   { date: "2026-01-07", day: 22, letter: "LETTRE DU JOUR 22", hint: "Bac B", gift: "Schweppes Grenade", giftMessage: "MESSAGE CADEAU SCHWEPPES", keywords: ["schweppes", "grenade", "canette"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
@@ -434,18 +433,17 @@ export default function Home() {
   const [showDeborahAnimation, setShowDeborahAnimation] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
   const [showMemoryGame, setShowMemoryGame] = useState(false);
-  // CLEANUP: suppression des variables Firebase inutiles
   const [isDataReady, setIsDataReady] = useState(false);
-  const [buttonOpacity, setButtonOpacity] = useState(1);
+  const [buttonOpacity, setButtonOpacity] = useState(1); // Rétabli: Opacité dynamique du bouton
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
 
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
-  const LOCAL_STORAGE_KEY = 'calendrier_deborah_found'; // Nouvelle clé pour localStorage
+  const LOCAL_STORAGE_KEY = 'calendrier_deborah_found'; 
 
-  // === NOUVEAU: CHARGEMENT DE LOCAL STORAGE (runs once) ===
+  // === LOCAL STORAGE : CHARGEMENT (runs once) ===
   useEffect(() => {
     if (!isClient) return;
     try {
@@ -459,16 +457,49 @@ export default function Home() {
     } catch (e) {
       console.error("Failed to load state from localStorage:", e);
     }
-    // Marque les données comme prêtes, remplaçant le rôle de Firebase
     setIsDataReady(true);
   }, [isClient]);
 
-  // === NOUVEAU: SAUVEGARDE VERS LOCAL STORAGE (runs on change) ===
+  // === LOCAL STORAGE : SAUVEGARDE (runs on change) ===
   useEffect(() => {
     if (foundDays.length > 0) {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(foundDays));
     }
   }, [foundDays]);
+  
+  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL (RÉTABLI ET CORRIGÉ) ===
+  useEffect(() => {
+    const handleScroll = () => {
+      // S'assurer que le code ne s'exécute que côté client
+      if (typeof window === 'undefined') return;
+
+      const scrollPosition = window.scrollY;
+      
+      // Calcule la hauteur totale de la page moins la hauteur visible
+      const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      
+      // La distance maximale de scroll est la distance totale scrollable (au lieu de 150px)
+      // On met 1 au minimum pour éviter une division par zéro si la page n'est pas scrollable.
+      const maxScrollDistance = totalScrollHeight > 0 ? totalScrollHeight : 1; 
+      
+      // Calcule l'opacité : 1 au sommet, 0 en bas
+      let newOpacity = 1 - Math.min(1, scrollPosition / maxScrollDistance);
+      
+      setButtonOpacity(newOpacity);
+    };
+
+    // Exécuter une fois au montage
+    handleScroll(); 
+    
+    window.addEventListener('scroll', handleScroll);
+    // On peut aussi attacher au redimensionnement si le contenu change de taille
+    window.addEventListener('resize', handleScroll); 
+    
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('resize', handleScroll);
+    };
+  }, []); 
 
   // === GESTION BLOQUAGE ZOOM IOS ===
   useEffect(() => {
@@ -543,19 +574,7 @@ export default function Home() {
   useEffect(() => { setIsClient(true); }, []);
 
 
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      const maxScroll = 100; 
-      let newOpacity = 1 - Math.min(1, scrollPosition / maxScroll);
-      setButtonOpacity(newOpacity);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
+  // === GESTION COUNTDOWN ===
   useEffect(() => {
     if (!isClient) return;
     const timer = setInterval(() => {
@@ -617,13 +636,11 @@ export default function Home() {
     setIsAuthenticated(false); setIsAdmin(false); setCode(''); setFoundDays([]); setPlayMusic(false);
     setFailedAttempts(0);
     setLoginError(null);
-    // CLEANUP: Suppression de auth.signOut()
   };
 
   const handleResetAdmin = () => {
-    if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression ? Cette action réinitialise la base de données.")) {
+    if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression ? Cette action réinitialise la progression locale.")) {
       setFoundDays([]);
-      // CLEANUP: suppression de la sauvegarde firebase; le useEffect LocalStorage s'en chargera
     }
   };
 
