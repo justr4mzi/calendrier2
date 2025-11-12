@@ -1054,7 +1054,11 @@ export default function Home() {
                           month: 'short'
                         }) : '...'}
                       </span>
-                      {day.isSpecial && <Sparkles className="w-4 h-4 text-yellow-200 mt-1" title="Jour Spécial" />}
+                      {day.isSpecial && (
+  <span title="Jour Spécial">
+    <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />
+  </span>
+)}
                     </div>
                   </button>
                 );
