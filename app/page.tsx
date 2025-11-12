@@ -400,7 +400,7 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
   const isWon = solved.length === cards.length;
   
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-3xl font-bold text-rose-500 mb-4 text-center">🧠 Memory Game</h2>
         <p className="text-center text-gray-600 mb-4">Coups: {moves}</p>
@@ -853,7 +853,7 @@ export default function Home() {
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de l'Après</span>
-              </h1>
+              </span>
               {/* Correction: Ajout de mt-2 pour séparer le titre de la phrase */}
               <p className="text-gray-600 italic mt-2">Pour ma Déborah ❤️</p>
             </div>
@@ -972,7 +972,7 @@ export default function Home() {
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
               <span className="text-6xl block title-fix-span-top mt-2">Calendrier</span>
               <span className="text-6xl block">de l'Après</span>
-            </h1>
+            </span>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
               className="text-rose-600 font-semibold text-xl mt-4 cursor-pointer hover:scale-105 transition-transform" 
@@ -999,7 +999,7 @@ export default function Home() {
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-semibold text-gray-700">Progression</span>
               <span className="text-sm font-semibold text-rose-600 flex items-center gap-1">
-                <Sparkles className="w-4 h-4 fill-rose-500 text-rose-500" />
+                <Sparkles className="w-4 h-4 fill-rose-500 text-rose-500" /> {/* CORRECTION: Retrait du title */}
                 {foundDays.length} / {CALENDAR_DATA.length}
               </span>
             </div>
@@ -1056,7 +1056,7 @@ export default function Home() {
                           month: 'short'
                         }) : '...'}
                       </span>
-                      {day.isSpecial && <Sparkles className="w-4 h-4 text-yellow-200 mt-1" title="Jour Spécial" />}
+                      {day.isSpecial && <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />} {/* L'élément Sparkles corrigé ici */}
                     </div>
                   </button>
                 );
