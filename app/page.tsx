@@ -8,9 +8,18 @@ import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { setLogLevel } from 'firebase/firestore';
 
 // Configuration Firebase
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+const firebaseConfig = {
+  apiKey: "AIzaSyDLf...DLIEY092fkk", // Ta clé réelle
+  authDomain: "calendrier-deborah-8f47b.firebaseapp.com", // Ton domaine d'authentification
+  projectId: "calendrier-deborah-8f47b", // Ton ID de projet
+  storageBucket: "calendrier-deborah-8f47b.appspot.com", // Ton Storage Bucket
+  messagingSenderId: "666646643143", // Ton Sender ID
+  appId: "1:666646643143:web:378d444a1417553f0ed3ec", // Ton App ID
+  measurementId: "G-VF9FZFZFM6" // Le measurementId est facultatif
+};
+// L'ID de l'application est utilisé pour le Firestore path de sauvegarde
+const appId = 'calendrier-deborah-v1'; 
+const initialAuthToken = null;
 
 // Initialisation des services Firebase
 let db: any;
