@@ -9,15 +9,16 @@ import { setLogLevel } from 'firebase/firestore';
 
 // Configuration Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyDLf...DLIEY092fkk", // Ta clé réelle
-  authDomain: "calendrier-deborah-8f47b.firebaseapp.com", // Ton domaine d'authentification
-  projectId: "calendrier-deborah-8f47b", // Ton ID de projet
-  storageBucket: "calendrier-deborah-8f47b.appspot.com", // Ton Storage Bucket
-  messagingSenderId: "666646643143", // Ton Sender ID
-  appId: "1:666646643143:web:378d444a1417553f0ed3ec", // Ton App ID
-  measurementId: "G-VF9FZFZFM6" // Le measurementId est facultatif
+  apiKey: "AIzaSyDTI9JDOKSU2gtNOY6ct7yv8Liey892fkk", // Ta clé réelle (laisse la tienne si elle est différente ici)
+  authDomain: "calendrier-deborah-8f47b.firebaseapp.com",
+  projectId: "calendrier-deborah-8f47b",
+  storageBucket: "calendrier-deborah-8f47b.appspot.com",
+  messagingSenderId: "666646643143",
+  appId: "1:666646643143:web:378d444a1417553f0ed3ec",
+  measurementId: "G-VF9FZFZFM6"
 };
-// L'ID de l'application est utilisé pour le Firestore path de sauvegarde
+
+// L'ID de l'application
 const appId = 'calendrier-deborah-v1'; 
 const initialAuthToken = null;
 
@@ -236,7 +237,7 @@ const Fireworks = () => (
   </div>
 );
 
-// === LECTEUR AUDIO (PERSISTANT, MONTE UNE SEULE FOIS) ===
+// === LECTEUR AUDIO ===
 const LofiPlayer = ({ play, volume, isMuted }: { play: boolean, volume: number, isMuted: boolean }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const startedRef = useRef(false);
@@ -248,7 +249,6 @@ const LofiPlayer = ({ play, volume, isMuted }: { play: boolean, volume: number, 
       el.play().catch(() => {});
       startedRef.current = true;
     } else {
-      // Ne coupe pas si une modale s'ouvre, on coupe seulement si play=false global
       el.pause();
       startedRef.current = false;
     }
@@ -281,15 +281,13 @@ const PasswordHint = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === GALERIE PHOTOS (MODIFIÉ) ===
+// === GALERIE PHOTOS ===
 const PhotoGallery = ({ onClose, foundDays }: { onClose: () => void, foundDays: number[] }) => {
   const photos = CALENDAR_DATA.filter(day => day.photoUrl);
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
-        
-        {/* BOUTON FERMER (CROIX) */}
         <button 
           onClick={onClose} 
           className="absolute top-4 right-4 text-gray-700 hover:text-rose-500 transition-all p-2 rounded-full hover:bg-gray-100 z-10"
@@ -307,7 +305,7 @@ const PhotoGallery = ({ onClose, foundDays }: { onClose: () => void, foundDays: 
                 {isFound ? (
                   <div 
                     className="polaroid cursor-default transition-transform duration-300" 
-                    style={{ transform: `rotate(${Math.random() * 6 - 3}deg)` }} // Léger tilt aléatoire
+                    style={{ transform: `rotate(${Math.random() * 6 - 3}deg)` }} 
                   >
                     <img 
                       src={day.photoUrl!} 
@@ -316,7 +314,6 @@ const PhotoGallery = ({ onClose, foundDays }: { onClose: () => void, foundDays: 
                     <div className="text-center text-sm mt-2 font-semibold text-gray-700">
                       Jour {day.day}
                     </div>
-                    {/* AFFICHAGE COMPLET DU COMMENTAIRE */}
                     {day.photoComment && (
                       <p className="text-center text-gray-500 mt-1 text-xs italic px-1">{day.photoComment}</p>
                     )}
@@ -346,7 +343,7 @@ const PhotoZoom = ({ photoUrl, onClose }: { photoUrl: string, onClose: () => voi
       src={photoUrl} 
       alt="Zoom" 
       className="max-w-full max-h-full rounded-xl shadow-2xl"
-      onClick={(e) => e.stopPropagation()} // Empêche la fermeture si on clique sur l'image elle-même
+      onClick={(e) => e.stopPropagation()} 
     />
     <button 
       onClick={onClose}
@@ -449,23 +446,21 @@ export default function Home() {
   const [showFireworks, setShowFireworks] = useState(false);
   const [playMusic, setPlayMusic] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(0.03); // Volume de base très faible
-  const [starClickCount, setStarClickCount] = useState(0); // Compteur pour le PUZZLE (étoile)
+  const [volume, setVolume] = useState(0.03);
+  const [starClickCount, setStarClickCount] = useState(0);
   const [showPuzzle, setShowPuzzle] = useState(false);
   const [showPasswordHint, setShowPasswordHint] = useState(false);
   const [showGallery, setShowGallery] = useState(false);
   const [zoomedPhoto, setZoomedPhoto] = useState<string | null>(null);
-  const [deborahClickCount, setDeborahClickCount] = useState(0); // Compteur pour l'ANIMATION DÉBORAH
+  const [deborahClickCount, setDeborahClickCount] = useState(0);
   const [showDeborahAnimation, setShowDeborahAnimation] = useState(false);
   const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
   const [showMemoryGame, setShowMemoryGame] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [isDataReady, setIsDataReady] = useState(false);
-  const [loadingTimeout, setLoadingTimeout] = useState(false); // Nouvel état pour gérer le timeout
-  const [buttonOpacity, setButtonOpacity] = useState(1); // Opacité du bouton Retour
-  const [showTutorial, setShowTutorial] = useState(false); // État pour la modale tuto
-  
-  // Nouveaux états pour la gestion des erreurs de connexion
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  const [buttonOpacity, setButtonOpacity] = useState(1);
+  const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
 
@@ -473,29 +468,20 @@ export default function Home() {
   const userCode = 'minou';
   const userSaveKey = 'found_days';
 
-  // === NOUVEAU : BLOQUAGE DU ZOOM IOS (Pincement & Double-tap) ===
+  // === BLOQUAGE ZOOM IOS ===
   useEffect(() => {
-    // 1. Bloquer le zoom par pincement (Gesture)
-    const handleGesture = (e: Event) => {
-      e.preventDefault();
-    };
-
-    // 2. Bloquer le zoom par double-tap
+    const handleGesture = (e: Event) => e.preventDefault();
     let lastTouchEnd = 0;
     const handleTouchEnd = (e: TouchEvent) => {
       const now = new Date().getTime();
-      if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-      }
+      if (now - lastTouchEnd <= 300) e.preventDefault();
       lastTouchEnd = now;
     };
 
-    // 3. Ajout des écouteurs d'événements
     document.addEventListener('gesturestart', handleGesture, { passive: false });
     document.addEventListener('gesturechange', handleGesture, { passive: false });
     document.addEventListener('touchend', handleTouchEnd, false);
 
-    // Nettoyage
     return () => {
       document.removeEventListener('gesturestart', handleGesture);
       document.removeEventListener('gesturechange', handleGesture);
@@ -508,7 +494,7 @@ export default function Home() {
     window.scrollTo(0, 0);
   }, [selectedDay, isAuthenticated]);
 
-  // === PARTICULES PERSONNALISÉES ===
+  // === PARTICULES ===
   const createParticles = (type: 'hearts' | 'stars' | 'petals' = 'hearts') => {
     const emojis = {
       hearts: ['💕', '💖', '💗', '💝', '❤️'],
@@ -527,7 +513,6 @@ export default function Home() {
     setTimeout(() => setParticles([]), 3000);
   };
 
-  // === ANIMATION DÉBORAH (2 CLICS SUR LE NOM) ===
   const handleDeborahClick = () => {
     const newCount = deborahClickCount + 1;
     setDeborahClickCount(newCount);
@@ -537,21 +522,19 @@ export default function Home() {
       createParticles('hearts');
       setTimeout(() => {
         setShowDeborahAnimation(false);
-        setDeborahClickCount(0); // Réinitialise le compteur après l'animation
+        setDeborahClickCount(0);
       }, 3000);
     }
-    // Si l'utilisateur clique plus de 3 fois rapidement, on réinitialise pour ne pas bloquer le compteur.
     if (newCount > 3) setDeborahClickCount(0); 
   };
   
-  // === MINI-JEU Mémory (3 CLICS SUR LE COEUR) ===
   const handleHeartClick = () => {
     const newCount = starClickCount + 1;
     setStarClickCount(newCount);
     
     if (newCount === 3) {
       setShowMemoryGame(true);
-      setStarClickCount(0); // Réinitialise le compteur après le déclenchement
+      setStarClickCount(0);
     }
   };
 
@@ -561,15 +544,15 @@ export default function Home() {
   useEffect(() => {
     if (!isDataReady) {
       const timer = setTimeout(() => {
-        setLoadingTimeout(true); // Passe à true après 3 secondes
+        setLoadingTimeout(true);
       }, 3000); 
       return () => clearTimeout(timer);
     } else {
-      setLoadingTimeout(false); // Annule si les données sont prêtes
+      setLoadingTimeout(false);
     }
   }, [isDataReady]);
 
-  // === FIREBASE SETUP ET LECTURE DES DONNÉES ===
+  // === FIREBASE SETUP (MODIFIÉ POUR SYNCHRO PC/SAFARI) ===
   useEffect(() => {
     if (!isClient || !firebaseConfig || Object.keys(firebaseConfig).length === 0) {
         setIsDataReady(true); 
@@ -577,13 +560,13 @@ export default function Home() {
     }
 
     try {
-      // Configuration et initialisation
       const app = initializeApp(firebaseConfig);
       db = getFirestore(app);
       auth = getAuth(app);
       setLogLevel('debug');
       
       const unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
+        // 1. Authentification Anonyme (nécessaire pour les droits)
         if (!user) {
           if (initialAuthToken) {
             await signInWithCustomToken(auth, initialAuthToken);
@@ -592,22 +575,24 @@ export default function Home() {
           }
         }
         
-        const currentUserId = auth.currentUser?.uid || crypto.randomUUID();
-        setUserId(currentUserId);
+        // 2. MODIFICATION ICI : ID FIXE POUR SYNCHRO
+        // Au lieu de générer un ID aléatoire, on utilise un ID partagé
+        const sharedSessionId = "session-unique-deborah"; 
+        setUserId(sharedSessionId);
 
-        // Démarre l'écoute des données Firestore
-        const docRef = doc(db, `artifacts/${appId}/users/${currentUserId}/found_days`, userSaveKey);
+        // 3. On écoute le dossier partagé
+        const docRef = doc(db, `artifacts/${appId}/users/${sharedSessionId}/found_days`, userSaveKey);
 
         const unsubscribeSnapshot = onSnapshot(docRef, (docSnap) => {
           if (docSnap.exists()) {
             const data = docSnap.data();
             const foundDaysFromFirestore = (data?.days || []) as number[];
             setFoundDays(foundDaysFromFirestore);
-          } else {
-            setFoundDays([]);
-          }
+          } 
+          // On ne remet pas à zéro si vide pour éviter d'écraser par erreur
           setIsDataReady(true); 
-        }, () => {
+        }, (error) => {
+          console.error("Erreur Firebase:", error);
           setIsDataReady(true); 
         });
 
@@ -629,6 +614,7 @@ export default function Home() {
 
     const saveToFirestore = async () => {
       try {
+        // On écrit bien dans le dossier partagé (userId contient maintenant l'ID fixe)
         const docRef = doc(db, `artifacts/${appId}/users/${userId}/found_days`, userSaveKey);
         await setDoc(docRef, { days: foundDays, lastUpdate: new Date().toISOString() });
       } catch {}
@@ -637,7 +623,7 @@ export default function Home() {
     saveToFirestore();
   }, [foundDays, isDataReady, userId]);
 
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
+  // === OPACITÉ BOUTON SCROLL ===
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
@@ -648,7 +634,7 @@ export default function Home() {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []); // appliqué globalement
+  }, []);
 
   useEffect(() => {
     if (!isClient) return;
@@ -679,9 +665,8 @@ export default function Home() {
     const lowerCode = code.toLowerCase();
     
     if (lowerCode === userCode || lowerCode === adminCode) {
-      // Connexion réussie
       setLoginError(null);
-      setFailedAttempts(0); // Réinitialiser le compteur d'échecs
+      setFailedAttempts(0);
       
       const isAdminUser = lowerCode === adminCode;
       setIsAuthenticated(true); 
@@ -695,7 +680,6 @@ export default function Home() {
       }
 
     } else {
-      // Connexion échouée
       const newFailedAttempts = failedAttempts + 1;
       setFailedAttempts(newFailedAttempts);
       
@@ -711,7 +695,7 @@ export default function Home() {
 
   const handleLogout = () => {
     setIsAuthenticated(false); setIsAdmin(false); setCode(''); setFoundDays([]); setPlayMusic(false);
-    setFailedAttempts(0); // Réinitialiser l'état d'échec
+    setFailedAttempts(0);
     setLoginError(null);
     if (auth) {
       auth.signOut();
@@ -786,7 +770,6 @@ export default function Home() {
     }
   };
   
-  // Fonction pour gérer le zoom sur la page du jour
   const handleDayPhotoZoom = (e: React.MouseEvent, photoUrl: string | null) => {
     e.stopPropagation();
     if (photoUrl) {
@@ -795,20 +778,15 @@ export default function Home() {
   };
 
   const progress = (foundDays.length / CALENDAR_DATA.length) * 100;
-
-  // La musique joue si isAuthenticated est true et playMusic est true.
   const isPlayingMusic = isAuthenticated && playMusic;
 
-  // === RENDU UNIQUE: on garde LofiPlayer monté une seule fois, et on affiche les vues/modales par-dessus ===
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-pink-100 to-purple-200 relative overflow-hidden transition-all duration-1000">
-      <MobileAppMeta /> {/* INCLUSION DU COMPOSANT META DANS LA RACINE */}
+      <MobileAppMeta />
       <BubblesBackground />
 
-      {/* Lecteur audio persistant: toujours monté, avec logique de lecture via isPlayingMusic */}
       {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
 
-      {/* Particules animées (tombent) */}
       {particles.map(p => (
         <div 
           key={p.id}
@@ -832,7 +810,6 @@ export default function Home() {
       )}
       {showFireworks && <Fireworks />}
 
-      {/* Modales/overlays montées AU-DESSUS sans changer la musique */}
       {showPasswordHint && <PasswordHint onClose={() => setShowPasswordHint(false)} />}
       {showGallery && <PhotoGallery onClose={() => setShowGallery(false)} foundDays={foundDays} />}
       {zoomedPhoto && <PhotoZoom photoUrl={zoomedPhoto} onClose={() => setZoomedPhoto(null)} />}
@@ -842,17 +819,14 @@ export default function Home() {
 
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
-        // min-h-screen pour centrer la carte verticalement
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
           <div className="floating-form rounded-3xl shadow-2xl p-8 max-w-md w-full relative mx-auto">
             <div className="text-center mb-8 title-adjust-login overflow-visible">
-              {/* Correction: Ajout de mb-4 pour séparer le cœur du titre */}
               <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de l'Après</span>
               </h1>
-              {/* Correction: Ajout de mt-2 pour séparer le titre de la phrase */}
               <p className="text-gray-600 italic mt-2">Pour ma Déborah ❤️</p>
             </div>
             
@@ -863,11 +837,10 @@ export default function Home() {
                 value={code}
                 onChange={(e) => {
                   setCode(e.target.value);
-                  setLoginError(null); // Effacer l'erreur quand l'utilisateur tape
+                  setLoginError(null);
                 }}
                 onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
                 placeholder="Mot de passe"
-                // AJOUT DE text-base (16px) POUR EVITER LE ZOOM IOS
                 className={`w-full px-4 py-3 border-2 rounded-xl focus:outline-none bg-white/80 text-base ${
                   loginError ? 'border-red-500 focus:border-red-600' : 'border-rose-300 focus:border-rose-400'
                 }`}
@@ -892,7 +865,6 @@ export default function Home() {
               >
                 Besoin d'un indice pour le mot de passe ?
               </button>
-              {/* NOUVEAU BOUTON TUTO */}
               <button 
                 onClick={() => setShowTutorial(true)}
                 className="flex items-center justify-center gap-2 w-full text-gray-500 text-xs hover:text-rose-600 transition-all py-2"
@@ -905,13 +877,11 @@ export default function Home() {
         </div>
       )}
 
-      {/* CALENDAR OR DAY VIEW (après connexion) */}
+      {/* CALENDAR OR DAY VIEW */}
       {isAuthenticated && !selectedDay && (
         <div className="max-w-6xl mx-auto py-8 px-4 relative z-10">
-          {/* BARRE DE NAVIGATION FIXE */}
           <div className="sticky top-0 z-50 bg-white/50 backdrop-blur-md rounded-xl p-3 mb-6 shadow-lg flex justify-between items-center w-full">
-            <div className="w-1/3 flex justify-start gap-2"> {/* AJOUT: gap-2 ici */}
-              {/* GALERIE DÉPLACÉE À GAUCHE */}
+            <div className="w-1/3 flex justify-start gap-2">
               <button
                 onClick={() => setShowGallery(true)}
                 className="bg-gradient-to-r from-rose-400 to-pink-500 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
@@ -931,7 +901,6 @@ export default function Home() {
             </div>
 
             <div className="flex gap-2 items-center">
-              {/* Mute / Volume */}
               <button
                 onClick={() => {
                   setPlayMusic(true);
@@ -974,16 +943,14 @@ export default function Home() {
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
               className="text-rose-600 font-semibold text-xl mt-4 cursor-pointer hover:scale-105 transition-transform" 
-              // Modification: onClick pour l'animation Déborah (2 clics)
               onClick={handleDeborahClick} 
               title="Cliquer 2 fois rapidement pour une animation !" 
             >
               Pour ma Déborah 
-              {/* Cœur: gère le Memory Game (3 clics) */}
               <span 
                 className="cursor-pointer inline-block mx-1 transition-transform hover:scale-125"
                 onClick={(e) => { 
-                  e.stopPropagation(); // Stop propagation pour isoler le clic du cœur du parent
+                  e.stopPropagation(); 
                   handleHeartClick(); 
                 }}
                 title="Cliquer 3 fois pour une surprise (Jeu Mémory)!"
@@ -1016,7 +983,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* CONTENEUR DE LA GRILLE AVEC TEXTURE DE PAPIER */}
           <div className="paper-texture rounded-3xl p-6 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {CALENDAR_DATA.map((day) => {
@@ -1078,7 +1044,6 @@ export default function Home() {
       {/* DAY VIEW */}
       {isAuthenticated && selectedDay && (
         <>
-          {/* Bouton retour fixe à gauche avec transparence au scroll */}
           <div 
             className="back-button-fixed-left"
             style={{ opacity: buttonOpacity }}
@@ -1091,7 +1056,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* AJOUT D'UN GROS PADDING-BOTTOM (pb-64) POUR LE SCROLL MOBILE */}
           <div className="max-w-2xl mx-auto relative z-10 p-4 pb-64">
             <div className="paper-texture rounded-3xl shadow-2xl p-8 mt-16">
               <div className="text-center mb-6">
@@ -1125,7 +1089,6 @@ export default function Home() {
                       onChange={(e) => setGuessInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
                       placeholder="Ta réponse..."
-                      // AJOUT DE text-base (16px) POUR EVITER LE ZOOM IOS
                       className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-400 focus:outline-none mb-3 text-base"
                     />
                     <button onClick={handleGuess} className="w-full bg-gradient-to-r from-blue-400 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 transition-all">
@@ -1186,7 +1149,6 @@ export default function Home() {
                     {selectedDay.photoUrl && (
                       <div className="bg-transparent rounded-2xl p-6">
                         <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">📸 Souvenir...</h3>
-                        {/* POLAROID AVEC SCOTCH - CLICABLE POUR LE ZOOM DU JOUR */}
                         <div className="relative mx-auto max-w-md">
                           <div 
                             className="polaroid cursor-pointer hover:scale-105 transition-transform"
@@ -1197,7 +1159,6 @@ export default function Home() {
                               <p className="text-center text-gray-600 mt-3 text-sm italic leading-relaxed">"{selectedDay.photoComment}"</p>
                             )}
                           </div>
-                          {/* INDICATEUR ZOOM */}
                           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-black/60 text-white px-2 py-1 rounded text-xs pointer-events-none z-10">
                               🔍 Cliquer pour agrandir
                           </div>
@@ -1223,7 +1184,6 @@ export default function Home() {
         </>
       )}
 
-      {/* Loader quand Firestore n'est pas prêt */}
       {!isDataReady && !loadingTimeout && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
           <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
