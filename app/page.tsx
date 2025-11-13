@@ -772,15 +772,14 @@ export default function Home() {
   };
 
   const handleResetAdmin = async () => {
-    if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression ? Cette action réinitialise la progression LOCALE ET SERVEUR.")) {
-      // 1. Réinitialisation locale
-      setFoundDays([]);
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-      
-      // 2. Réinitialisation sur le serveur (en postant un tableau vide)
-      await saveFoundDays([]);
-    }
-  };
+  if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression de Déborah ? Cette action réinitialise la progression SERVEUR uniquement (visible par Déborah).")) {
+    // Réinitialisation sur le serveur (en postant un tableau vide)
+    await saveFoundDays([]);
+    
+    // Optionnel : rafraîchir l'état local pour refléter le changement
+    setFoundDays([]);
+  }
+};
 
   const isDayUnlocked = (date: string) => {
     if (!isClient) return false;
@@ -899,7 +898,7 @@ export default function Home() {
               <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
-                <span className="text-6xl block">de l'Après</span>
+                <span className="text-6xl block">de Déborah</span>
               </h1>
               <p className="text-gray-600 italic mt-2">Pour ma Déborah ❤️</p>
             </div>
@@ -1012,7 +1011,7 @@ export default function Home() {
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
               <span className="text-6xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-6xl block">de l'Après</span>
+              <span className="text-6xl block">de Déborah</span>
             </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
