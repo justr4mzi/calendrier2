@@ -146,61 +146,61 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER ===
+// === DONNÉES DU CALENDRIER (MISES À JOUR POUR LES TESTS) ===
 const CALENDAR_DATA = [
   {
-    date: "2025-12-17", day: 1,
+    date: "2025-11-13", day: 1, // Aujourd'hui
     letter: "Coucou Déborah, j'espère que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuyes sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
     hint: "Récupérer la lettre B", gift: "Switch",
     giftMessage: "Voici amuse toi bien, je t'ai installé pleins de jeux incroyables et faits pour toi. Hésite pas à l'utiliser le plus possible des vacances, elle est à toi. Hésite pas si t'as des questions et tout, ton copain est là. Mets toi peut être comme objectif de finir un jeu pendant les vacances, tu verras ça va vraiment t'aider dans ton addiction aux réseaux comme insta ou tiktok et tu seras tellement fière de toi.",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
-    date: "2025-12-18", day: 2,
+    date: "2025-11-14", day: 2,
     letter: "Le deuxième jour ! J'espère que t'as kiffer le concept en tt cas il te réserve encore de belle surprise hehe. Petit cadeau aujourd'hui pas énorme mais comme ca tu vas te régaler ;) Je pars en Algérie aujourd'hui, en tout cas je t'oublie jamais je serai la tout les jours pour toi avec ca mmh avoue tu kiff sah j'ai bien galérer c'est des heures de codage et de galère hein oublie pas j'espère en tout cas je vais bien arriver en Algérie voila voila j'irai avec ma mère.",
     hint: "Récupérer la lettre D", gift: "Reese's",
     giftMessage: "Bonne app mon coeur mange bien comme ca tu prends des forces pour les cours",
     keywords: ["chocolat", "reese", "beurre de cacahuète", "bonbon"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
-    date: "2025-12-19", day: 3,
+    date: "2025-11-15", day: 3,
     letter: "Troisième jourrrr jsuis en Algérie normalement, de ton côté j'espère que ça va bien, courage dernier jour de cours avant les vacances. Petit cadeau aujourd'hui pour passer un bon matin :)",
     hint: "Récupérer la lettre F et G", gift: "Photo #1",
     giftMessage: "BONUS : des petits tatouages de moi bébé hehe avoue tes chockbar tu t'y attendais pas",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour la je t'avais prêté mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucré la madame.", photoDownload: true, extraPhoto1: null,
   },
   {
-    date: "2025-12-20", day: 4,
+    date: "2025-11-16", day: 4,
     letter: "Premier jour des vacances ! J'espère que ca va bien se passer j'espère que t'as pu jouer a la switch et tout je suis trop content si ca serait le cas franchement j'espère que tu vas réussir a vaincre tes addictions grâce a ca et voila . Aujourd'hui objet un peu troll franchement mais au moins la prochaine fois on pourra pas se tromper.",
     hint: "Récupérer la lettre A", gift: "Mesureur de bague",
     giftMessage: "C'était un mesureur de taille de doigt pour les bagues :) A ta place j'aurai envoyé a ramzi la taille comme ca la prochaine fois pas ya pas de gna gna c'était pas la bonne",
     keywords: ["bague", "mesureur", "taille", "doigt", "doigts"], hasGuess: true, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
-    date: "2025-12-21", day: 5,
+    date: "2025-11-17", day: 5,
     letter: "C'est Dimanche ! Tout est fermé en France alors qu'en Algérie c'est le premier jour de la semaine c'est fou la différence. Ca me donne envie d'aller en Algérie avec toi haha. Bon assez parle je te laisse voir le petit cadeau.",
     hint: "Récupérer la lettre H", gift: "Photo #2",
     giftMessage: "C'est cool les photos c'est mieux que uniquement sur le téléphone, je comprends la fille dans La Boume haha",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo-jour-5.jpg", photoComment: "Notre fameux fond d'écran papapa", photoDownload: true, extraPhoto1: null,
   },
-  { date: "2025-12-22", day: 6, letter: "LETTRE DU JOUR 6", hint: "Bac B + Bac C", gift: "Schweppes Citron + Porte-clé", giftMessage: "MESSAGE CADEAU JOUR 6", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-23", day: 7, letter: "LETTRE DU JOUR 7", hint: "Bac A", gift: "Photo #3", giftMessage: "MESSAGE CADEAU JOUR 7", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_7.jpg", photoComment: "COMMENTAIRE_PHOTO_3_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-24", day: 8, letter: "LETTRE DU JOUR 8", hint: "Bac D", gift: "Vernis Rouge", giftMessage: "MESSAGE CADEAU VERNIS", keywords: ["vernis", "ongles", "rouge", "manucure"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: "/photo_vernis.jpg" },
-  { date: "2025-12-25", day: 9, letter: "LETTRE DU JOUR 9 (NOEL)", hint: "Bac B", gift: "Chocolat Dubaï", giftMessage: "MESSAGE CADEAU CHOCOLAT", keywords: ["chocolat", "dubai", "dubaï"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-26", day: 10, letter: "LETTRE DU JOUR 10", hint: "Bac A", gift: "Photo #4", giftMessage: "MESSAGE CADEAU JOUR 10", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_10.jpg", photoComment: "COMMENTAIRE_PHOTO_4_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-27", day: 11, letter: "LETTRE DU JOUR 11", hint: "Bac C", gift: "Adjusteurs de bague", giftMessage: "MESSAGE CADEAU ADJUSTEURS", keywords: ["adjusteur", "bague", "doré", "argenté"], hasGuess: true, videoUrl: "/ajusteur.mp4", isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-28", day: 12, letter: "LETTRE DU JOUR 12", hint: "Bac A", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-29", day: 13, letter: "LETTRE DU JOUR 13", hint: "Bac C + Bac A", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-30", day: 14, letter: "LETTRE DU JOUR 14", hint: "Bac B", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU GAUFRETTE", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-31", day: 15, letter: "LETTRE DU JOUR 15 (NOUVEL AN)", hint: "Bac A", gift: "Photo #7", giftMessage: "MESSAGE CADEAU JOUR 15", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2026-01-01", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Bac D", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-02", day: 17, letter: "LETTRE DU JOUR 17", hint: "Bac A", gift: "Photo #8", giftMessage: "MESSAGE CADEAU JOUR 17", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2026-01-03", day: 18, letter: "LETTRE DU JOUR 18", hint: "Bac B", gift: "Canette IZEM Cerise", giftMessage: "MESSAGE CADEAU IZEM", keywords: ["canette", "boisson", "ism", "izem", "cerise"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-05", day: 19, letter: "LETTRE DU JOUR 19", hint: "Bac A", gift: "Photo #9", giftMessage: "MESSAGE CADEAU JOUR 19", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-05", day: 20, letter: "LETTRE DU JOUR 20", hint: "Bac D", gift: "Maillot de foot", giftMessage: "MESSAGE CADEAU MAILLOT", keywords: ["maillot", "foot", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-06", day: 21, letter: "LETTRE DU JOUR 21 (TON RETOUR)", hint: "Bac C", gift: "Visionneuse Photo", giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE", keywords: ["photo", "visionneuse", "viewer"], hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-07", day: 22, letter: "LETTRE DU JOUR 22", hint: "Bac B", gift: "Schweppes Grenade", giftMessage: "MESSAGE CADEAU SCHWEPPES", keywords: ["schweppes", "grenade", "canette"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-08", day: 23, letter: "LETTRE DU JOUR 23 (FINALE)", hint: "Bac A", gift: "Photo #10 (Finale)", giftMessage: "MESSAGE CADEAU JOUR 23", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-18", day: 6, letter: "LETTRE DU JOUR 6", hint: "Bac B + Bac C", gift: "Schweppes Citron + Porte-clé", giftMessage: "MESSAGE CADEAU JOUR 6", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-19", day: 7, letter: "LETTRE DU JOUR 7", hint: "Bac A", gift: "Photo #3", giftMessage: "MESSAGE CADEAU JOUR 7", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_7.jpg", photoComment: "COMMENTAIRE_PHOTO_3_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-20", day: 8, letter: "LETTRE DU JOUR 8", hint: "Bac D", gift: "Vernis Rouge", giftMessage: "MESSAGE CADEAU VERNIS", keywords: ["vernis", "ongles", "rouge", "manucure"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: "/photo_vernis.jpg" },
+  { date: "2025-11-21", day: 9, letter: "LETTRE DU JOUR 9 (NOEL)", hint: "Bac B", gift: "Chocolat Dubaï", giftMessage: "MESSAGE CADEAU CHOCOLAT", keywords: ["chocolat", "dubai", "dubaï"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-22", day: 10, letter: "LETTRE DU JOUR 10", hint: "Bac A", gift: "Photo #4", giftMessage: "MESSAGE CADEAU JOUR 10", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_10.jpg", photoComment: "COMMENTAIRE_PHOTO_4_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-23", day: 11, letter: "LETTRE DU JOUR 11", hint: "Bac C", gift: "Adjusteurs de bague", giftMessage: "MESSAGE CADEAU ADJUSTEURS", keywords: ["adjusteur", "bague", "doré", "argenté"], hasGuess: true, videoUrl: "/ajusteur.mp4", isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-24", day: 12, letter: "LETTRE DU JOUR 12", hint: "Bac A", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-25", day: 13, letter: "LETTRE DU JOUR 13", hint: "Bac C + Bac A", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-26", day: 14, letter: "LETTRE DU JOUR 14", hint: "Bac B", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU GAUFRETTE", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-27", day: 15, letter: "LETTRE DU JOUR 15 (NOUVEL AN)", hint: "Bac A", gift: "Photo #7", giftMessage: "MESSAGE CADEAU JOUR 15", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-28", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Bac D", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-29", day: 17, letter: "LETTRE DU JOUR 17", hint: "Bac A", gift: "Photo #8", giftMessage: "MESSAGE CADEAU JOUR 17", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-11-30", day: 18, letter: "LETTRE DU JOUR 18", hint: "Bac B", gift: "Canette IZEM Cerise", giftMessage: "MESSAGE CADEAU IZEM", keywords: ["canette", "boisson", "ism", "izem", "cerise"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-12-01", day: 19, letter: "LETTRE DU JOUR 19", hint: "Bac A", gift: "Photo #9", giftMessage: "MESSAGE CADEAU JOUR 19", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null },
+  { date: "2025-12-02", day: 20, letter: "LETTRE DU JOUR 20", hint: "Bac D", gift: "Maillot de foot", giftMessage: "MESSAGE CADEAU MAILLOT", keywords: ["maillot", "foot", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-12-03", day: 21, letter: "LETTRE DU JOUR 21 (TON RETOUR)", hint: "Bac C", gift: "Visionneuse Photo", giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE", keywords: ["photo", "visionneuse", "viewer"], hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null },
+  { date: "2025-12-04", day: 22, letter: "LETTRE DU JOUR 22", hint: "Bac B", gift: "Schweppes Grenade", giftMessage: "MESSAGE CADEAU SCHWEPPES", keywords: ["schweppes", "grenade", "canette"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-12-05", day: 23, letter: "LETTRE DU JOUR 23 (FINALE)", hint: "Bac A", gift: "Photo #10 (Finale)", giftMessage: "MESSAGE CADEAU JOUR 23", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null },
 ];
 
 // === FEUX D'ARTIFICE ===
@@ -247,7 +247,7 @@ const LofiPlayer = ({ play, volume, isMuted }: { play: boolean, volume: number, 
 };
 
 // === INDICE MOT DE PASSE ===
-const PasswordHint = ({ onClose }: { onClose: () => void }) => (
+const PasswordHint = ({ onClose }: { onClose: () àvoid }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md" onClick={onClose}>
     <div className="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
       <h2 className="text-xl font-bold text-rose-500 mb-4">Indice...</h2>
@@ -434,7 +434,7 @@ export default function Home() {
   const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
   const [showMemoryGame, setShowMemoryGame] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
-  const [buttonOpacity, setButtonOpacity] = useState(1); // Rétabli: Opacité dynamique du bouton
+  const [buttonOpacity, setButtonOpacity] = useState(1);
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
@@ -467,32 +467,25 @@ export default function Home() {
     }
   }, [foundDays]);
   
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL (RÉTABLI ET CORRIGÉ) ===
+  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL (CORRIGÉ POUR FADE TOTAL) ===
   useEffect(() => {
     const handleScroll = () => {
-      // S'assurer que le code ne s'exécute que côté client
       if (typeof window === 'undefined') return;
 
       const scrollPosition = window.scrollY;
       
-      // Calcule la hauteur totale de la page moins la hauteur visible
       const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
       
-      // La distance maximale de scroll est la distance totale scrollable (au lieu de 150px)
-      // On met 1 au minimum pour éviter une division par zéro si la page n'est pas scrollable.
       const maxScrollDistance = totalScrollHeight > 0 ? totalScrollHeight : 1; 
       
-      // Calcule l'opacité : 1 au sommet, 0 en bas
       let newOpacity = 1 - Math.min(1, scrollPosition / maxScrollDistance);
       
       setButtonOpacity(newOpacity);
     };
 
-    // Exécuter une fois au montage
     handleScroll(); 
     
     window.addEventListener('scroll', handleScroll);
-    // On peut aussi attacher au redimensionnement si le contenu change de taille
     window.addEventListener('resize', handleScroll); 
     
     return () => {
@@ -876,7 +869,7 @@ export default function Home() {
               <span className="text-6xl block title-fix-span-top mt-2">Calendrier</span>
               <span className="text-6xl block">de l'Après</span>
             </h1>
-            <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
+            <p className="text-gray-600 text-lg italic mt-2">13 novembre 2025 - 5 décembre 2025</p>
             <p 
               className="text-rose-600 font-semibold text-xl mt-4 cursor-pointer hover:scale-105 transition-transform" 
               onClick={handleDeborahClick} 
