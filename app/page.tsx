@@ -128,7 +128,7 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
         onClick={onClose}
         className="absolute -top-12 right-0 text-white hover:text-rose-300 transition-colors"
       >
-        X className="w-8 h-8" />
+        <X className="w-8 h-8" />
       </button>
       
       <div className="relative pt-[177%] w-full rounded-2xl overflow-hidden bg-black">
