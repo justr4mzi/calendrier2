@@ -279,12 +279,12 @@ const CALENDAR_DATA = [
     extraPhoto1: null 
   },
   { 
-    date: "2025-11-23", 
+    date: "2025-12-27", 
     day: 11, 
-    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime", 
+    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", // <- Correction appliquée ici
     hint: "Récupérer la lettre L", 
     gift: "Adjusteurs de bague", 
-    giftMessage: "Mmmh a ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais. Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
+    giftMessage: "Voilà tes ajusteurs de bague ! Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", // <- Correction appliquée ici
     keywords: ["ajusteur", "bague", "taille"], 
     hasGuess: true, 
     videoUrl: "/ajusteur.mp4", 
