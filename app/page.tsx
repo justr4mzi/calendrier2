@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// CORRECTION : Changement de '../data/calendar' à './data/calendar'
-import { CALENDAR_DATA } from '../data/calendar';
+// IMPORT CORRIGÉ : Utilisation de l'alias absolu "@/data/calendar" pour résoudre l'erreur
+import { CALENDAR_DATA } from '@/data/calendar'; 
 
 
 // === PWA / MOBILE CONFIGURATION ===
