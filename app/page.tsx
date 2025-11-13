@@ -215,7 +215,7 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-11-18", day: 6, 
-    letter: "Lundiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ca arrivera pas encore bcp de fois)", 
+    letter: "Mardiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ca arrivera pas encore bcp de fois)", 
     hint: "Récupérer la lettre C et E", 
     gift: "Schweppes Citron + Porte-clé", 
     giftMessage: "Bonne apppp! et papapa t'as vu le porte clé j'ai le même il le complète le jour on s'est mit en couple Déborah.", 
@@ -223,10 +223,10 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-11-19", day: 7, 
-    letter: "C'est mardi et ca fait une semaine que tu ouvres tout les jours le calendrier ! J'espère que tu kiff en tout cas et que tout ce passe bien. J'ai plus de environ 50 h de codage , de galères et quasiment 2000 lignes de code . Il y a 3 easter egg sur la page aussi. A toi de les trouver :)", 
+    letter: "C'est mercredi et ca fait une semaine que tu ouvres tout les jours le calendrier ! J'espère que tu kiff en tout cas et que tout ce passe bien. J'ai plus de environ 50 h de codage , de galères et quasiment 2000 lignes de code . Il y a 3 easter egg sur la page aussi. A toi de les trouver :)", 
     hint: "Récupérer la lettre K", 
     gift: "Photo #3", 
-    giftMessage: "Petite photo! Le Commentaire : Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    giftMessage: "Petite photo!", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, 
     photoUrl: "/photo_jour_7.jpg", 
     photoComment: "Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
