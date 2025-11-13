@@ -284,7 +284,7 @@ const CALENDAR_DATA = [
     letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
     hint: "Récupérer la lettre L", 
     gift: "Adjusteurs de bague", 
-    giftMessage: "Voilà tes ajusteurs de bague ! Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
+    giftMessage: "Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
     keywords: ["ajusteur", "bague", "taille"], 
     hasGuess: true, 
     videoUrl: "/ajusteur.mp4", 
