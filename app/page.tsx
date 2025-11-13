@@ -1218,10 +1218,9 @@ export default function Home() {
       {/* Loader qui remplace !isDataReady */}
       {!isDataReady && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
-          <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-700 font-semibold mt-4">Chargement des donnÃ©es...</p>
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
+            <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
+            <p className="text-gray-700 font-semibold">Chargement des données...</p>
+          </div>
         </div>
       )}
-    </div>
-  );
-}
