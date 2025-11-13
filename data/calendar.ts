@@ -1,9 +1,7 @@
-// /data/calendar.ts
-
-export const CALENDAR_DATA = [
+const CALENDAR_DATA = [
   {
     date: "2025-11-13", day: 1, // Aujourd'hui
-    letter: "Coucou Déborah, j'espère que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuyes sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
+    letter: "Coucou Déborah, j'espère que tu vas bien, voilà surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuyes sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
     hint: "Récupérer la lettre B", gift: "Switch",
     giftMessage: "Voici amuse toi bien, je t'ai installé pleins de jeux incroyables et faits pour toi. Hésite pas à l'utiliser le plus possible des vacances, elle est à toi. Hésite pas si t'as des questions et tout, ton copain est là. Mets toi peut être comme objectif de finir un jeu pendant les vacances, tu verras ça va vraiment t'aider dans ton addiction aux réseaux comme insta ou tiktok et tu seras tellement fière de toi.",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
@@ -36,15 +34,32 @@ export const CALENDAR_DATA = [
     giftMessage: "C'est cool les photos c'est mieux que uniquement sur le téléphone, je comprends la fille dans La Boume haha",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo-jour-5.jpg", photoComment: "Notre fameux fond d'écran papapa", photoDownload: true, extraPhoto1: null,
   },
-  { date: "2025-11-18", day: 6, letter: "LETTRE DU JOUR 6", hint: "Bac B + Bac C", gift: "Schweppes Citron + Porte-clé", giftMessage: "MESSAGE CADEAU JOUR 6", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-11-19", day: 7, letter: "LETTRE DU JOUR 7", hint: "Bac A", gift: "Photo #3", giftMessage: "MESSAGE CADEAU JOUR 7", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_7.jpg", photoComment: "COMMENTAIRE_PHOTO_3_ICI", photoDownload: true, extraPhoto1: null },
+  { 
+    date: "2025-11-18", day: 6, 
+    letter: "Lundiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ca arrivera pas encore bcp de fois)", 
+    hint: "Récupérer la lettre C et E", 
+    gift: "Schweppes Citron + Porte-clé", 
+    giftMessage: "Bonne apppp! et papapa t'as vu le porte clé j'ai le même il le complète le jour on s'est mit en couple Déborah.", 
+    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2025-11-19", day: 7, 
+    letter: "C'est mardi et ca fait une semaine que tu ouvres tout les jours le calendrier ! J'espère que tu kiff en tout cas et que tout ce passe bien. J'ai plus de environ 50 h de codage , de galères et quasiment 2000 lignes de code . Il y a 3 easter egg sur la page aussi. A toi de les trouver :)", 
+    hint: "Récupérer la lettre K", 
+    gift: "Photo #3", 
+    giftMessage: "Petite photo! Le Commentaire : Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, 
+    photoUrl: "/photo_jour_7.jpg", 
+    photoComment: "Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    photoDownload: true, extraPhoto1: null 
+  },
   { date: "2025-11-20", day: 8, letter: "LETTRE DU JOUR 8", hint: "Bac D", gift: "Vernis Rouge", giftMessage: "MESSAGE CADEAU VERNIS", keywords: ["vernis", "ongles", "rouge", "manucure"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: "/photo_vernis.jpg" },
   { date: "2025-11-21", day: 9, letter: "LETTRE DU JOUR 9 (NOEL)", hint: "Bac B", gift: "Chocolat Dubaï", giftMessage: "MESSAGE CADEAU CHOCOLAT", keywords: ["chocolat", "dubai", "dubaï"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-11-22", day: 10, letter: "LETTRE DU JOUR 10", hint: "Bac A", gift: "Photo #4", giftMessage: "MESSAGE CADEAU JOUR 10", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_10.jpg", photoComment: "COMMENTAIRE_PHOTO_4_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-11-23", day: 11, letter: "LETTRE DU JOUR 11", hint: "Bac C", gift: "Adjusteurs de bague", giftMessage: "MESSAGE CADEAU ADJUSTEURS", keywords: ["adjusteur", "bague", "doré", "argenté"], hasGuess: true, videoUrl: "/ajusteur.mp4", isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-11-24", day: 12, letter: "LETTRE DU JOUR 12", hint: "Bac A", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-11-25", day: 13, letter: "LETTRE DU JOUR 13", hint: "Bac C + Bac A", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-11-26", day: 14, letter: "LETTRE DU JOUR 14", hint: "Bac B", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU GAUFRETTE", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { date: "2025-11-26", day: 14, letter: "LETTRE DU JOUR 14", hint: "Bac B", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU JOUR 14", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-11-27", day: 15, letter: "LETTRE DU JOUR 15 (NOUVEL AN)", hint: "Bac A", gift: "Photo #7", giftMessage: "MESSAGE CADEAU JOUR 15", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-11-28", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Bac D", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-11-29", day: 17, letter: "LETTRE DU JOUR 17", hint: "Bac A", gift: "Photo #8", giftMessage: "MESSAGE CADEAU JOUR 17", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null },
