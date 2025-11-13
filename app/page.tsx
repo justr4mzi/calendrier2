@@ -235,7 +235,7 @@ const CALENDAR_DATA = [
   { 
     date: "2025-11-20", day: 8, 
     letter: "Demain c'est noël je crois! Tiens petit cadeau pr te faire belle ! Tu vas surement rejoindre ta famille donc profite", 
-    hint: "Bac D", 
+    hint: "Récupérer la lettre J", // <- MIS À JOUR
     gift: "Vernis Rouge", 
     giftMessage: "Tiens j'espère que t'aimerass ! Petite photo bonus en guise d'exemple :)", 
     keywords: ["vernis", "ongles", "rouge", "manucure"], 
@@ -246,8 +246,38 @@ const CALENDAR_DATA = [
     photoDownload: false, 
     extraPhoto1: "/photo_vernis.jpg" 
   },
-  { date: "2025-11-21", day: 9, letter: "LETTRE DU JOUR 9 (NOEL)", hint: "Bac B", gift: "Chocolat Dubaï", giftMessage: "MESSAGE CADEAU CHOCOLAT", keywords: ["chocolat", "dubai", "dubaï"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-11-22", day: 10, letter: "LETTRE DU JOUR 10", hint: "Bac A", gift: "Photo #4", giftMessage: "MESSAGE CADEAU JOUR 10", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_10.jpg", photoComment: "COMMENTAIRE_PHOTO_4_ICI", photoDownload: true, extraPhoto1: null },
+  { 
+    date: "2025-11-21", 
+    day: 9, 
+    letter: "C'est Noël ! profite bien même si cette été est pas Dubout dans mes convictions et que je veux pas la fêter . Profite bien du petit cadeau.", 
+    hint: "Récupérer la lettre M", // <- MIS À JOUR
+    gift: "Chocolat Dubaï", 
+    giftMessage: "Papapappa chocolat dubai c'est maman elle m'a dit tiens pour Déborah la meilleure maman du monde bonne app", 
+    keywords: ["chocolat", "dubai", "dubaï"], 
+    hasGuess: false, 
+    videoUrl: null, 
+    isSpecial: true, 
+    photoUrl: null, 
+    photoComment: null, 
+    photoDownload: false, 
+    extraPhoto1: null 
+  },
+  { 
+    date: "2025-11-22", 
+    day: 10, 
+    letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici la .", 
+    hint: "Récupérer la lettre I", 
+    gift: "Photo #4", 
+    giftMessage: "Une nouvelle photoo!", 
+    keywords: [], 
+    hasGuess: false, 
+    videoUrl: null, 
+    isSpecial: false, 
+    photoUrl: "/photo_jour_10.jpg", 
+    photoComment: "Tu te rappelles ? C'était au tram le retour a la part dieu. On était rentrer avec ma sœur et ma mère . On avait passer une super journée et t'as appelé ma mère tata hehe", 
+    photoDownload: true, 
+    extraPhoto1: null 
+  },
   { date: "2025-11-23", day: 11, letter: "LETTRE DU JOUR 11", hint: "Bac C", gift: "Adjusteurs de bague", giftMessage: "MESSAGE CADEAU ADJUSTEURS", keywords: ["adjusteur", "bague", "doré", "argenté"], hasGuess: true, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-11-24", day: 12, letter: "LETTRE DU JOUR 12", hint: "Bac A", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-11-25", day: 13, letter: "LETTRE DU JOUR 13", hint: "Bac C + Bac A", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
