@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// IMPORT CORRIGÉ : Utilisation de l'alias absolu "@/data/calendar" pour résoudre l'erreur
+// 1. IMPORT DES DONNÉES DU FICHIER SÉPARÉ
 import { CALENDAR_DATA } from '@/data/calendar'; 
 
 // === API HELPER FUNCTIONS (Vercel KV Bridge) ===
@@ -173,6 +173,17 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
       </div>
       <p className="text-center text-sm text-gray-500 mt-2 pb-2">Appuie sur le carré avec la flèche (Partager) puis "Sur l'écran d'accueil"</p>
     </div>
+  </div>
+);
+
+// === FEUX D'ARTIFICE ===
+const Fireworks = () => (
+  <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
+    <div className="absolute top-1/4 left-1/4 text-5xl animate-ping">🎆</div>
+    <div className="absolute top-1/2 left-1/2 text-7xl animate-bounce">🎇</div>
+    <div className="absolute bottom-1/4 right-1/4 text-6xl animate-ping">✨</div>
+    <div className="absolute top-1/3 right-1/3 text-5xl animate-bounce">🎉</div>
+    <div className="absolute bottom-1/2 left-1/3 text-6xl animate-ping">🎊</div>
   </div>
 );
 
@@ -393,8 +404,7 @@ export default function Home() {
   const [zoomedPhoto, setZoomedPhoto] = useState<string | null>(null);
   const [deborahClickCount, setDeborahClickCount] = useState(0);
   const [showDeborahAnimation, setShowDeborahAnimation] = useState(false);
-  const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
-  const [showMemoryGame, setShowMemoryGame] = useState(false);
+  const [particles, setParticles] = ArrayshowMemoryGame] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [buttonOpacity, setButtonOpacity] = useState(1);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -404,25 +414,6 @@ export default function Home() {
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
   const LOCAL_STORAGE_KEY = 'calendrier_deborah_found'; 
-
-  // === LOCAL STORAGE : CHARGEMENT (DEVENU OBSOLETE) ===
-  /*
-  useEffect(() => {
-    if (!isClient) return;
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setFoundDays(parsed);
-        }
-      }
-    } catch (e) {
-      console.error("Failed to load state from localStorage:", e);
-    }
-    setIsDataReady(true);
-  }, [isClient]);
-  */
 
   // === NOUVEAU : CHARGEMENT DEPUIS VERCEL KV (runs once) ===
   useEffect(() => {
