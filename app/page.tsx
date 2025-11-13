@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// 1. IMPORT DES DONNÉES DU FICHIER SÉPARÉ
+// IMPORT CORRIGÉ : Utilisation de l'alias absolu "@/data/calendar" pour résoudre l'erreur
 import { CALENDAR_DATA } from '@/data/calendar'; 
 
 // === API HELPER FUNCTIONS (Vercel KV Bridge) ===
@@ -404,7 +404,8 @@ export default function Home() {
   const [zoomedPhoto, setZoomedPhoto] = useState<string | null>(null);
   const [deborahClickCount, setDeborahClickCount] = useState(0);
   const [showDeborahAnimation, setShowDeborahAnimation] = useState(false);
-  const [particles, setParticles] = ArrayshowMemoryGame] = useState(false);
+  const [particles, setParticles] = useState<Array<{id: number, emoji: string, x: number, y: number}>>([]);
+  const [showMemoryGame, setShowMemoryGame] = useState(false);
   const [isDataReady, setIsDataReady] = useState(false);
   const [buttonOpacity, setButtonOpacity] = useState(1);
   const [showTutorial, setShowTutorial] = useState(false);
