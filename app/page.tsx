@@ -1219,7 +1219,7 @@ export default function Home() {
       {!isDataReady && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
           <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
-          <p className="text-gray-700 font-semibold mt-4">Chargement des données...</p>
+          <p className="text-gray-700 font-semibold mt-4">Chargement des donnÃ©es...</p>
         </div>
       )}
     </div>
