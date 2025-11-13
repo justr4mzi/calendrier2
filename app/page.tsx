@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// 1. IMPORT DES DONNÉES DU NOUVEAU FICHIER data/calendar.ts
-import { CALENDAR_DATA } from '../data/calendar';
+// CORRECTION : Changement de '../data/calendar' à './data/calendar'
+import { CALENDAR_DATA } from './data/calendar';
 
 
 // === PWA / MOBILE CONFIGURATION ===
@@ -402,7 +402,7 @@ export default function Home() {
     }
   }, [foundDays]);
   
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
+  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL (CORRIGÉ POUR FADE TOTAL) ===
   useEffect(() => {
     const handleScroll = () => {
       if (typeof window === 'undefined') return;
