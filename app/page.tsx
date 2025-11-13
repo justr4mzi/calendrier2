@@ -247,7 +247,7 @@ const LofiPlayer = ({ play, volume, isMuted }: { play: boolean, volume: number, 
 };
 
 // === INDICE MOT DE PASSE ===
-const PasswordHint = ({ onClose }: { onClose: () àvoid }) => (
+const PasswordHint = ({ onClose }: { onClose: () => void }) => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md" onClick={onClose}>
     <div className="bg-white rounded-2xl p-8 shadow-2xl text-center max-w-sm mx-4" onClick={(e) => e.stopPropagation()}>
       <h2 className="text-xl font-bold text-rose-500 mb-4">Indice...</h2>
