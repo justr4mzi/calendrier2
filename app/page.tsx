@@ -278,7 +278,22 @@ const CALENDAR_DATA = [
     photoDownload: true, 
     extraPhoto1: null 
   },
-  { date: "2025-12-27", day: 11, letter: "LETTRE DU JOUR 11", hint: "Récupérer la lettre L", gift: "Adjusteurs de bague", giftMessage: "MESSAGE CADEAU ADJUSTEURS", keywords: ["adjusteur", "bague", "doré", "argenté"], hasGuess: true, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
+  { 
+    date: "2025-11-23", 
+    day: 11, 
+    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime", 
+    hint: "Récupérer la lettre L", 
+    gift: "Adjusteurs de bague", 
+    giftMessage: "Mmmh a ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais. Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
+    keywords: ["ajusteur", "bague", "taille"], 
+    hasGuess: true, 
+    videoUrl: "/ajusteur.mp4", 
+    isSpecial: false, 
+    photoUrl: null, 
+    photoComment: null, 
+    photoDownload: false, 
+    extraPhoto1: null 
+  },
   { date: "2025-12-28", day: 12, letter: "LETTRE DU JOUR 12", hint: "Récupérer la lettre T", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-12-29", day: 13, letter: "LETTRE DU JOUR 13", hint: "Récupérer la lettre Q et R", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2025-12-30", day: 14, letter: "LETTRE DU JOUR 14", hint: "Récupérer la lettre N", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU JOUR 14", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
