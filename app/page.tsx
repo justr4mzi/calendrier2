@@ -281,10 +281,10 @@ const CALENDAR_DATA = [
   { 
     date: "2025-12-27", 
     day: 11, 
-    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", // <- Correction appliquée ici
+    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
     hint: "Récupérer la lettre L", 
     gift: "Adjusteurs de bague", 
-    giftMessage: "Voilà tes ajusteurs de bague ! Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", // <- Correction appliquée ici
+    giftMessage: "Voilà tes ajusteurs de bague ! Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
     keywords: ["ajusteur", "bague", "taille"], 
     hasGuess: true, 
     videoUrl: "/ajusteur.mp4", 
@@ -294,8 +294,38 @@ const CALENDAR_DATA = [
     photoDownload: false, 
     extraPhoto1: null 
   },
-  { date: "2025-12-28", day: 12, letter: "LETTRE DU JOUR 12", hint: "Récupérer la lettre T", gift: "Photo #5", giftMessage: "MESSAGE CADEAU JOUR 12", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_12.jpg", photoComment: "COMMENTAIRE_PHOTO_5_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2025-12-29", day: 13, letter: "LETTRE DU JOUR 13", hint: "Récupérer la lettre Q et R", gift: "Masque visage + Photo #6", giftMessage: "MESSAGE CADEAU JOUR 13", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_13.jpg", photoComment: "COMMENTAIRE_PHOTO_6_ICI", photoDownload: true, extraPhoto1: null },
+  { 
+    date: "2025-12-28", 
+    day: 12, 
+    letter: "Aujourd'hui je voulais parler de a quel point t'as changé ma vie. Ma vie a été totalement bouleversé depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
+    hint: "Récupérer la lettre T", 
+    gift: "Photo #5", 
+    giftMessage: "Petite photoooo !", 
+    keywords: [], 
+    hasGuess: false, 
+    videoUrl: null, 
+    isSpecial: false, 
+    photoUrl: "/photo_jour_12.jpg", 
+    photoComment: "On était chez toi c'était vraiment trop bien et t'es trop belle", 
+    photoDownload: true, 
+    extraPhoto1: null 
+  },
+  { 
+    date: "2025-12-29", 
+    day: 13, 
+    letter: "Aujourd'hui j'aimerai parler a quel point tu a évolué . Hier j'ai parlé de moi mais on doit parler de toi aussi. Tu t'es tellement épanouie je suis tellement admirative de toi Déborah.", 
+    hint: "Récupérer la lettre Q et R", 
+    gift: "Masque visage + Photo #6", 
+    giftMessage: "Aujourd'hui cadeaux 2 en 1 !!! Une petite photo et avec un petit masque hehe je l'ai sélectionne spécialement pour toi j'espère que tu vas aimer. J'ai chercher a varier le plus possible et j'espère que ca te fera plaisir.", 
+    keywords: [], 
+    hasGuess: false, 
+    videoUrl: null, 
+    isSpecial: false, 
+    photoUrl: "/photo_jour_13.jpg", 
+    photoComment: "Un dérivé de la photo de notre fond d'écran ! Tu t'en souviens de cette photo?", 
+    photoDownload: true, 
+    extraPhoto1: null 
+  },
   { date: "2025-12-30", day: 14, letter: "LETTRE DU JOUR 14", hint: "Récupérer la lettre N", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU JOUR 14", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
   { date: "2025-12-31", day: 15, letter: "LETTRE DU JOUR 15 (NOUVEL AN)", hint: "Récupérer la lettre S", gift: "Photo #7", giftMessage: "MESSAGE CADEAU JOUR 15", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null },
   { date: "2026-01-01", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Récupérer la lettre U", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
