@@ -756,9 +756,9 @@ export default function Home() {
       setFailedAttempts(newFailedAttempts);
       
       if (newFailedAttempts === 1) {
-        setLoginError('Mot de passe incorrect, essaie encore mon amour ❤️');
+        setLoginError('Mot de passe incorrect, essaie encore mon coeur ❤️');
       } else if (newFailedAttempts === 2) {
-        setLoginError("Wsh t'abuses deux fois tu rates... besoin d'un indice ? 🤨");
+        setLoginError("Wsh t'abuses deux fois tu rates... t'as besoin d'un indice ? 🤨");
       } else {
         setLoginError(`Toujours pas... C'est la ${newFailedAttempts}ème tentative, tu devrais vraiment utiliser l'indice.`);
       }
@@ -900,7 +900,7 @@ export default function Home() {
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de Déborah</span>
               </h1>
-              <p className="text-gray-600 italic mt-2">Pour ma Déborah ❤️</p>
+              <p className="text-gray-600 italic mt-2">Pour ma chérie ❤️</p>
             </div>
             
             <div className="space-y-4">
@@ -931,13 +931,22 @@ export default function Home() {
               </button>
             </div>
 
+            <div className="space-y-4">
+              {/* ... (votre champ de mot de passe et bouton de connexion restent ici) ... */}
+            </div>
+
             <div className="text-center mt-6 space-y-3">
-              <button 
-                  onClick={() => setShowPasswordHint(true)} 
-                  className="text-sm font-semibold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm hover:opacity-80 transition-all"
-              >
-                Besoin d'un indice pour le mot de passe ?
-              </button>
+              
+              {/* NOUVELLE CONDITION AJOUTÉE ICI : n'affiche le bouton que si failedAttempts > 0 */}
+              {failedAttempts > 0 && (
+                <button 
+                    onClick={() => setShowPasswordHint(true)} 
+                    className="text-sm font-semibold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm hover:opacity-80 transition-all"
+                >
+                  Besoin d'un indice pour le mot de passe ?
+                </button>
+              )}
+              
               <button 
                 onClick={() => setShowTutorial(true)}
                 className="flex items-center justify-center gap-2 w-full text-gray-500 text-xs hover:text-rose-600 transition-all py-2"
@@ -1019,7 +1028,7 @@ export default function Home() {
               onClick={handleDeborahClick} 
               title="Cliquer 2 fois rapidement pour une animation !" 
             >
-              Pour ma Déborah 
+              Pour ma chérie 
               <span 
                 className="cursor-pointer inline-block mx-1 transition-transform hover:scale-125"
                 onClick={(e) => { 
