@@ -1,37 +1,135 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play } from 'lucide-react';
-// L'IMPORT EXTERNE A ÉTÉ RETIRÉ POUR ÉVITER LES ERREURS DE COMPILATION
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye } from 'lucide-react';
 
+// === API HELPER FUNCTIONS ===
 
-// === API HELPER FUNCTIONS (Vercel KV Bridge) ===
-
-// Fonction pour lire les données depuis le serveur Vercel KV
-const fetchFoundDays = async () => {
+// Lire les données (Jours + Compteur)
+const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
     if (!response.ok) throw new Error('Network response was not ok');
     const data = await response.json();
-    return data.days || [];
+    return {
+      days: data.foundDays || [],
+      loginCount: data.loginCount || 0
+    };
   } catch (e) {
-    console.error("Erreur de lecture KV. Retour à la liste vide.", e);
-    return [];
+    console.error("Erreur lecture KV:", e);
+    return { days: [], loginCount: 0 };
   }
 };
 
-// Fonction pour sauvegarder les données vers le serveur Vercel KV
+// Sauvegarder les jours trouvés
 const saveFoundDays = async (days: number[]) => {
   try {
     await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ days }),
+      body: JSON.stringify({ action: 'update_days', days }),
     });
   } catch (e) {
-    console.error("Erreur de sauvegarde KV:", e);
+    console.error("Erreur sauvegarde jours:", e);
   }
 };
+
+// Incrémenter le compteur de connexion
+const incrementLoginCount = async () => {
+  try {
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'increment_login' }),
+    });
+  } catch (e) {
+    console.error("Erreur incrément login:", e);
+  }
+};
+
+// Réinitialiser TOUT (Jours + Compteur)
+const resetAllData = async () => {
+  try {
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'reset' }),
+    });
+  } catch (e) {
+    console.error("Erreur reset:", e);
+  }
+};
+
+// === TYPEWRITER EFFECT ===
+const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) => {
+  const [displayedText, setDisplayedText] = useState("");
+  
+  useEffect(() => {
+    setDisplayedText("");
+    let i = 0;
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setDisplayedText((prev) => prev + text.charAt(i));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, speed);
+    return () => clearInterval(timer);
+  }, [text, speed]);
+
+  return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
+};
+
+// === SNOWFALL EFFECT ===
+const Snowfall = () => {
+  // Création statique des flocons pour éviter les problèmes d'hydratation
+  const flakes = Array.from({ length: 20 }); 
+  return (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      {flakes.map((_, i) => (
+        <div
+          key={i}
+          className="absolute top-[-20px] text-white/60 animate-snow"
+          style={{
+            left: `${Math.random() * 100}%`,
+            fontSize: `${Math.random() * 1.5 + 0.5}rem`,
+            animationDuration: `${Math.random() * 5 + 5}s`,
+            animationDelay: `${Math.random() * 5}s`,
+          }}
+        >
+          ❄️
+        </div>
+      ))}
+      <style jsx>{`
+        @keyframes snow {
+          0% { transform: translateY(-20px) rotate(0deg); opacity: 0.8; }
+          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        .animate-snow {
+          animation-name: snow;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// === CUSTOM CURSOR STYLES ===
+const CustomCursorStyles = () => (
+  <style jsx global>{`
+    /* Curseur par défaut : Petite baguette magique ou coeur simple */
+    body {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23f43f5e" stroke="white" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 12 12, auto;
+    }
+    
+    /* Curseur au survol des liens/boutons : Coeur qui bat ou différent */
+    button, a, .cursor-pointer {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%23ec4899" stroke="white" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 14 14, pointer !important;
+    }
+  `}</style>
+);
 
 // === PWA / MOBILE CONFIGURATION ===
 const MobileAppMeta = () => (
@@ -44,11 +142,9 @@ const MobileAppMeta = () => (
   </>
 );
 
-// === COMPOSANT BULLES ANIMÉES ===
+// === COMPOSANT BULLES ANIMÉES (Gardé pour le fond coloré) ===
 const BubblesBackground = () => (
   <div className="bubbles-background">
-    <div className="bubble"></div>
-    <div className="bubble"></div>
     <div className="bubble"></div>
     <div className="bubble"></div>
     <div className="bubble"></div>
@@ -176,10 +272,10 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER (MISES À JOUR POUR LES TESTS) ===
+// === DONNÉES DU CALENDRIER ===
 const CALENDAR_DATA = [
   {
-    date: "2025-12-17", day: 1, // Aujourd'hui
+    date: "2025-12-17", day: 1,
     letter: "Coucou Déborah, j'espère que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuies sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
     hint: "Récupérer la lettre B", gift: "Switch",
     giftMessage: "Voilà amuse toi bien, je t'ai installé pleins de jeux incroyables et faits pour toi. Hésite pas à l'utiliser le plus possible des vacances, elle est à toi. Hésite pas si t'as des questions et tout, ton copain est là. Mets toi peut être comme objectif de finir un jeu pendant les vacances, tu verras ça va vraiment t'aider dans ton addiction aux réseaux comme insta ou tiktok et tu seras tellement fière de toi.",
@@ -195,7 +291,7 @@ const CALENDAR_DATA = [
   {
     date: "2025-12-19", day: 3,
     letter: "Troisième jourrrr jsuis en Algérie normalement, de ton côté j'espère que ça va bien, courage dernier jour de cours avant les vacances. Petit cadeau aujourd'hui pour passer un bon matin :)",
-    hint: "Récupérer la lettre F et G", gift: "Photo #1",
+    hint: "Récupérer la lettre F et G", gift: "Photo #1 + Stickers",
     giftMessage: "BONUS : des petits tatouages de moi bébé hehe avoue tes chockbar tu t'y attendais pas",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour la je t'avais prêté mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucré la madame.", photoDownload: true, extraPhoto1: null,
   },
@@ -247,8 +343,7 @@ const CALENDAR_DATA = [
     extraPhoto1: "/photo_vernis.jpg" 
   },
   { 
-    date: "2025-12-25", 
-    day: 9, 
+    date: "2025-12-25", day: 9, 
     letter: "C'est Noël ! profite bien même si cette été est pas Dubout dans mes convictions et que je veux pas la fêter . Profite bien du petit cadeau.", 
     hint: "Récupérer la lettre M", 
     gift: "Chocolat Dubaï", 
@@ -263,8 +358,7 @@ const CALENDAR_DATA = [
     extraPhoto1: null 
   },
   { 
-    date: "2025-12-26", 
-    day: 10, 
+    date: "2025-12-26", day: 10, 
     letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici la .", 
     hint: "Récupérer la lettre I", 
     gift: "Photo #4", 
@@ -279,10 +373,9 @@ const CALENDAR_DATA = [
     extraPhoto1: null 
   },
   { 
-    date: "2025-12-27", 
-    day: 11, 
+    date: "2025-12-27", day: 11, 
     letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
-    hint: "Récupérer la lettre L", 
+    hint: "Récupérer la lettre P", 
     gift: "Adjusteurs de bague", 
     giftMessage: "Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
     keywords: ["ajusteur", "bague", "taille"], 
@@ -295,10 +388,9 @@ const CALENDAR_DATA = [
     extraPhoto1: null 
   },
   { 
-    date: "2025-12-28", 
-    day: 12, 
+    date: "2025-12-28", day: 12, 
     letter: "Aujourd'hui je voulais parler de a quel point t'as changé ma vie. Ma vie a été totalement bouleversé depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
-    hint: "Récupérer la lettre T", 
+    hint: "Récupérer la lettre L", 
     gift: "Photo #5", 
     giftMessage: "Petite photoooo !", 
     keywords: [], 
@@ -311,8 +403,7 @@ const CALENDAR_DATA = [
     extraPhoto1: null 
   },
   { 
-    date: "2025-12-29", 
-    day: 13, 
+    date: "2025-12-29", day: 13, 
     letter: "Aujourd'hui j'aimerai parler a quel point tu a évolué . Hier j'ai parlé de moi mais on doit parler de toi aussi. Tu t'es tellement épanouie je suis tellement admirative de toi Déborah.", 
     hint: "Récupérer la lettre Q et R", 
     gift: "Masque visage + Photo #6", 
@@ -326,16 +417,96 @@ const CALENDAR_DATA = [
     photoDownload: true, 
     extraPhoto1: null 
   },
-  { date: "2025-12-30", day: 14, letter: "LETTRE DU JOUR 14", hint: "Récupérer la lettre N", gift: "Gaufrette", giftMessage: "MESSAGE CADEAU JOUR 14", keywords: ["gaufrette", "reese", "gâteau"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2025-12-31", day: 15, letter: "LETTRE DU JOUR 15 (NOUVEL AN)", hint: "Récupérer la lettre S", gift: "Photo #7", giftMessage: "MESSAGE CADEAU JOUR 15", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2026-01-01", day: 16, letter: "LETTRE DU JOUR 16 (NOUVEL AN)", hint: "Récupérer la lettre U", gift: "Nuisette", giftMessage: "MESSAGE CADEAU NUISETTE", keywords: ["nuisette", "lingerie", "tissu", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-02", day: 17, letter: "LETTRE DU JOUR 17", hint: "Récupérer la lettre V", gift: "Photo #8", giftMessage: "MESSAGE CADEAU JOUR 17", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2026-01-03", day: 18, letter: "LETTRE DU JOUR 18", hint: "Récupérer la lettre O", gift: "Canette IZEM Cerise", giftMessage: "MESSAGE CADEAU IZEM", keywords: ["canette", "boisson", "ism", "izem", "cerise"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-04", day: 19, letter: "LETTRE DU JOUR 19", hint: "Récupérer la lettre W", gift: "Photo #9", giftMessage: "MESSAGE CADEAU JOUR 19", keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null },
-  { date: "2026-01-05", day: 20, letter: "LETTRE DU JOUR 20", hint: "Récupérer la lettre Z", gift: "Maillot de foot", giftMessage: "MESSAGE CADEAU MAILLOT", keywords: ["maillot", "foot", "vêtement"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-06", day: 21, letter: "LETTRE DU JOUR 21 (TON RETOUR)", hint: "Récupérer la lettre X", gift: "Visionneuse Photo", giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE", keywords: ["photo", "visionneuse", "viewer"], hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-07", day: 22, letter: "LETTRE DU JOUR 22", hint: "Récupérer la lettre X", gift: "Schweppes Grenade", giftMessage: "MESSAGE CADEAU SCHWEPPES", keywords: ["schweppes", "grenade", "canette"], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null },
-  { date: "2026-01-08", day: 23, letter: "LETTRE DU JOUR 23 (FINALE)", hint: "Récupérer la lettre Y", gift: "Photo #10 (Finale)", giftMessage: "MESSAGE CADEAU JOUR 23", keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null },
+  { 
+    date: "2025-12-30", day: 14, 
+    letter: "LETTRE DU JOUR 14 (À remplir)", 
+    hint: "Récupérer la lettre N", 
+    gift: "Gaufrette", 
+    giftMessage: "MESSAGE CADEAU JOUR 14 (À remplir)", 
+    keywords: ["gaufrette", "biscuit", "manger"], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2025-12-31", day: 15, 
+    letter: "LETTRE DU JOUR 15 (VEILLE NOUVEL AN)", 
+    hint: "Récupérer la lettre T", 
+    gift: "Photo #7 + Loriana", 
+    giftMessage: "MESSAGE CADEAU JOUR 15 (À remplir)", 
+    keywords: [], 
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-01", day: 16, 
+    letter: "LETTRE DU JOUR 16 (NOUVEL AN)", 
+    hint: "Récupérer la lettre S", 
+    gift: "Nuisette", 
+    giftMessage: "MESSAGE CADEAU NUISETTE (À remplir)", 
+    keywords: ["nuisette", "lingerie", "vêtement", "pyjama"], 
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-02", day: 17, 
+    letter: "LETTRE DU JOUR 17", 
+    hint: "Récupérer la lettre U", 
+    gift: "Photo #8", 
+    giftMessage: "MESSAGE CADEAU JOUR 17 (À remplir)", 
+    keywords: [], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-03", day: 18, 
+    letter: "LETTRE DU JOUR 18", 
+    hint: "Récupérer la lettre O", 
+    gift: "Canette IZEM Cerise", 
+    giftMessage: "MESSAGE CADEAU IZEM (À remplir)", 
+    keywords: ["canette", "boisson", "ism", "izem", "cerise"], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-04", day: 19, 
+    letter: "LETTRE DU JOUR 19", 
+    hint: "Récupérer la lettre V", 
+    gift: "Photo #9", 
+    giftMessage: "MESSAGE CADEAU JOUR 19 (À remplir)", 
+    keywords: [], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-05", day: 20, 
+    letter: "LETTRE DU JOUR 20", 
+    hint: "Récupérer la lettre W", 
+    gift: "Maillot de foot", 
+    giftMessage: "MESSAGE CADEAU MAILLOT (À remplir)", 
+    keywords: ["maillot", "foot", "vêtement", "t-shirt"], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-06", day: 21, 
+    letter: "LETTRE DU JOUR 21 (TON RETOUR)", 
+    hint: "Récupérer la lettre Z", 
+    gift: "Visionneuse Photo", 
+    giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE (À remplir)", 
+    keywords: ["photo", "visionneuse", "viewer", "camera"], 
+    hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-07", day: 22, 
+    letter: "LETTRE DU JOUR 22", 
+    hint: "Récupérer la lettre X", 
+    gift: "Schweppes Grenade", 
+    giftMessage: "MESSAGE CADEAU SCHWEPPES (À remplir)", 
+    keywords: ["schweppes", "grenade", "canette", "boisson"], 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
+  },
+  { 
+    date: "2026-01-08", day: 23, 
+    letter: "LETTRE DU JOUR 23 (FINALE)", 
+    hint: "Récupérer la lettre Y", 
+    gift: "Photo #10 (Finale)", 
+    giftMessage: "MESSAGE CADEAU JOUR 23 (À remplir)", 
+    keywords: [], 
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null 
+  },
 ];
 
 // === FEUX D'ARTIFICE ===
@@ -551,6 +722,7 @@ export default function Home() {
   const [selectedDay, setSelectedDay] = useState<any>(null);
   const [isClient, setIsClient] = useState(false);
   const [foundDays, setFoundDays] = useState<number[]>([]);
+  const [loginCount, setLoginCount] = useState(0); // Nouveau state pour le compteur
   const [guessInput, setGuessInput] = useState('');
   const [guessResult, setGuessResult] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -576,65 +748,45 @@ export default function Home() {
 
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
-  const LOCAL_STORAGE_KEY = 'calendrier_deborah_found'; 
 
-  // === NOUVEAU : CHARGEMENT DEPUIS VERCEL KV (runs once) ===
+  // === CHARGEMENT DEPUIS VERCEL KV ===
   useEffect(() => {
     if (!isClient) return;
-
-    // Fonction d'initialisation asynchrone
     const loadInitialData = async () => {
-      const days = await fetchFoundDays();
-      setFoundDays(days);
+      const data = await fetchData();
+      setFoundDays(data.days);
+      setLoginCount(data.loginCount);
       setIsDataReady(true);
     };
-    
     loadInitialData();
-
   }, [isClient]);
 
-  // === NOUVEAU : SAUVEGARDE VERS VERCEL KV (runs on change) ===
+  // === SAUVEGARDE VERS VERCEL KV (Jours seulement) ===
   useEffect(() => {
-    // Évite la sauvegarde si foundDays est []. On sauvegarde uniquement si des jours sont trouvés.
     if (!isDataReady || foundDays.length === 0) return; 
-
-    // On utilise aussi le localStorage en fallback / pour les tests rapides
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(foundDays));
-    
-    // Sauvegarde vers Vercel KV
     saveFoundDays(foundDays);
-    
   }, [foundDays, isDataReady]);
-
   
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL (CORRIGÉ POUR FADE TOTAL) ===
+  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
   useEffect(() => {
     const handleScroll = () => {
       if (typeof window === 'undefined') return;
-
       const scrollPosition = window.scrollY;
-      
       const totalScrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      
       const maxScrollDistance = totalScrollHeight > 0 ? totalScrollHeight : 1; 
-      
       let newOpacity = 1 - Math.min(1, scrollPosition / maxScrollDistance);
-      
       setButtonOpacity(newOpacity);
     };
-
     handleScroll(); 
-    
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleScroll); 
-    
     return () => {
         window.removeEventListener('scroll', handleScroll);
         window.removeEventListener('resize', handleScroll);
     };
   }, []); 
 
-  // === GESTION BLOQUAGE ZOOM IOS ===
+  // === BLOQUAGE ZOOM IOS ===
   useEffect(() => {
     const handleGesture = (e: Event) => e.preventDefault();
     let lastTouchEnd = 0;
@@ -643,11 +795,9 @@ export default function Home() {
       if (now - lastTouchEnd <= 300) e.preventDefault();
       lastTouchEnd = now;
     };
-
     document.addEventListener('gesturestart', handleGesture, { passive: false });
     document.addEventListener('gesturechange', handleGesture, { passive: false });
     document.addEventListener('touchend', handleTouchEnd, false);
-
     return () => {
       document.removeEventListener('gesturestart', handleGesture);
       document.removeEventListener('gesturechange', handleGesture);
@@ -655,7 +805,6 @@ export default function Home() {
     };
   }, []);
 
-  // === SCROLL AUTOMATIQUE EN HAUT ===
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [selectedDay, isAuthenticated]);
@@ -667,14 +816,12 @@ export default function Home() {
       stars: ['✨', '⭐', '🌟', '💫', '⚡'],
       petals: ['🌸', '🌺', '🌼', '🌷', '🌹']
     };
-    
     const newParticles = Array.from({length: 20}, (_, i) => ({
       id: Date.now() + i,
       emoji: emojis[type][Math.floor(Math.random() * emojis[type].length)],
       x: Math.random() * 100,
       y: -10
     }));
-    
     setParticles(newParticles);
     setTimeout(() => setParticles([]), 3000);
   };
@@ -682,7 +829,6 @@ export default function Home() {
   const handleDeborahClick = () => {
     const newCount = deborahClickCount + 1;
     setDeborahClickCount(newCount);
-    
     if (newCount === 2) {
       setShowDeborahAnimation(true);
       createParticles('hearts');
@@ -697,7 +843,6 @@ export default function Home() {
   const handleHeartClick = () => {
     const newCount = starClickCount + 1;
     setStarClickCount(newCount);
-    
     if (newCount === 3) {
       setShowMemoryGame(true);
       setStarClickCount(0);
@@ -706,18 +851,15 @@ export default function Home() {
 
   useEffect(() => { setIsClient(true); }, []);
 
-
   // === GESTION COUNTDOWN ===
   useEffect(() => {
     if (!isClient) return;
     const timer = setInterval(() => {
       const now = new Date();
       const nextDay = CALENDAR_DATA.find(day => new Date(day.date + 'T00:00:00+01:00') > now);
-      
       if (nextDay) {
         const nextUnlockDate = new Date(nextDay.date + 'T00:00:00+01:00');
         const diff = nextUnlockDate.getTime() - now.getTime();
-        
         if (diff > 0) {
           const d = Math.floor(diff / (1000 * 60 * 60 * 24));
           const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -745,12 +887,12 @@ export default function Home() {
       setIsAdmin(isAdminUser); 
       setPlayMusic(true); 
       setIsMuted(false);
-      
-      if (typeof window !== "undefined") {
-         localStorage.setItem('ramzi-auth', 'true');
-         localStorage.setItem('ramzi-is-admin', isAdminUser ? 'true' : 'false');
-      }
 
+      // Incrémenter le compteur SI c'est "minou" qui se connecte
+      if (lowerCode === userCode) {
+        incrementLoginCount();
+      }
+      
     } else {
       const newFailedAttempts = failedAttempts + 1;
       setFailedAttempts(newFailedAttempts);
@@ -772,14 +914,12 @@ export default function Home() {
   };
 
   const handleResetAdmin = async () => {
-  if (isAdmin && confirm("Es-tu sûr de vouloir réinitialiser la progression de Déborah ? Cette action réinitialise la progression SERVEUR uniquement (visible par Déborah).")) {
-    // Réinitialisation sur le serveur (en postant un tableau vide)
-    await saveFoundDays([]);
-    
-    // Optionnel : rafraîchir l'état local pour refléter le changement
-    setFoundDays([]);
-  }
-};
+    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours ouverts + compteur de connexion) ?")) {
+      await resetAllData();
+      setFoundDays([]);
+      setLoginCount(0);
+    }
+  };
 
   const isDayUnlocked = (date: string) => {
     if (!isClient) return false;
@@ -856,6 +996,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-200 via-pink-100 to-purple-200 relative overflow-hidden transition-all duration-1000">
       <MobileAppMeta />
+      <CustomCursorStyles /> {/* Injection du CSS curseur */}
+      <Snowfall /> {/* Effet Neige */}
       <BubblesBackground />
 
       {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
@@ -931,13 +1073,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="space-y-4">
-              {/* ... (votre champ de mot de passe et bouton de connexion restent ici) ... */}
-            </div>
-
             <div className="text-center mt-6 space-y-3">
-              
-              {/* NOUVELLE CONDITION AJOUTÉE ICI : n'affiche le bouton que si failedAttempts > 0 */}
               {failedAttempts > 0 && (
                 <button 
                     onClick={() => setShowPasswordHint(true)} 
@@ -977,7 +1113,7 @@ export default function Home() {
                   className="bg-yellow-400 text-black px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-500 transition-all flex items-center gap-1.5 justify-center"
                 >
                   <RefreshCcw className="w-4 h-4" />
-                  Réinitialiser (Admin)
+                  Admin
                 </button>
               )}
             </div>
@@ -1016,6 +1152,22 @@ export default function Home() {
               </button>
             </div>
           </div>
+
+          {/* ZONE ADMIN : Compteur de connexions */}
+          {isAdmin && (
+            <div className="mb-6 bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-purple-500 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Eye className="w-6 h-6 text-purple-600" />
+                <div>
+                  <p className="font-bold text-gray-800">Espace Espion 🕵️‍♂️</p>
+                  <p className="text-sm text-gray-600">Nombre de connexions de "minou" :</p>
+                </div>
+              </div>
+              <span className="text-3xl font-bold text-purple-600 bg-purple-100 px-4 py-2 rounded-lg">
+                {loginCount}
+              </span>
+            </div>
+          )}
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
@@ -1042,7 +1194,6 @@ export default function Home() {
             </p>
           </div>
 
-          {/* COMPTE À REBOURS FIXE EN HAUT */}
           {countdown && (
             <div className="sticky top-16 z-40 bg-white/70 backdrop-blur-sm rounded-2xl p-4 mb-6 text-center shadow-lg border-2 border-rose-300">
               <p className="text-lg font-semibold text-gray-700">Prochaine surprise dans :</p>
@@ -1065,7 +1216,6 @@ export default function Home() {
               />
             </div>
           </div>
-
 
           <div className="paper-texture rounded-3xl p-6 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -1105,10 +1255,10 @@ export default function Home() {
                         }) : '...'}
                       </span>
                       {day.isSpecial && (
-  <span title="Jour Spécial">
-    <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />
-  </span>
-)}
+                        <span title="Jour Spécial">
+                          <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
@@ -1156,7 +1306,8 @@ export default function Home() {
               <div className="space-y-6">
                 <div className="torn-paper rounded-2xl p-6">
                   <h3 className="text-lg font-semibold text-rose-800 mb-2">💌 Lettre</h3>
-                  <p className="text-gray-700 italic leading-relaxed">{selectedDay.letter}</p>
+                  {/* TYPEWRITER EFFECT */}
+                  <TypewriterText text={selectedDay.letter} />
                 </div>
 
                 <div className="post-it rounded-2xl p-6">
