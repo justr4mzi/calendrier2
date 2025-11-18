@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, CloudRain, Sun, Clock } from 'lucide-react';
 
 // === API HELPER FUNCTIONS ===
 
@@ -81,21 +81,20 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
 };
 
-// === SNOWFALL EFFECT ===
+// === SNOWFALL EFFECT (CORRIGÉ & AMÉLIORÉ) ===
 const Snowfall = () => {
-  // Création statique des flocons pour éviter les problèmes d'hydratation
-  const flakes = Array.from({ length: 20 }); 
+  const flakes = Array.from({ length: 50 }); 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       {flakes.map((_, i) => (
         <div
           key={i}
-          className="absolute top-[-20px] text-white/60 animate-snow"
+          className="absolute top-[-20px] text-white/70 animate-snow"
           style={{
             left: `${Math.random() * 100}%`,
-            fontSize: `${Math.random() * 1.5 + 0.5}rem`,
-            animationDuration: `${Math.random() * 5 + 5}s`,
-            animationDelay: `${Math.random() * 5}s`,
+            fontSize: `${Math.random() * 1.5 + 0.5}rem`, 
+            animationDuration: `${Math.random() * 15 + 10}s`, 
+            animationDelay: `-${Math.random() * 20}s`, 
           }}
         >
           ❄️
@@ -103,13 +102,20 @@ const Snowfall = () => {
       ))}
       <style jsx>{`
         @keyframes snow {
-          0% { transform: translateY(-20px) rotate(0deg); opacity: 0.8; }
-          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+          0% { 
+            transform: translateY(-10vh) translateX(0) rotate(0deg); 
+            opacity: 0.8; 
+          }
+          100% { 
+            transform: translateY(110vh) translateX(20px) rotate(360deg); 
+            opacity: 0; 
+          }
         }
         .animate-snow {
           animation-name: snow;
           animation-timing-function: linear;
           animation-iteration-count: infinite;
+          will-change: transform;
         }
       `}</style>
     </div>
@@ -119,19 +125,85 @@ const Snowfall = () => {
 // === CUSTOM CURSOR STYLES ===
 const CustomCursorStyles = () => (
   <style jsx global>{`
-    /* Curseur par défaut : Petite baguette magique ou coeur simple */
     body {
       cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23f43f5e" stroke="white" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 12 12, auto;
     }
-    
-    /* Curseur au survol des liens/boutons : Coeur qui bat ou différent */
     button, a, .cursor-pointer {
       cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%23ec4899" stroke="white" stroke-width="2"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') 14 14, pointer !important;
     }
   `}</style>
 );
 
-// === PWA / MOBILE CONFIGURATION ===
+// === WIDGET MÉTÉO ===
+const WeatherWidget = () => {
+  return (
+    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border-2 border-blue-100 mb-6 transform hover:scale-105 transition-transform">
+        <div className="flex justify-between items-center text-center gap-4">
+            <div className="flex flex-col items-center">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">France</span>
+                <CloudRain className="w-8 h-8 text-blue-400 my-1" />
+                <span className="font-bold text-gray-700">Grisaille</span>
+                <span className="text-xs text-blue-500">5°C 🥶</span>
+            </div>
+            
+            <div className="h-12 w-px bg-gray-300"></div>
+            
+            <div className="flex flex-col items-center">
+                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Algérie</span>
+                <Sun className="w-8 h-8 text-yellow-500 my-1 animate-spin-slow" />
+                <span className="font-bold text-gray-700">Grand Soleil</span>
+                <span className="text-xs text-yellow-600">25°C ☀️</span>
+            </div>
+        </div>
+        <div className="mt-3 text-center border-t border-gray-200 pt-2">
+            <p className="text-sm text-rose-500 font-medium italic">
+                "Il fait 25°C ici, mais j'ai froid sans toi ❤️"
+            </p>
+        </div>
+    </div>
+  );
+};
+
+// === COMPTE A REBOURS RETROUVAILLES ===
+const ReunionCountdown = () => {
+    const [timeLeft, setTimeLeft] = useState("");
+    
+    useEffect(() => {
+        const targetDate = new Date("2026-01-06T00:00:00+01:00"); // Date du retour
+        
+        const timer = setInterval(() => {
+            const now = new Date();
+            const diff = targetDate.getTime() - now.getTime();
+            
+            if (diff <= 0) {
+                setTimeLeft("Je suis là ! ❤️");
+                clearInterval(timer);
+            } else {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
+            }
+        }, 1000);
+        
+        return () => clearInterval(timer);
+    }, []);
+
+    if (!timeLeft) return null;
+
+    return (
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+            <div className="flex items-center justify-center gap-2 text-rose-600">
+                <Clock className="w-4 h-4 animate-pulse" />
+                <span className="text-xs sm:text-sm font-semibold">Temps avant que je te serre dans mes bras :</span>
+                <span className="text-sm sm:text-base font-bold font-mono bg-rose-100 px-2 py-0.5 rounded text-rose-700">{timeLeft}</span>
+            </div>
+        </div>
+    );
+};
+
+// === MOBILE META ===
 const MobileAppMeta = () => (
   <>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -140,17 +212,6 @@ const MobileAppMeta = () => (
     <meta name="apple-mobile-web-app-title" content="Calendrier" />
     <link rel="apple-touch-icon" href="/app-icon.png" />
   </>
-);
-
-// === COMPOSANT BULLES ANIMÉES (Gardé pour le fond coloré) ===
-const BubblesBackground = () => (
-  <div className="bubbles-background">
-    <div className="bubble"></div>
-    <div className="bubble"></div>
-    <div className="bubble"></div>
-    <div className="bubble"></div>
-    <div className="bubble"></div>
-  </div>
 );
 
 // === PUZZLE ===
@@ -417,12 +478,13 @@ const CALENDAR_DATA = [
     photoDownload: true, 
     extraPhoto1: null 
   },
+  // --- JOURS MIS À JOUR ---
   { 
     date: "2025-12-30", day: 14, 
-    letter: "LETTRE DU JOUR 14 (À remplir)", 
+    letter: "Au jour ou j'écris cette lettre on s'est pas parlé de la journée on est en embrouille totale j'en peux vraiment plus j'ai finis a 15 h j'ai attendu Déborah jusqu'a 17h30 mais malheuresement elle est rentrer avec sa mere je suie rentrer en JD ducoup mais voila j'ai pas voulu lui dire car elle allait culpabiliser et c'est ce que elle me reprochait donc voila message un peu deprimant aujourdhui mais ya des jours avec et des jours sans. Toujours un petit cadeau bien sur", 
     hint: "Récupérer la lettre N", 
     gift: "Gaufrette", 
-    giftMessage: "MESSAGE CADEAU JOUR 14 (À remplir)", 
+    giftMessage: "Petite gauffrettes ! ils sont archi bonnes sah regal toi et essaye de tout finir jette pas", 
     keywords: ["gaufrette", "biscuit", "manger"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
@@ -1031,13 +1093,16 @@ export default function Home() {
       {showMemoryGame && <MemoryGame onClose={() => setShowMemoryGame(false)} />}
       {showPuzzle && <SlidingPuzzle onClose={() => setShowPuzzle(false)} imageUrl="/photo-puzzle.jpg" />}
       {showTutorial && <VideoTutorialModal onClose={() => setShowTutorial(false)} />}
+      
+      {/* COMPTEUR RETROUVAILLES FIXÉ EN BAS */}
+      {isAuthenticated && <ReunionCountdown />}
 
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
           <div className="floating-form rounded-3xl shadow-2xl p-8 max-w-md w-full relative mx-auto">
             <div className="text-center mb-8 title-adjust-login overflow-visible">
-              <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" /> 
+              <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de Déborah</span>
@@ -1097,7 +1162,7 @@ export default function Home() {
 
       {/* CALENDAR OR DAY VIEW */}
       {isAuthenticated && !selectedDay && (
-        <div className="max-w-6xl mx-auto py-8 px-4 relative z-10">
+        <div className="max-w-6xl mx-auto py-8 px-4 pb-24 relative z-10"> {/* Padding bottom augmenté pour le footer */}
           <div className="sticky top-0 z-50 bg-white/50 backdrop-blur-md rounded-xl p-3 mb-6 shadow-lg flex justify-between items-center w-full">
             <div className="w-1/3 flex justify-start gap-2">
               <button
@@ -1152,6 +1217,9 @@ export default function Home() {
               </button>
             </div>
           </div>
+
+          {/* WIDGET METEO (NOUVEAU) */}
+          <WeatherWidget />
 
           {/* ZONE ADMIN : Compteur de connexions */}
           {isAdmin && (
@@ -1359,7 +1427,8 @@ export default function Home() {
                       
                       {selectedDay.giftMessage && (
                         <div className="mt-4 p-4 bg-white rounded-xl text-left shadow-md">
-                          <p className="text-gray-700 leading-relaxed">{selectedDay.giftMessage}</p>
+                          {/* TYPEWRITER EFFECT POUR LE MESSAGE CADEAU AUSSI */}
+                          <TypewriterText text={selectedDay.giftMessage} speed={20} />
 
                           {selectedDay.videoUrl && selectedDay.videoUrl.endsWith('.mp4') && (
                             <div className="mt-4">
@@ -1423,7 +1492,7 @@ export default function Home() {
       {!isDataReady && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
           <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
-            <Heart className="w-16 h-16 text-rose-500 mx-auto mb-4 animate-pulse" />
+            <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" />
             <p className="text-gray-700 font-semibold">Chargement des données...</p>
           </div>
         </div>
