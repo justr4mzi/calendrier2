@@ -1300,13 +1300,14 @@ export default function Home() {
                     </span>
                 </div>
 
-                {/* Bloc Dernière Vue (FUSION) */}
+                {/* Bloc Dernière Vue (CORRIGÉ) */}
                 <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-blue-500 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {lastDevice === 'Mobile' ? <Smartphone className="w-6 h-6 text-blue-600" /> : <Monitor className="w-6 h-6 text-blue-600" />}
                         <div>
                         <p className="font-bold text-gray-800 text-sm">Dernière vue</p>
-                        <p className="text-xs text-gray-600 truncate w-32">
+                        {/* J'ai enlevé "truncate" et "w-32" ici 👇 */}
+                        <p className="text-xs text-gray-600">
                             {formatLastSeen(lastConnection, lastDevice)}
                         </p>
                         </div>
@@ -1317,8 +1318,8 @@ export default function Home() {
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-              <span className="text-8xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-8xl block">de Déborah</span>
+              <span className="text-7xl block title-fix-span-top mt-2">Calendrier</span>
+              <span className="text-7xl block">de Déborah</span>
             </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
