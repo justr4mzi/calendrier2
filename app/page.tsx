@@ -81,7 +81,7 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
 };
 
-// === SNOWFALL EFFECT (CORRIGÉ & AMÉLIORÉ) ===
+// === SNOWFALL EFFECT ===
 const Snowfall = () => {
   const flakes = Array.from({ length: 50 }); 
   return (
@@ -214,6 +214,19 @@ const MobileAppMeta = () => (
   </>
 );
 
+// === COMPOSANT BULLES ANIMÉES (C'est celui-ci qui manquait !) ===
+const BubblesBackground = () => (
+  <div className="bubbles-background">
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+    <div className="bubble"></div>
+  </div>
+);
+
 // === PUZZLE ===
 const GRID_SIZE = 3;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
@@ -333,7 +346,7 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER ===
+// === DONNÉES DU CALENDRIER (MISES À JOUR SELON LE CSV) ===
 const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
