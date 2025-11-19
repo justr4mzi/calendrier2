@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -15,7 +15,7 @@ const getDeviceType = () => {
 
 // === API HELPER FUNCTIONS ===
 
-// Lire les données (Jours + Compteur + Temps + Espion)
+// Lire les données (Jours + Compteur + Temps + Espion + Bisous + Message)
 const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
@@ -26,11 +26,13 @@ const fetchData = async () => {
       loginCount: data.loginCount || 0,
       totalTime: data.totalTime || 0,
       lastConnection: data.lastConnection || null,
-      lastDevice: data.lastDevice || 'Inconnu'
+      lastDevice: data.lastDevice || 'Inconnu',
+      kissCount: data.kissCount || 0,
+      finalMessage: data.finalMessage || ''
     };
   } catch (e) {
     console.error("Erreur lecture KV:", e);
-    return { days: [], loginCount: 0, totalTime: 0, lastConnection: null, lastDevice: '' };
+    return { days: [], loginCount: 0, totalTime: 0, lastConnection: null, lastDevice: '', kissCount: 0, finalMessage: '' };
   }
 };
 
@@ -66,10 +68,36 @@ const incrementLoginCount = async (device: string) => {
     await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'increment_login', device }), // On envoie l'appareil
+      body: JSON.stringify({ action: 'increment_login', device }),
     });
   } catch (e) {
     console.error("Erreur incrément login:", e);
+  }
+};
+
+// Envoyer un Bisou
+const sendKiss = async () => {
+  try {
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'send_kiss' }),
+    });
+  } catch (e) {
+    console.error("Erreur envoi bisou:", e);
+  }
+};
+
+// Sauvegarder le message final (Jour 23)
+const saveFinalMessage = async (message: string) => {
+  try {
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save_message', message }),
+    });
+  } catch (e) {
+    console.error("Erreur sauvegarde message:", e);
   }
 };
 
@@ -86,12 +114,13 @@ const resetAllData = async () => {
   }
 };
 
-// === TYPEWRITER EFFECT (Machine à écrire) - CORRIGÉ ===
+// === TYPEWRITER EFFECT (Machine à écrire) ===
 const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) => {
   const [displayedText, setDisplayedText] = useState("");
   
   useEffect(() => {
     let i = 0;
+    setDisplayedText(""); // Reset quand le texte change
     const timer = setInterval(() => {
       i++;
       setDisplayedText(text.slice(0, i));
@@ -102,7 +131,7 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
     return () => clearInterval(timer);
   }, [text, speed]);
 
-  return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
+  return <p className="text-gray-700 italic leading-relaxed whitespace-pre-line">{displayedText}</p>;
 };
 
 // === SNOWFALL EFFECT ===
@@ -585,6 +614,51 @@ const Fireworks = () => (
   </div>
 );
 
+// === BOUTON BISOUS VOLANT ===
+const FlyingKiss = ({ onClick }: { onClick: () => void }) => {
+    const [position, setPosition] = useState({ top: '50%', left: '50%' });
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+        const moveAndShow = () => {
+            const top = Math.random() * 80 + 10; // 10% à 90%
+            const left = Math.random() * 80 + 10;
+            setPosition({ top: `${top}%`, left: `${left}%` });
+            setVisible(true);
+
+            // Disparaît après 3 secondes si pas cliqué
+            setTimeout(() => setVisible(false), 3000);
+        };
+
+        // Apparaît toutes les 10 à 25 secondes
+        const interval = setInterval(moveAndShow, Math.random() * 15000 + 10000);
+        
+        // Première apparition rapide
+        const initialTimer = setTimeout(moveAndShow, 5000);
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(initialTimer);
+        };
+    }, []);
+
+    if (!visible) return null;
+
+    return (
+        <button
+            onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+                setVisible(false);
+            }}
+            style={{ top: position.top, left: position.left }}
+            className="fixed z-[60] text-4xl animate-bounce cursor-pointer transition-transform hover:scale-125 drop-shadow-lg"
+        >
+            😘
+        </button>
+    );
+};
+
 // === LECTEUR AUDIO ===
 const LofiPlayer = ({ play, volume, isMuted }: { play: boolean, volume: number, isMuted: boolean }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -811,6 +885,11 @@ export default function Home() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
   
+  // === NOUVEAUX ETATS ===
+  const [kissCount, setKissCount] = useState(0);
+  const [finalMessageInput, setFinalMessageInput] = useState('');
+  const [finalMessageStored, setFinalMessageStored] = useState('');
+  
   // === ETATS ESPION ===
   const [totalTime, setTotalTime] = useState(0); 
   const [sessionTime, setSessionTime] = useState(0);
@@ -830,6 +909,8 @@ export default function Home() {
       setTotalTime(data.totalTime); 
       setLastConnection(data.lastConnection);
       setLastDevice(data.lastDevice);
+      setKissCount(data.kissCount);
+      setFinalMessageStored(data.finalMessage);
       setIsDataReady(true);
     };
     loadInitialData();
@@ -851,6 +932,22 @@ export default function Home() {
       return () => clearInterval(timer);
     }
   }, [isAuthenticated, isAdmin, totalTime]);
+
+  // === DÉTECTION ÉVÉNEMENTS SPÉCIAUX (DÉCO) ===
+  useEffect(() => {
+    if (isClient) {
+        const today = new Date();
+        const month = today.getMonth(); // 11 = Décembre
+        const day = today.getDate();
+
+        // Feux d'artifice le 31 déc et 1er janv
+        if ((month === 11 && day === 31) || (month === 0 && day === 1)) {
+            setShowFireworks(true);
+        }
+    }
+  }, [isClient]);
+
+  const isChristmas = isClient && new Date().getMonth() === 11 && new Date().getDate() === 25;
 
   // Helpers de formatage
   const formatTime = (seconds: number) => {
@@ -935,6 +1032,13 @@ export default function Home() {
     }));
     setParticles(newParticles);
     setTimeout(() => setParticles([]), 3000);
+  };
+
+  const handleKissClick = () => {
+      sendKiss();
+      createParticles('hearts');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
   };
 
   const handleDeborahClick = () => {
@@ -1026,7 +1130,7 @@ export default function Home() {
   };
 
   const handleResetAdmin = async () => {
-    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours + compteur + temps + historique) ?")) {
+    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours + compteur + temps + historique + bisous + message) ?")) {
       await resetAllData();
       setFoundDays([]);
       setLoginCount(0);
@@ -1034,6 +1138,8 @@ export default function Home() {
       setSessionTime(0);
       setLastConnection(null);
       setLastDevice('');
+      setKissCount(0);
+      setFinalMessageStored('');
     }
   };
 
@@ -1090,6 +1196,16 @@ export default function Home() {
     }
   };
 
+  const submitFinalMessage = async () => {
+      if (!finalMessageInput.trim()) return;
+      
+      await saveFinalMessage(finalMessageInput);
+      setFinalMessageStored(finalMessageInput);
+      
+      // Une fois le message envoyé, on marque le jour comme trouvé pour débloquer le cadeau
+      markAsFound();
+  };
+
   const handleStarClick = () => {
     const newCount = starClickCount + 1;
     setStarClickCount(newCount);
@@ -1117,6 +1233,7 @@ export default function Home() {
       <BubblesBackground />
 
       {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
+      {isClient && isAuthenticated && !isAdmin && <FlyingKiss onClick={handleKissClick} />}
 
       {particles.map(p => (
         <div 
@@ -1152,10 +1269,10 @@ export default function Home() {
       {!isAuthenticated && (
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
           <div className="floating-form rounded-3xl shadow-2xl p-8 max-w-md w-full relative mx-auto">
-            <div className="text-center mb-8 title-adjust-login overflow-visible">
+            <div className="text-center mb-8 title-adjust-login overflow-visible relative">
+              {isChristmas && <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-6xl">🎅</div>}
               <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
-                {/* Mobile: 6xl | PC: 7xl */}
                 <span className="text-6xl md:text-7xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl md:text-7xl block">de Déborah</span>
               </h1>
@@ -1272,7 +1389,7 @@ export default function Home() {
 
           {/* ZONE ADMIN : STATISTIQUES */}
           {isAdmin && (
-            <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                 {/* Bloc Connexions */}
                 <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-purple-500 flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -1284,6 +1401,20 @@ export default function Home() {
                     </div>
                     <span className="text-2xl font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-lg">
                         {loginCount}
+                    </span>
+                </div>
+
+                {/* Bloc Bisous */}
+                <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-pink-500 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Heart className="w-6 h-6 text-pink-600" />
+                        <div>
+                        <p className="font-bold text-gray-800 text-sm">Bisous Reçus</p>
+                        <p className="text-xs text-gray-600">Nb fois :</p>
+                        </div>
+                    </div>
+                    <span className="text-2xl font-bold text-pink-600 bg-pink-100 px-3 py-1 rounded-lg">
+                        {kissCount}
                     </span>
                 </div>
 
@@ -1301,25 +1432,34 @@ export default function Home() {
                     </span>
                 </div>
 
-                {/* Bloc Dernière Vue (CORRIGÉ) */}
+                {/* Bloc Dernière Vue */}
                 <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-blue-500 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {lastDevice === 'Mobile' ? <Smartphone className="w-6 h-6 text-blue-600" /> : <Monitor className="w-6 h-6 text-blue-600" />}
                         <div>
                         <p className="font-bold text-gray-800 text-sm">Dernière vue</p>
-                        {/* J'ai enlevé "truncate" et "w-32" ici 👇 */}
                         <p className="text-xs text-gray-600">
                             {formatLastSeen(lastConnection, lastDevice)}
                         </p>
                         </div>
                     </div>
                 </div>
+
+                {/* Bloc Message Final */}
+                {finalMessageStored && (
+                    <div className="col-span-1 md:col-span-4 bg-white/90 backdrop-blur rounded-xl p-4 shadow-md border-2 border-gold-400 relative">
+                        <h3 className="text-rose-600 font-bold flex items-center gap-2 mb-2">
+                            <MessageCircleHeart className="w-5 h-5" /> Message Final reçu :
+                        </h3>
+                        <p className="italic text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200">"{finalMessageStored}"</p>
+                    </div>
+                )}
             </div>
           )}
           
-          <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
+          <div className="text-center mb-8 title-adjust-calendar overflow-visible relative"> 
+            {isChristmas && <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-7xl drop-shadow-md z-20">🎅</div>}
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-              {/* Mobile: 7xl | PC: 8xl */}
               <span className="text-7xl md:text-8xl block title-fix-span-top mt-2">Calendrier</span>
               <span className="text-7xl md:text-8xl block">de Déborah</span>
             </h1>
@@ -1446,7 +1586,8 @@ export default function Home() {
           <div className="max-w-2xl mx-auto relative z-10 p-4 pb-64">
             <div className="paper-texture rounded-3xl shadow-2xl p-8 mt-16">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4">
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4 relative">
+                  {isChristmas && <div className="absolute -top-6 -right-2 text-5xl rotate-12">🎅</div>}
                   <span className="text-4xl font-bold text-white">{selectedDay.day}</span>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 capitalize">
@@ -1497,10 +1638,40 @@ export default function Home() {
                 )}
 
                 {!foundDays.includes(selectedDay.day) && (
-                  <button onClick={markAsFound} className="w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
-                    <Gift className="w-5 h-5" />
-                    {selectedDay.hasGuess ? "Montrer comment / Cadeau récupéré ✓" : "Cadeau récupéré ✓"}
-                  </button>
+                  <>
+                    {selectedDay.day === 23 ? (
+                        // === LOGIQUE CAPSULE TEMPORELLE (JOUR 23) ===
+                        <div className="bg-purple-50 rounded-2xl p-6 border-2 border-purple-200">
+                            <h3 className="text-lg font-bold text-purple-800 mb-3 flex items-center gap-2">
+                                <MessageCircleHeart className="w-6 h-6" /> 
+                                Capsule Temporelle
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-4 italic">
+                                Pour débloquer l'ultime cadeau, tu dois m'écrire un message sincère sur ton ressenti et notre futur. Ce message sera sauvegardé pour moi. ❤️
+                            </p>
+                            <textarea 
+                                value={finalMessageInput}
+                                onChange={(e) => setFinalMessageInput(e.target.value)}
+                                placeholder="Écris ton cœur ici..."
+                                className="w-full h-40 p-4 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-gray-700 mb-4 resize-none"
+                            />
+                            <button 
+                                onClick={submitFinalMessage}
+                                disabled={!finalMessageInput.trim()}
+                                className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <Send className="w-5 h-5" />
+                                Envoyer & Découvrir
+                            </button>
+                        </div>
+                    ) : (
+                        // === BOUTON CLASSIQUE ===
+                        <button onClick={markAsFound} className="w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
+                            <Gift className="w-5 h-5" />
+                            {selectedDay.hasGuess ? "Montrer comment / Cadeau récupéré ✓" : "Cadeau récupéré ✓"}
+                        </button>
+                    )}
+                  </>
                 )}
 
                 {foundDays.includes(selectedDay.day) && (
