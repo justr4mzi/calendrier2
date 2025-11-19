@@ -1,11 +1,21 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor } from 'lucide-react';
+
+// === UTILITAIRE : DÉTECTER L'APPAREIL ===
+const getDeviceType = () => {
+  if (typeof navigator === 'undefined') return 'Inconnu';
+  const ua = navigator.userAgent;
+  if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
+    return 'Mobile';
+  }
+  return 'Ordi';
+};
 
 // === API HELPER FUNCTIONS ===
 
-// Lire les données (Jours + Compteur)
+// Lire les données (Jours + Compteur + Temps + Espion)
 const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
@@ -13,11 +23,14 @@ const fetchData = async () => {
     const data = await response.json();
     return {
       days: data.foundDays || [],
-      loginCount: data.loginCount || 0
+      loginCount: data.loginCount || 0,
+      totalTime: data.totalTime || 0,
+      lastConnection: data.lastConnection || null,
+      lastDevice: data.lastDevice || 'Inconnu'
     };
   } catch (e) {
     console.error("Erreur lecture KV:", e);
-    return { days: [], loginCount: 0 };
+    return { days: [], loginCount: 0, totalTime: 0, lastConnection: null, lastDevice: '' };
   }
 };
 
@@ -34,20 +47,33 @@ const saveFoundDays = async (days: number[]) => {
   }
 };
 
-// Incrémenter le compteur de connexion
-const incrementLoginCount = async () => {
+// Sauvegarder le temps passé
+const saveTotalTime = async (time: number) => {
   try {
     await fetch('/api/sync', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'increment_login' }),
+      body: JSON.stringify({ action: 'update_time', time }),
+    });
+  } catch (e) {
+    console.error("Erreur sauvegarde temps:", e);
+  }
+};
+
+// Incrémenter le compteur de connexion + Device Tracker
+const incrementLoginCount = async (device: string) => {
+  try {
+    await fetch('/api/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'increment_login', device }), // On envoie l'appareil
     });
   } catch (e) {
     console.error("Erreur incrément login:", e);
   }
 };
 
-// Réinitialiser TOUT (Jours + Compteur)
+// Réinitialiser TOUT
 const resetAllData = async () => {
   try {
     await fetch('/api/sync', {
@@ -65,37 +91,31 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   const [displayedText, setDisplayedText] = useState("");
   
   useEffect(() => {
-    // On ne remet pas à zéro immédiatement pour éviter le flash
     let i = 0;
     const timer = setInterval(() => {
       i++;
-      // Au lieu d'ajouter la lettre, on prend tout le morceau du début jusqu'à i
-      // C'est beaucoup plus stable et ça empêche les fautes de frappe virtuelles
       setDisplayedText(text.slice(0, i));
-      
       if (i >= text.length) {
         clearInterval(timer);
       }
     }, speed);
-    
     return () => clearInterval(timer);
   }, [text, speed]);
 
   return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
 };
 
-// === SNOWFALL EFFECT (NEIGE INFINIE) ===
+// === SNOWFALL EFFECT ===
 const Snowfall = () => {
   const [flakes, setFlakes] = useState<{id: number, left: number, fontSize: number, duration: number, delay: number}[]>([]);
 
   useEffect(() => {
-    // Génération côté client uniquement pour éviter les problèmes d'hydratation
     const newFlakes = Array.from({ length: 40 }).map((_, i) => ({
       id: i,
-      left: Math.random() * 100, // Position horizontale aléatoire
-      fontSize: Math.random() * 1.0 + 0.8, // Taille entre 0.8rem et 1.8rem
-      duration: Math.random() * 20 + 10, // Durée de chute entre 10s et 30s (très lent)
-      delay: Math.random() * -30, // Délai NÉGATIF : commence "dans le passé" pour couvrir l'écran direct
+      left: Math.random() * 100,
+      fontSize: Math.random() * 1.0 + 0.8,
+      duration: Math.random() * 20 + 10,
+      delay: Math.random() * -30,
     }));
     setFlakes(newFlakes);
   }, []);
@@ -126,7 +146,7 @@ const Snowfall = () => {
   );
 };
 
-// === CUSTOM CURSOR STYLES ===
+// === CUSTOM CURSOR ===
 const CustomCursorStyles = () => (
   <style jsx global>{`
     body {
@@ -138,17 +158,15 @@ const CustomCursorStyles = () => (
   `}</style>
 );
 
-// === COMPTE A REBOURS RETROUVAILLES ===
+// === COMPTE A REBOURS (PIED DE PAGE) ===
 const ReunionCountdown = () => {
     const [timeLeft, setTimeLeft] = useState("");
     
     useEffect(() => {
-        const targetDate = new Date("2026-01-06T00:00:00+01:00"); // Date du retour
-        
+        const targetDate = new Date("2026-01-06T00:00:00+01:00"); 
         const timer = setInterval(() => {
             const now = new Date();
             const diff = targetDate.getTime() - now.getTime();
-            
             if (diff <= 0) {
                 setTimeLeft("Je suis là ! ❤️");
                 clearInterval(timer);
@@ -160,28 +178,17 @@ const ReunionCountdown = () => {
                 setTimeLeft(`${days}j ${hours}h ${minutes}m ${seconds}s`);
             }
         }, 1000);
-        
         return () => clearInterval(timer);
     }, []);
 
     if (!timeLeft) return null;
 
     return (
-        <div 
-            className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]"
-            // C'EST ICI LA CORRECTION 👇
-            style={{ 
-                paddingTop: '8px',
-                paddingLeft: '8px',
-                paddingRight: '8px',
-                // On ajoute 8px + la taille de la barre iPhone (env safe-area)
-                paddingBottom: 'calc(8px + env(safe-area-inset-bottom))' 
-            }}
-        >
-            <div className="flex items-center justify-center gap-2 text-rose-600">
-                <Clock className="w-4 h-4 animate-pulse" />
-                <span className="text-xs sm:text-sm font-semibold">Je te serre dans mes bras dans :</span>
-                <span className="text-sm sm:text-base font-bold font-mono bg-rose-100 px-2 py-0.5 rounded text-rose-700">{timeLeft}</span>
+        <div className="w-full mt-12 mb-8 text-center pb-safe">
+            <div className="inline-flex items-center justify-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-rose-200">
+                <Clock className="w-5 h-5 text-rose-500 animate-pulse" />
+                <span className="text-gray-600 font-medium">Je te serre dans mes bras dans :</span>
+                <span className="font-mono font-bold text-rose-600 text-lg">{timeLeft}</span>
             </div>
         </div>
     );
@@ -198,7 +205,7 @@ const MobileAppMeta = () => (
   </>
 );
 
-// === COMPOSANT BULLES ANIMÉES ===
+// === BULLES ANIMÉES ===
 const BubblesBackground = () => (
   <div className="bubbles-background">
     <div className="bubble"></div>
@@ -330,7 +337,7 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER (TEXTES CORRIGÉS) ===
+// === DONNÉES DU CALENDRIER ===
 const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
@@ -780,7 +787,7 @@ export default function Home() {
   const [selectedDay, setSelectedDay] = useState<any>(null);
   const [isClient, setIsClient] = useState(false);
   const [foundDays, setFoundDays] = useState<number[]>([]);
-  const [loginCount, setLoginCount] = useState(0); // Nouveau state pour le compteur
+  const [loginCount, setLoginCount] = useState(0); 
   const [guessInput, setGuessInput] = useState('');
   const [guessResult, setGuessResult] = useState<string | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -803,6 +810,12 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  
+  // === ETATS ESPION ===
+  const [totalTime, setTotalTime] = useState(0); 
+  const [sessionTime, setSessionTime] = useState(0);
+  const [lastConnection, setLastConnection] = useState<string | null>(null);
+  const [lastDevice, setLastDevice] = useState<string>('');
 
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
@@ -814,10 +827,50 @@ export default function Home() {
       const data = await fetchData();
       setFoundDays(data.days);
       setLoginCount(data.loginCount);
+      setTotalTime(data.totalTime); 
+      setLastConnection(data.lastConnection);
+      setLastDevice(data.lastDevice);
       setIsDataReady(true);
     };
     loadInitialData();
   }, [isClient]);
+
+  // === CHRONOMÈTRE ESPION ===
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin) {
+      const timer = setInterval(() => {
+        setSessionTime(prev => {
+          const newTime = prev + 1;
+          // Sauvegarde toutes les 10 secondes
+          if (newTime % 10 === 0) {
+             saveTotalTime(totalTime + newTime);
+          }
+          return newTime;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [isAuthenticated, isAdmin, totalTime]);
+
+  // Helpers de formatage
+  const formatTime = (seconds: number) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h}h ${m}m ${s}s`;
+  };
+
+  const formatLastSeen = (isoDate: string | null, device: string) => {
+    if (!isoDate) return "Jamais";
+    const date = new Date(isoDate);
+    const today = new Date();
+    const isToday = date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+    
+    const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = isToday ? "Aujourd'hui" : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    
+    return `${dateStr} à ${timeStr} sur ${device}`;
+  };
 
   // === SAUVEGARDE VERS VERCEL KV (Jours seulement) ===
   useEffect(() => {
@@ -948,7 +1001,8 @@ export default function Home() {
 
       // Incrémenter le compteur SI c'est "minou" qui se connecte
       if (lowerCode === userCode) {
-        incrementLoginCount();
+        const device = getDeviceType();
+        incrementLoginCount(device);
       }
       
     } else {
@@ -972,10 +1026,14 @@ export default function Home() {
   };
 
   const handleResetAdmin = async () => {
-    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours ouverts + compteur de connexion) ?")) {
+    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours + compteur + temps + historique) ?")) {
       await resetAllData();
       setFoundDays([]);
       setLoginCount(0);
+      setTotalTime(0);
+      setSessionTime(0);
+      setLastConnection(null);
+      setLastDevice('');
     }
   };
 
@@ -1090,9 +1148,6 @@ export default function Home() {
       {showPuzzle && <SlidingPuzzle onClose={() => setShowPuzzle(false)} imageUrl="/photo-puzzle.jpg" />}
       {showTutorial && <VideoTutorialModal onClose={() => setShowTutorial(false)} />}
       
-      {/* COMPTEUR RETROUVAILLES FIXÉ EN BAS */}
-      {isAuthenticated && <ReunionCountdown />}
-
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
@@ -1214,26 +1269,56 @@ export default function Home() {
             </div>
           </div>
 
-          {/* ZONE ADMIN : Compteur de connexions */}
+          {/* ZONE ADMIN : STATISTIQUES */}
           {isAdmin && (
-            <div className="mb-6 bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-purple-500 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Eye className="w-6 h-6 text-purple-600" />
-                <div>
-                  <p className="font-bold text-gray-800">Espace Espion 🕵️‍♂️</p>
-                  <p className="text-sm text-gray-600">Nombre de connexions de "minou" :</p>
+            <div className="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Bloc Connexions */}
+                <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-purple-500 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Eye className="w-6 h-6 text-purple-600" />
+                        <div>
+                        <p className="font-bold text-gray-800 text-sm">Connexions</p>
+                        <p className="text-xs text-gray-600">Nb fois :</p>
+                        </div>
+                    </div>
+                    <span className="text-2xl font-bold text-purple-600 bg-purple-100 px-3 py-1 rounded-lg">
+                        {loginCount}
+                    </span>
                 </div>
-              </div>
-              <span className="text-3xl font-bold text-purple-600 bg-purple-100 px-4 py-2 rounded-lg">
-                {loginCount}
-              </span>
+
+                {/* Bloc Temps Passé */}
+                <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-rose-500 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Clock className="w-6 h-6 text-rose-600" />
+                        <div>
+                        <p className="font-bold text-gray-800 text-sm">Temps passé</p>
+                        <p className="text-xs text-gray-600">Durée :</p>
+                        </div>
+                    </div>
+                    <span className="text-lg font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-lg whitespace-nowrap">
+                        {formatTime(totalTime + sessionTime)}
+                    </span>
+                </div>
+
+                {/* Bloc Dernière Vue (FUSION) */}
+                <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-blue-500 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        {lastDevice === 'Mobile' ? <Smartphone className="w-6 h-6 text-blue-600" /> : <Monitor className="w-6 h-6 text-blue-600" />}
+                        <div>
+                        <p className="font-bold text-gray-800 text-sm">Dernière vue</p>
+                        <p className="text-xs text-gray-600 truncate w-32">
+                            {formatLastSeen(lastConnection, lastDevice)}
+                        </p>
+                        </div>
+                    </div>
+                </div>
             </div>
           )}
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-              <span className="text-7xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-7xl block">de Déborah</span>
+              <span className="text-8xl block title-fix-span-top mt-2">Calendrier</span>
+              <span className="text-8xl block">de Déborah</span>
             </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
@@ -1307,7 +1392,7 @@ export default function Home() {
                     </div>
                     
                     <div className="flex flex-col items-center justify-center h-full">
-                      <span className="text-3xl font-bold text-white mb-1">{day.day}</span>
+                      <span className="text-4xl font-bold text-white mb-1">{day.day}</span>
                       <span className="text-xs text-white font-medium capitalize">
                         {isClient ? new Date(day.date + 'T00:00:00+01:00').toLocaleDateString('fr-FR', {
                           weekday: 'short',
@@ -1327,11 +1412,15 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 text-center text-gray-600 text-sm">
+          <div className="mt-8 text-center text-gray-600 text-sm pb-8">
             <p>Chaque jour se débloque automatiquement à minuit 🌙</p>
             <p className="mt-1">
               Les étoiles <span onClick={handleStarClick} className="cursor-pointer" title="Cliquer 3 fois pour une surprise (Jeu Puzzle)">⭐</span> marquent les jours spéciaux
             </p>
+
+            {/* COMPTEUR RETROUVAILLES (EN BAS DU SCROLL) */}
+            <ReunionCountdown />
+
           </div>
         </div>
       )}
@@ -1354,8 +1443,8 @@ export default function Home() {
           <div className="max-w-2xl mx-auto relative z-10 p-4 pb-64">
             <div className="paper-texture rounded-3xl shadow-2xl p-8 mt-16">
               <div className="text-center mb-6">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4">
-                  <span className="text-2xl font-bold text-white">{selectedDay.day}</span>
+                <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4">
+                  <span className="text-4xl font-bold text-white">{selectedDay.day}</span>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 capitalize">
                   {isClient && new Date(selectedDay.date + 'T00:00:00+01:00').toLocaleDateString('fr-FR', {
