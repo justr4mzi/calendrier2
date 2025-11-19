@@ -5,7 +5,6 @@ import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, Volum
 
 // === API HELPER FUNCTIONS ===
 
-// Lire les données (Jours + Compteur)
 const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
@@ -21,7 +20,6 @@ const fetchData = async () => {
   }
 };
 
-// Sauvegarder les jours trouvés
 const saveFoundDays = async (days: number[]) => {
   try {
     await fetch('/api/sync', {
@@ -34,7 +32,6 @@ const saveFoundDays = async (days: number[]) => {
   }
 };
 
-// Incrémenter le compteur de connexion
 const incrementLoginCount = async () => {
   try {
     await fetch('/api/sync', {
@@ -47,7 +44,6 @@ const incrementLoginCount = async () => {
   }
 };
 
-// Réinitialiser TOUT (Jours + Compteur)
 const resetAllData = async () => {
   try {
     await fetch('/api/sync', {
@@ -60,7 +56,7 @@ const resetAllData = async () => {
   }
 };
 
-// === TYPEWRITER EFFECT (Machine à écrire) ===
+// === TYPEWRITER EFFECT ===
 const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) => {
   const [displayedText, setDisplayedText] = useState("");
   
@@ -81,18 +77,17 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
 };
 
-// === SNOWFALL EFFECT (NEIGE INFINIE) ===
+// === SNOWFALL EFFECT (INFINI ET FLUIDE) ===
 const Snowfall = () => {
   const [flakes, setFlakes] = useState<{id: number, left: number, fontSize: number, duration: number, delay: number}[]>([]);
 
   useEffect(() => {
-    // Génération côté client uniquement pour éviter les problèmes d'hydratation
     const newFlakes = Array.from({ length: 40 }).map((_, i) => ({
       id: i,
-      left: Math.random() * 100, // Position horizontale aléatoire
-      fontSize: Math.random() * 1.0 + 0.8, // Taille entre 0.8rem et 1.8rem
-      duration: Math.random() * 20 + 10, // Durée de chute entre 10s et 30s (très lent)
-      delay: Math.random() * -30, // Délai NÉGATIF : commence "dans le passé" pour couvrir l'écran direct
+      left: Math.random() * 100,
+      fontSize: Math.random() * 1.0 + 0.8,
+      duration: Math.random() * 20 + 10,
+      delay: Math.random() * -30, 
     }));
     setFlakes(newFlakes);
   }, []);
@@ -140,7 +135,7 @@ const ReunionCountdown = () => {
     const [timeLeft, setTimeLeft] = useState("");
     
     useEffect(() => {
-        const targetDate = new Date("2026-01-06T00:00:00+01:00"); // Date du retour
+        const targetDate = new Date("2026-01-06T00:00:00+01:00"); 
         
         const timer = setInterval(() => {
             const now = new Date();
@@ -164,7 +159,7 @@ const ReunionCountdown = () => {
     if (!timeLeft) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] safe-area-pb">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
             <div className="flex items-center justify-center gap-2 text-rose-600">
                 <Clock className="w-4 h-4 animate-pulse" />
                 <span className="text-xs sm:text-sm font-semibold">Je te serre dans mes bras dans :</span>
@@ -174,7 +169,6 @@ const ReunionCountdown = () => {
     );
 };
 
-// === MOBILE META ===
 const MobileAppMeta = () => (
   <>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
@@ -185,7 +179,6 @@ const MobileAppMeta = () => (
   </>
 );
 
-// === COMPOSANT BULLES ANIMÉES ===
 const BubblesBackground = () => (
   <div className="bubbles-background">
     <div className="bubble"></div>
@@ -198,7 +191,6 @@ const BubblesBackground = () => (
   </div>
 );
 
-// === PUZZLE ===
 const GRID_SIZE = 3;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
 
@@ -291,7 +283,6 @@ const SlidingPuzzle = ({ onClose, imageUrl }: { onClose: () => void, imageUrl: s
   );
 };
 
-// === MODALE TUTO VIDÉO ===
 const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
     <div className="bg-white rounded-3xl p-2 shadow-2xl w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
@@ -317,7 +308,6 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER (TEXTES CORRIGÉS) ===
 const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
@@ -413,7 +403,7 @@ const CALENDAR_DATA = [
     videoUrl: null, 
     isSpecial: false, 
     photoUrl: "/photo_jour_10.jpg", 
-    photoComment: "Tu te rappelles ? C'était au tram le retour à la part dieu. On était rentré avec ma sœur et ma mère. On avait passé une super journée et t'as appelé ma mère tata hehe", 
+    photoComment: "Tu te rappelles ? C'était au tram le retour a la part dieu. On était rentré avec ma sœur et ma mère. On avait passé une super journée et t'as appelé ma mère tata hehe", 
     photoDownload: true, 
     extraPhoto1: null 
   },
@@ -1085,7 +1075,7 @@ export default function Home() {
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
           <div className="floating-form rounded-3xl shadow-2xl p-8 max-w-md w-full relative mx-auto">
             <div className="text-center mb-8 title-adjust-login overflow-visible">
-              <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" /> 
+              <Heart className="w-32 h-32 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl block title-fix-span">Calendrier</span>
                 <span className="text-6xl block">de Déborah</span>
