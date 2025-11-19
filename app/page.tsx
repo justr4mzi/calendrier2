@@ -1222,8 +1222,8 @@ export default function Home() {
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-              <span className="text-7xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-7xl block">de Déborah</span>
+              <span className="text-8xl block title-fix-span-top mt-2">Calendrier</span>
+              <span className="text-8xl block">de Déborah</span>
             </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
