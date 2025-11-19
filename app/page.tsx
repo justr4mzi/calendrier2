@@ -842,7 +842,7 @@ export default function Home() {
         setSessionTime(prev => {
           const newTime = prev + 1;
           // Sauvegarde toutes les 10 secondes
-          if (newTime % 10 === 0) {
+          if (newTime % 7 === 0) {
              saveTotalTime(totalTime + newTime);
           }
           return newTime;
