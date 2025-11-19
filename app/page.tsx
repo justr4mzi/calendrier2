@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, CloudRain, Sun, Clock } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock } from 'lucide-react';
 
 // === API HELPER FUNCTIONS ===
 
@@ -60,7 +60,7 @@ const resetAllData = async () => {
   }
 };
 
-// === TYPEWRITER EFFECT ===
+// === TYPEWRITER EFFECT (Machine à écrire) ===
 const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) => {
   const [displayedText, setDisplayedText] = useState("");
   
@@ -81,41 +81,42 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   return <p className="text-gray-700 italic leading-relaxed">{displayedText}</p>;
 };
 
-// === SNOWFALL EFFECT ===
+// === SNOWFALL EFFECT (NEIGE INFINIE) ===
 const Snowfall = () => {
-  const flakes = Array.from({ length: 50 }); 
+  const [flakes, setFlakes] = useState<{id: number, left: number, fontSize: number, duration: number, delay: number}[]>([]);
+
+  useEffect(() => {
+    // Génération côté client uniquement pour éviter les problèmes d'hydratation
+    const newFlakes = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      left: Math.random() * 100, // Position horizontale aléatoire
+      fontSize: Math.random() * 1.0 + 0.8, // Taille entre 0.8rem et 1.8rem
+      duration: Math.random() * 20 + 10, // Durée de chute entre 10s et 30s (très lent)
+      delay: Math.random() * -30, // Délai NÉGATIF : commence "dans le passé" pour couvrir l'écran direct
+    }));
+    setFlakes(newFlakes);
+  }, []);
+
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      {flakes.map((_, i) => (
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden h-full w-full">
+      {flakes.map((flake) => (
         <div
-          key={i}
-          className="absolute top-[-20px] text-white/70 animate-snow"
+          key={flake.id}
+          className="absolute top-[-50px] text-white/60"
           style={{
-            left: `${Math.random() * 100}%`,
-            fontSize: `${Math.random() * 1.5 + 0.5}rem`, 
-            animationDuration: `${Math.random() * 15 + 10}s`, 
-            animationDelay: `-${Math.random() * 20}s`, 
+            left: `${flake.left}%`,
+            fontSize: `${flake.fontSize}rem`,
+            animation: `fall ${flake.duration}s linear infinite`,
+            animationDelay: `${flake.delay}s`,
           }}
         >
           ❄️
         </div>
       ))}
       <style jsx>{`
-        @keyframes snow {
-          0% { 
-            transform: translateY(-10vh) translateX(0) rotate(0deg); 
-            opacity: 0.8; 
-          }
-          100% { 
-            transform: translateY(110vh) translateX(20px) rotate(360deg); 
-            opacity: 0; 
-          }
-        }
-        .animate-snow {
-          animation-name: snow;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          will-change: transform;
+        @keyframes fall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+          100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
         }
       `}</style>
     </div>
@@ -133,36 +134,6 @@ const CustomCursorStyles = () => (
     }
   `}</style>
 );
-
-// === WIDGET MÉTÉO ===
-const WeatherWidget = () => {
-  return (
-    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border-2 border-blue-100 mb-6 transform hover:scale-105 transition-transform">
-        <div className="flex justify-between items-center text-center gap-4">
-            <div className="flex flex-col items-center">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">France</span>
-                <CloudRain className="w-8 h-8 text-blue-400 my-1" />
-                <span className="font-bold text-gray-700">Grisaille</span>
-                <span className="text-xs text-blue-500">5°C 🥶</span>
-            </div>
-            
-            <div className="h-12 w-px bg-gray-300"></div>
-            
-            <div className="flex flex-col items-center">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Algérie</span>
-                <Sun className="w-8 h-8 text-yellow-500 my-1 animate-spin-slow" />
-                <span className="font-bold text-gray-700">Grand Soleil</span>
-                <span className="text-xs text-yellow-600">25°C ☀️</span>
-            </div>
-        </div>
-        <div className="mt-3 text-center border-t border-gray-200 pt-2">
-            <p className="text-sm text-rose-500 font-medium italic">
-                "Il fait 25°C ici, mais j'ai froid sans toi ❤️"
-            </p>
-        </div>
-    </div>
-  );
-};
 
 // === COMPTE A REBOURS RETROUVAILLES ===
 const ReunionCountdown = () => {
@@ -193,10 +164,10 @@ const ReunionCountdown = () => {
     if (!timeLeft) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] safe-area-pb">
             <div className="flex items-center justify-center gap-2 text-rose-600">
                 <Clock className="w-4 h-4 animate-pulse" />
-                <span className="text-xs sm:text-sm font-semibold">Temps avant que je te serre dans mes bras :</span>
+                <span className="text-xs sm:text-sm font-semibold">Je te serre dans mes bras dans :</span>
                 <span className="text-sm sm:text-base font-bold font-mono bg-rose-100 px-2 py-0.5 rounded text-rose-700">{timeLeft}</span>
             </div>
         </div>
@@ -214,7 +185,7 @@ const MobileAppMeta = () => (
   </>
 );
 
-// === COMPOSANT BULLES ANIMÉES (C'est celui-ci qui manquait !) ===
+// === COMPOSANT BULLES ANIMÉES ===
 const BubblesBackground = () => (
   <div className="bubbles-background">
     <div className="bubble"></div>
@@ -346,7 +317,7 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   </div>
 );
 
-// === DONNÉES DU CALENDRIER (MISES À JOUR SELON LE CSV) ===
+// === DONNÉES DU CALENDRIER (TEXTES CORRIGÉS) ===
 const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
@@ -357,57 +328,57 @@ const CALENDAR_DATA = [
   },
   {
     date: "2025-12-18", day: 2,
-    letter: "Le deuxième jour ! J'espère que t'as kiffer le concept en tt cas il te réserve encore de belle surprise hehe. Petit cadeau aujourd'hui pas énorme mais comme ca tu vas te régaler ;) Je pars en Algérie aujourd'hui, en tout cas je t'oublie jamais je serai la tout les jours pour toi avec ca mmh avoue tu kiff sah j'ai bien galérer c'est des heures de codage et de galère hein oublie pas j'espère en tout cas je vais bien arriver en Algérie voila voila j'irai avec ma mère.",
+    letter: "Le deuxième jour ! J'espère que t'as kiffé le concept en tout cas il te réserve encore de belles surprises hehe. Petit cadeau aujourd'hui pas énorme mais comme ça tu vas te régaler ;) Je pars en Algérie aujourd'hui, en tout cas je t'oublie jamais je serai là tous les jours pour toi avec ça mmh avoue tu kiffes sah j'ai bien galéré c'est des heures de codage et de galère hein oublie pas j'espère en tout cas je vais bien arriver en Algérie voila voila j'irai avec ma mère.",
     hint: "Récupérer la lettre D", gift: "Reese's",
-    giftMessage: "Bonne app mon coeur mange bien comme ca tu prends des forces pour les cours",
+    giftMessage: "Bon appétit mon coeur mange bien comme ça tu prends des forces pour les cours",
     keywords: ["chocolat", "reese", "beurre de cacahuète", "bonbon"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
     date: "2025-12-19", day: 3,
     letter: "Troisième jourrrr jsuis en Algérie normalement, de ton côté j'espère que ça va bien, courage dernier jour de cours avant les vacances. Petit cadeau aujourd'hui pour passer un bon matin :)",
     hint: "Récupérer la lettre F et G", gift: "Photo #1 + Stickers",
-    giftMessage: "BONUS : des petits tatouages de moi bébé hehe avoue tes chockbar tu t'y attendais pas",
-    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour la je t'avais prêté mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucré la madame.", photoDownload: true, extraPhoto1: null,
+    giftMessage: "BONUS : des petits tatouages de moi bébé hehe avoue t'es choquée tu t'y attendais pas",
+    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour là je t'avais prêté mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucré la madame.", photoDownload: true, extraPhoto1: null,
   },
   {
     date: "2025-12-20", day: 4,
-    letter: "Premier jour des vacances ! J'espère que ca va bien se passer j'espère que t'as pu jouer a la switch et tout je suis trop content si ca serait le cas franchement j'espère que tu vas réussir a vaincre tes addictions grâce a ca et voila . Aujourd'hui objet un peu troll franchement mais au moins la prochaine fois on pourra pas se tromper.",
+    letter: "Premier jour des vacances ! J'espère que ça va bien se passer j'espère que t'as pu jouer à la switch et tout je suis trop content si c'est le cas franchement j'espère que tu vas réussir à vaincre tes addictions grâce à ça et voila. Aujourd'hui objet un peu troll franchement mais au moins la prochaine fois on pourra pas se tromper.",
     hint: "Récupérer la lettre A", gift: "Mesureur de bague",
-    giftMessage: "C'était un mesureur de taille de doigt pour les bagues :) A ta place j'aurai envoyé a ramzi la taille comme ca la prochaine fois pas ya pas de gna gna c'était pas la bonne",
+    giftMessage: "C'était un mesureur de taille de doigt pour les bagues :) À ta place j'aurai envoyé à ramzi la taille comme ça la prochaine fois y'a pas de gna gna c'était pas la bonne",
     keywords: ["bague", "mesureur", "taille", "doigt", "doigts"], hasGuess: true, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
     date: "2025-12-21", day: 5,
-    letter: "C'est Dimanche ! Tout est fermé en France alors qu'en Algérie c'est le premier jour de la semaine c'est fou la différence. Ca me donne envie d'aller en Algérie avec toi haha. Bon assez parle je te laisse voir le petit cadeau.",
+    letter: "C'est Dimanche ! Tout est fermé en France alors qu'en Algérie c'est le premier jour de la semaine c'est fou la différence. Ca me donne envie d'aller en Algérie avec toi haha. Bon assez parlé je te laisse voir le petit cadeau.",
     hint: "Récupérer la lettre H", gift: "Photo #2",
-    giftMessage: "C'est cool les photos c'est mieux que uniquement sur le téléphone, je comprends la fille dans La Boume haha",
+    giftMessage: "C'est cool les photos c'est mieux que uniquement sur le téléphone, je comprends la fille dans La Boum haha",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo-jour-5.jpg", photoComment: "Notre fameux fond d'écran papapa", photoDownload: true, extraPhoto1: null,
   },
   { 
     date: "2025-12-22", day: 6, 
-    letter: "Lundiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ca arrivera pas encore bcp de fois)", 
+    letter: "Lundiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ça arrivera pas encore beaucoup de fois)", 
     hint: "Récupérer la lettre C et E", 
     gift: "Schweppes Citron + Porte-clé", 
-    giftMessage: "Bonne apppp! et papapa t'as vu le porte clé j'ai le même il le complète le jour on s'est mit en couple Déborah.", 
+    giftMessage: "Bon apppp! et papapa t'as vu le porte clé j'ai le même il le complète le jour où on s'est mis en couple Déborah.", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2025-12-23", day: 7, 
-    letter: "C'est mardi et ca fait une semaine que tu ouvres tout les jours le calendrier ! J'espère que tu kiff en tout cas et que tout ce passe bien. J'ai plus de environ 50 h de codage , de galères et quasiment 2000 lignes de code . Il y a 3 easter egg sur la page aussi. A toi de les trouver :)", 
+    letter: "C'est mardi et ça fait une semaine que tu ouvres tous les jours le calendrier ! J'espère que tu kiffes en tout cas et que tout se passe bien. J'ai plus de environ 50 h de codage, de galères et quasiment 2000 lignes de code. Il y a 3 easter egg sur la page aussi. À toi de les trouver :)", 
     hint: "Récupérer la lettre K", 
     gift: "Photo #3", 
-    giftMessage: "Petite photo! Le Commentaire : Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    giftMessage: "Petite photo! Le Commentaire : Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, 
     photoUrl: "/photo_jour_7.jpg", 
-    photoComment: "Comment t'es magnifique Déborah . La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    photoComment: "Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
     photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2025-12-24", day: 8, 
-    letter: "Demain c'est noël je crois! Tiens petit cadeau pr te faire belle ! Tu vas surement rejoindre ta famille donc profite", 
+    letter: "Demain c'est noël je crois! Tiens petit cadeau pour te faire belle ! Tu vas surement rejoindre ta famille donc profite", 
     hint: "Récupérer la lettre J", 
     gift: "Vernis Rouge", 
-    giftMessage: "Tiens j'espère que t'aimerass ! Petite photo bonus en guise d'exemple :)", 
+    giftMessage: "Tiens j'espère que t'aimeras ! Petite photo bonus en guise d'exemple :)", 
     keywords: ["vernis", "ongles", "rouge", "manucure"], 
     hasGuess: false, videoUrl: null, 
     isSpecial: true, 
@@ -418,7 +389,7 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-25", day: 9, 
-    letter: "C'est Noël ! profite bien même si cette été est pas Dubout dans mes convictions et que je veux pas la fêter . Profite bien du petit cadeau.", 
+    letter: "C'est Noël ! profite bien même si cet été est pas du tout dans mes convictions et que je veux pas la fêter. Profite bien du petit cadeau.", 
     hint: "Récupérer la lettre M", 
     gift: "Chocolat Dubaï", 
     giftMessage: "Papapappa chocolat dubai c'est maman elle m'a dit tiens pour Déborah la meilleure maman du monde bonne app", 
@@ -433,7 +404,7 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-26", day: 10, 
-    letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici la .", 
+    letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici là.", 
     hint: "Récupérer la lettre I", 
     gift: "Photo #4", 
     giftMessage: "Une nouvelle photoo!", 
@@ -442,13 +413,13 @@ const CALENDAR_DATA = [
     videoUrl: null, 
     isSpecial: false, 
     photoUrl: "/photo_jour_10.jpg", 
-    photoComment: "Tu te rappelles ? C'était au tram le retour a la part dieu. On était rentrer avec ma sœur et ma mère . On avait passer une super journée et t'as appelé ma mère tata hehe", 
+    photoComment: "Tu te rappelles ? C'était au tram le retour à la part dieu. On était rentré avec ma sœur et ma mère. On avait passé une super journée et t'as appelé ma mère tata hehe", 
     photoDownload: true, 
     extraPhoto1: null 
   },
   { 
     date: "2025-12-27", day: 11, 
-    letter: "Quel belle journée j'espère ! en tout cas aujourdhui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ca serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
+    letter: "Quelle belle journée j'espère ! en tout cas aujourd'hui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ça serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
     hint: "Récupérer la lettre P", 
     gift: "Adjusteurs de bague", 
     giftMessage: "Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
@@ -463,7 +434,7 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-28", day: 12, 
-    letter: "Aujourd'hui je voulais parler de a quel point t'as changé ma vie. Ma vie a été totalement bouleversé depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
+    letter: "Aujourd'hui je voulais parler de à quel point t'as changé ma vie. Ma vie a été totalement bouleversée depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
     hint: "Récupérer la lettre L", 
     gift: "Photo #5", 
     giftMessage: "Petite photoooo !", 
@@ -478,10 +449,10 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-29", day: 13, 
-    letter: "Aujourd'hui j'aimerai parler a quel point tu a évolué . Hier j'ai parlé de moi mais on doit parler de toi aussi. Tu t'es tellement épanouie je suis tellement admirative de toi Déborah.", 
+    letter: "Aujourd'hui j'aimerais parler à quel point tu as évolué. Hier j'ai parlé de moi mais on doit parler de toi aussi. Tu t'es tellement épanouie je suis tellement admiratif de toi Déborah.", 
     hint: "Récupérer la lettre Q et R", 
     gift: "Masque visage + Photo #6", 
-    giftMessage: "Aujourd'hui cadeaux 2 en 1 !!! Une petite photo et avec un petit masque hehe je l'ai sélectionne spécialement pour toi j'espère que tu vas aimer. J'ai chercher a varier le plus possible et j'espère que ca te fera plaisir.", 
+    giftMessage: "Aujourd'hui cadeaux 2 en 1 !!! Une petite photo et avec un petit masque hehe je l'ai sélectionné spécialement pour toi j'espère que tu vas aimer. J'ai cherché à varier le plus possible et j'espère que ça te fera plaisir.", 
     keywords: [], 
     hasGuess: false, 
     videoUrl: null, 
@@ -491,13 +462,12 @@ const CALENDAR_DATA = [
     photoDownload: true, 
     extraPhoto1: null 
   },
-  // --- JOURS MIS À JOUR ---
   { 
     date: "2025-12-30", day: 14, 
-    letter: "Au jour ou j'écris cette lettre on s'est pas parlé de la journée on est en embrouille totale j'en peux vraiment plus j'ai finis a 15 h j'ai attendu Déborah jusqu'a 17h30 mais malheuresement elle est rentrer avec sa mere je suie rentrer en JD ducoup mais voila j'ai pas voulu lui dire car elle allait culpabiliser et c'est ce que elle me reprochait donc voila message un peu deprimant aujourdhui mais ya des jours avec et des jours sans. Toujours un petit cadeau bien sur", 
+    letter: "Au jour où j'écris cette lettre on s'est pas parlé de la journée on est en embrouille totale j'en peux vraiment plus j'ai finis à 15h j'ai attendu Déborah jusqu'à 17h30 mais malheureusement elle est rentrée avec sa mère je suis rentré en JD du coup mais voila j'ai pas voulu lui dire car elle allait culpabiliser et c'est ce qu'elle me reprochait donc voila message un peu déprimant aujourd'hui mais y'a des jours avec et des jours sans. Toujours un petit cadeau bien sûr", 
     hint: "Récupérer la lettre N", 
     gift: "Gaufrette", 
-    giftMessage: "Petite gauffrettes ! ils sont archi bonnes sah regal toi et essaye de tout finir jette pas", 
+    giftMessage: "Petite gaufrettes ! elles sont archi bonnes sah régale toi et essaye de tout finir jette pas", 
     keywords: ["gaufrette", "biscuit", "manger"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
@@ -1230,9 +1200,6 @@ export default function Home() {
               </button>
             </div>
           </div>
-
-          {/* WIDGET METEO (NOUVEAU) */}
-          <WeatherWidget />
 
           {/* ZONE ADMIN : Compteur de connexions */}
           {isAdmin && (
