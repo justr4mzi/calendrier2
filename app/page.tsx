@@ -167,7 +167,17 @@ const ReunionCountdown = () => {
     if (!timeLeft) return null;
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 p-2 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] safe-area-pb">
+        <div 
+            className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t-2 border-rose-300 z-[100] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]"
+            // C'EST ICI LA CORRECTION 👇
+            style={{ 
+                paddingTop: '8px',
+                paddingLeft: '8px',
+                paddingRight: '8px',
+                // On ajoute 8px + la taille de la barre iPhone (env safe-area)
+                paddingBottom: 'calc(8px + env(safe-area-inset-bottom))' 
+            }}
+        >
             <div className="flex items-center justify-center gap-2 text-rose-600">
                 <Clock className="w-4 h-4 animate-pulse" />
                 <span className="text-xs sm:text-sm font-semibold">Je te serre dans mes bras dans :</span>
@@ -1222,8 +1232,8 @@ export default function Home() {
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible"> 
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
-              <span className="text-8xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-8xl block">de Déborah</span>
+              <span className="text-7xl block title-fix-span-top mt-2">Calendrier</span>
+              <span className="text-7xl block">de Déborah</span>
             </h1>
             <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
             <p 
