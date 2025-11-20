@@ -15,7 +15,7 @@ const getDeviceType = () => {
 
 // === API HELPER FUNCTIONS ===
 
-// Lire les données (Jours + Compteur + Temps + Espion + Bisous + Message)
+// Lire les données
 const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
@@ -120,7 +120,7 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   
   useEffect(() => {
     let i = 0;
-    setDisplayedText(""); // Reset quand le texte change
+    setDisplayedText(""); 
     const timer = setInterval(() => {
       i++;
       setDisplayedText(text.slice(0, i));
@@ -415,12 +415,13 @@ const CALENDAR_DATA = [
     date: "2025-12-23", day: 7, 
     letter: "C'est mardi et ça fait une semaine que tu ouvres tous les jours le calendrier ! J'espère que tu kiffes en tout cas et que tout se passe bien. J'ai plus de environ 50 h de codage, de galères et quasiment 2000 lignes de code. Il y a 3 easter egg sur la page aussi. À toi de les trouver :)", 
     hint: "Récupérer la lettre K", 
-    gift: "Photo #3", 
-    giftMessage: "Petite photo! Le Commentaire : Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    gift: "Photo #3 + Défi Olfactif", 
+    giftMessage: "Petite photo avec une surprise pour ton nez ! Le Commentaire : Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, 
     photoUrl: "/photo_jour_7.jpg", 
     photoComment: "Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
-    photoDownload: true, extraPhoto1: null 
+    photoDownload: true, extraPhoto1: null,
+    perfumeAnswer: 2 
   },
   { 
     date: "2025-12-24", day: 8, 
@@ -455,8 +456,8 @@ const CALENDAR_DATA = [
     date: "2025-12-26", day: 10, 
     letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici là.", 
     hint: "Récupérer la lettre I", 
-    gift: "Photo #4", 
-    giftMessage: "Une nouvelle photoo!", 
+    gift: "Photo #4 + Petit chocolat Lindt", 
+    giftMessage: "Une nouvelle photoo! Et un petit chocolat pour la route hehe", 
     keywords: [], 
     hasGuess: false, 
     videoUrl: null, 
@@ -485,8 +486,8 @@ const CALENDAR_DATA = [
     date: "2025-12-28", day: 12, 
     letter: "Aujourd'hui je voulais parler de à quel point t'as changé ma vie. Ma vie a été totalement bouleversée depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
     hint: "Récupérer la lettre L", 
-    gift: "Photo #5", 
-    giftMessage: "Petite photoooo !", 
+    gift: "Photo #5 + Défi Olfactif", 
+    giftMessage: "Petite photoooo ! Et sens bien l'enveloppe...", 
     keywords: [], 
     hasGuess: false, 
     videoUrl: null, 
@@ -494,7 +495,8 @@ const CALENDAR_DATA = [
     photoUrl: "/photo_jour_12.jpg", 
     photoComment: "On était chez toi c'était vraiment trop bien et t'es trop belle", 
     photoDownload: true, 
-    extraPhoto1: null 
+    extraPhoto1: null,
+    perfumeAnswer: 1
   },
   { 
     date: "2025-12-29", day: 13, 
@@ -542,7 +544,7 @@ const CALENDAR_DATA = [
     date: "2026-01-02", day: 17, 
     letter: "LETTRE DU JOUR 17", 
     hint: "Récupérer la lettre U", 
-    gift: "Photo #8", 
+    gift: "Photo #8 + Petit chocolat Lindt", 
     giftMessage: "MESSAGE CADEAU JOUR 17 (À remplir)", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null 
@@ -560,7 +562,7 @@ const CALENDAR_DATA = [
     date: "2026-01-04", day: 19, 
     letter: "LETTRE DU JOUR 19", 
     hint: "Récupérer la lettre V", 
-    gift: "Photo #9", 
+    gift: "Photo #9 + Petit chocolat Lindt", 
     giftMessage: "MESSAGE CADEAU JOUR 19 (À remplir)", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null 
@@ -599,7 +601,8 @@ const CALENDAR_DATA = [
     gift: "Photo #10 (Finale)", 
     giftMessage: "MESSAGE CADEAU JOUR 23 (À remplir)", 
     keywords: [], 
-    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null 
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null,
+    perfumeAnswer: 3
   },
 ];
 
@@ -889,6 +892,7 @@ export default function Home() {
   const [kissCount, setKissCount] = useState(0);
   const [finalMessageInput, setFinalMessageInput] = useState('');
   const [finalMessageStored, setFinalMessageStored] = useState('');
+  const [perfumeResult, setPerfumeResult] = useState<string | null>(null);
   
   // === ETATS ESPION ===
   const [totalTime, setTotalTime] = useState(0); 
@@ -1156,6 +1160,7 @@ export default function Home() {
       setSelectedDay(day);
       setGuessInput('');
       setGuessResult(null);
+      setPerfumeResult(null); // Reset parfum game
     }
   };
 
@@ -1204,6 +1209,17 @@ export default function Home() {
       
       // Une fois le message envoyé, on marque le jour comme trouvé pour débloquer le cadeau
       markAsFound();
+  };
+
+  const checkPerfume = (choice: number, correct: number) => {
+      if (choice === correct) {
+          setPerfumeResult('correct');
+          createParticles('petals');
+          setShowConfetti(true);
+          setTimeout(() => setShowConfetti(false), 2000);
+      } else {
+          setPerfumeResult('incorrect');
+      }
   };
 
   const handleStarClick = () => {
@@ -1698,6 +1714,38 @@ export default function Home() {
                         </div>
                       )}
                     </div>
+
+                    {/* GAME OLFACTIF */}
+                    {selectedDay.perfumeAnswer && (
+                        <div className="mt-6 bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-center shadow-md">
+                             <h3 className="font-bold text-amber-800 mb-2 text-lg flex items-center justify-center gap-2">👃 Quiz Olfactif !</h3>
+                             <p className="text-sm text-amber-700 mb-4">
+                                Cette photo a une odeur particulière... C'est lequel de mes parfums ?
+                                <br/><span className="text-xs italic opacity-70">(J'espère qu'il y a encore l'odeur mdrr)</span>
+                             </p>
+                             
+                             {!perfumeResult ? (
+                                 <div className="flex flex-col gap-2 max-w-xs mx-auto">
+                                     {[1, 2, 3].map(num => (
+                                         <button 
+                                            key={num}
+                                            onClick={() => checkPerfume(num, selectedDay.perfumeAnswer)}
+                                            className="bg-white border border-amber-300 text-amber-800 py-2 rounded-lg hover:bg-amber-100 transition-colors font-semibold"
+                                         >
+                                             Parfum {num}
+                                         </button>
+                                     ))}
+                                 </div>
+                             ) : (
+                                 <div className={`p-4 rounded-xl font-bold ${perfumeResult === 'correct' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                     {perfumeResult === 'correct' ? "Bravo mon amour ! T'as le nez fin ! ❤️" : "Oups... Respire encore un coup !"}
+                                     {perfumeResult === 'incorrect' && (
+                                         <button onClick={() => setPerfumeResult(null)} className="block mx-auto mt-2 text-xs underline">Réessayer</button>
+                                     )}
+                                 </div>
+                             )}
+                        </div>
+                    )}
 
                     {selectedDay.extraPhoto1 && (
                       <div className="bg-gray-50 rounded-2xl p-6 shadow-md">
