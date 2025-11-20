@@ -1738,7 +1738,7 @@ export default function Home() {
                                  </div>
                              ) : (
                                  <div className={`p-4 rounded-xl font-bold ${perfumeResult === 'correct' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                     {perfumeResult === 'correct' ? "Bravo mon amour ! T'as le nez fin ! ❤️" : "Oups... Respire encore un coup !"}
+                                     {perfumeResult === 'correct' ? "Bravo mon coeur ! Tu me connais bien toi ❤️" : "Oups... Respire encore un coup !"}
                                      {perfumeResult === 'incorrect' && (
                                          <button onClick={() => setPerfumeResult(null)} className="block mx-auto mt-2 text-xs underline">Réessayer</button>
                                      )}
