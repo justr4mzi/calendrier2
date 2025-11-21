@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Check } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Check, MapPin, Pill, Briefcase, Eraser, Smile } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -202,6 +202,306 @@ const VoicePlayer = ({ day }: { day: number }) => {
       `}</style>
     </div>
   );
+};
+
+// === 1. TICKET A GRATTER (CANVAS) ===
+const ScratchCard = ({ onClose }: { onClose: () => void }) => {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRevealed, setIsRevealed] = useState(false);
+  const [scratchedPercent, setScratchedPercent] = useState(0);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const width = canvas.parentElement?.offsetWidth || 300;
+    const height = 200;
+    canvas.width = width;
+    canvas.height = height;
+
+    // Couche grise à gratter
+    ctx.fillStyle = '#cbd5e1'; // gris
+    ctx.fillRect(0, 0, width, height);
+    
+    // Texte "Gratte moi"
+    ctx.fillStyle = '#64748b';
+    ctx.font = 'bold 24px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('✨ GRATTE ICI ✨', width / 2, height / 2);
+
+    let isDrawing = false;
+
+    const getPos = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      let clientX, clientY;
+      if ('touches' in e) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = (e as MouseEvent).clientX;
+        clientY = (e as MouseEvent).clientY;
+      }
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    };
+
+    const scratch = (x: number, y: number) => {
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.beginPath();
+      ctx.arc(x, y, 20, 0, Math.PI * 2);
+      ctx.fill();
+      checkScratchPercent();
+    };
+
+    const checkScratchPercent = () => {
+      // Optimisation: on ne check pas à chaque pixel, c'est lourd, mais ok pour ce petit usage
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const pixels = imageData.data;
+      let transparentPixels = 0;
+      for (let i = 0; i < pixels.length; i += 4) {
+        if (pixels[i + 3] < 128) transparentPixels++;
+      }
+      const percent = (transparentPixels / (pixels.length / 4)) * 100;
+      setScratchedPercent(percent);
+      if (percent > 50) setIsRevealed(true);
+    };
+
+    const startDrawing = (e: MouseEvent | TouchEvent) => { isDrawing = true; const pos = getPos(e); scratch(pos.x, pos.y); };
+    const stopDrawing = () => { isDrawing = false; };
+    const draw = (e: MouseEvent | TouchEvent) => { 
+      if (!isDrawing) return; 
+      e.preventDefault(); // Empêche le scroll sur mobile
+      const pos = getPos(e); 
+      scratch(pos.x, pos.y); 
+    };
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('touchend', stopDrawing);
+
+    return () => {
+        canvas.removeEventListener('mousedown', startDrawing);
+        canvas.removeEventListener('touchstart', startDrawing);
+        // clean up...
+    };
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
+      <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center relative overflow-hidden" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
+        
+        <h2 className="text-2xl font-bold text-rose-600 mb-2">Ticket Magique 🎫</h2>
+        <p className="text-gray-500 mb-4 text-sm">Gratte la zone ci-dessous pour découvrir ton message !</p>
+        
+        <div className="relative w-full h-[200px] rounded-xl overflow-hidden bg-gradient-to-br from-rose-100 to-purple-100 border-2 border-dashed border-rose-300">
+            {/* CONTENU CACHÉ SOUS LE GRATTAGE */}
+            <div className="absolute inset-0 flex items-center justify-center p-4 flex-col">
+                <span className="text-4xl mb-2">🥰</span>
+                <p className="font-satisfy text-2xl text-rose-600 font-bold">Je t'aime + que tout</p>
+                <p className="text-xs text-gray-500 mt-2">(Bon valable pour un gros câlin)</p>
+            </div>
+            
+            {/* CANVAS DE GRATTAGE */}
+            <canvas 
+                ref={canvasRef} 
+                className={`absolute inset-0 touch-none transition-opacity duration-1000 ${isRevealed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+            />
+        </div>
+
+        {isRevealed && (
+            <div className="mt-4 animate-bounce text-green-600 font-bold">
+                🎉 Gagné ! 🎉
+            </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// === 2. BOULE DE CRISTAL (COMPLIMENTS) ===
+const CrystalBall = ({ onClose }: { onClose: () => void }) => {
+    const [compliment, setCompliment] = useState<string | null>(null);
+    const [isShaking, setIsShaking] = useState(false);
+
+    const compliments = [
+        "Tu es la plus belle chose qui me soit arrivée.",
+        "Ton sourire illumine ma journée, vraiment.",
+        "T'es intelligente, drôle et magnifique. Le combo parfait.",
+        "J'aime la façon dont tu prends soin des gens.",
+        "Même en pyjama, t'es la plus belle femme du monde.",
+        "T'as un charme de fou, tu t'en rends même pas compte.",
+        "Je suis fier de la femme que tu deviens.",
+        "Tes yeux... je pourrais m'y perdre pendant des heures.",
+        "T'es ma meilleure amie et mon amour en même temps."
+    ];
+
+    const shakeBall = () => {
+        if (isShaking) return;
+        setIsShaking(true);
+        setCompliment(null);
+        setTimeout(() => {
+            const random = compliments[Math.floor(Math.random() * compliments.length)];
+            setCompliment(random);
+            setIsShaking(false);
+        }, 1500);
+    };
+
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
+            <div className="bg-indigo-950 rounded-full p-10 shadow-2xl max-w-sm w-full aspect-square flex flex-col items-center justify-center text-center relative border-4 border-indigo-400 shadow-indigo-500/50" onClick={(e) => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-6 right-6 text-indigo-300 hover:text-white"><X /></button>
+                
+                {!compliment ? (
+                    <>
+                        <div className={`text-6xl mb-4 ${isShaking ? 'animate-spin' : ''}`}>🔮</div>
+                        <h2 className="text-xl font-bold text-indigo-200 mb-6">La Boule de Cristal</h2>
+                        <button 
+                            onClick={shakeBall}
+                            className="bg-indigo-600 text-white px-6 py-2 rounded-full hover:bg-indigo-500 transition-all font-bold shadow-lg hover:shadow-indigo-500/50"
+                        >
+                            {isShaking ? "Consultation..." : "Dis-moi quelque chose"}
+                        </button>
+                    </>
+                ) : (
+                    <div className="animate-in fade-in zoom-in duration-700">
+                        <p className="font-satisfy text-2xl text-indigo-100 leading-relaxed drop-shadow-md">
+                            "{compliment}"
+                        </p>
+                        <button 
+                            onClick={shakeBall}
+                            className="mt-6 text-sm text-indigo-400 hover:text-indigo-200 underline"
+                        >
+                            Encore un ?
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+// === 3. MAP DE L'AMOUR ===
+const LoveMap = ({ onClose }: { onClose: () => void }) => {
+    // Positions en pourcentage (top, left)
+    const locations = [
+        { id: 1, x: 45, y: 40, title: "Part-Dieu", desc: "Le début de tout. Nos premiers rencards, le shopping, le tram..." },
+        { id: 2, x: 30, y: 60, title: "Bellecour", desc: "Le lieu mythique. La statue, les rendez-vous sous la queue du cheval." },
+        { id: 3, x: 70, y: 20, title: "Chez toi", desc: "Là où on a passé nos meilleures soirées chill." },
+        { id: 4, x: 10, y: 80, title: "Futur", desc: "L'Algérie ? Une maison ? L'avenir nous le dira ❤️" }
+    ];
+    
+    const [selectedLoc, setSelectedLoc] = useState<any>(null);
+
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
+            <div className="bg-white rounded-3xl p-4 shadow-2xl max-w-md w-full h-[80vh] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-4 right-4 z-10 bg-white rounded-full p-1 text-gray-700 shadow-md"><X /></button>
+                <h2 className="text-2xl font-bold text-rose-600 mb-4 text-center flex items-center justify-center gap-2">
+                    <MapPin className="fill-rose-500 text-rose-600" /> Map de l'Amour
+                </h2>
+                
+                <div className="relative flex-1 bg-blue-50 rounded-2xl overflow-hidden border-4 border-white shadow-inner bg-[url('https://img.freepik.com/free-vector/city-map-background-blue-tone_99087-108.jpg')] bg-cover">
+                    {/* Carte fictive stylisée */}
+                    {locations.map(loc => (
+                        <button
+                            key={loc.id}
+                            onClick={() => setSelectedLoc(loc)}
+                            className="absolute transform -translate-x-1/2 -translate-y-1/2 hover:scale-125 transition-transform group"
+                            style={{ top: `${loc.y}%`, left: `${loc.x}%` }}
+                        >
+                            <div className="w-8 h-8 bg-rose-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white animate-bounce">
+                                <Heart className="w-4 h-4 fill-white" />
+                            </div>
+                            <span className="absolute top-8 left-1/2 -translate-x-1/2 bg-white/90 px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                                {loc.title}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+
+                <div className="mt-4 h-32 bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center justify-center text-center">
+                    {selectedLoc ? (
+                        <div>
+                            <h3 className="font-bold text-rose-600 text-lg mb-1">{selectedLoc.title}</h3>
+                            <p className="text-gray-600 text-sm">{selectedLoc.desc}</p>
+                        </div>
+                    ) : (
+                        <p className="text-gray-400 italic text-sm">Clique sur un cœur sur la carte pour voir le souvenir...</p>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// === 4. GELULES DE SECOURS (EMERGENCY KIT) ===
+const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
+    const [openPill, setOpenPill] = useState<string | null>(null);
+
+    const pills = [
+        { id: 'sad', icon: '😢', label: "Je suis triste", color: "bg-blue-500", content: "Mon amour, sache que la tristesse est passagère. Je suis là, même loin. Ferme les yeux, imagine mes bras autour de toi. Je t'aime plus que tout. Respire un grand coup. Ça va aller ❤️" },
+        { id: 'angry', icon: '😡', label: "Je suis énervée", color: "bg-red-500", content: "Wooo on respire ! Je sais que t'as tes raisons. Si c'est contre moi, désolé. Si c'est autre chose, dis-toi que t'es une reine et que rien ne mérite de gâcher ton teint. Va boire un verre d'eau !" },
+        { id: 'miss', icon: '🥺', label: "Tu me manques", color: "bg-purple-500", content: "Tu me manques aussi terriblement. Regarde le compte à rebours en bas de la page. Chaque seconde qui passe nous rapproche. Tiens bon, nos retrouvailles vont être légendaires." },
+        { id: 'sleep', icon: '😴', label: "J'arrive pas à dormir", color: "bg-indigo-900", content: "Éteins tout. Pense à notre meilleur souvenir. Imagine-nous sur une plage ou dans un lit douillet. Laisse ma voix (dans les notes vocales) te bercer. Bonne nuit ma princesse 🌙" },
+    ];
+
+    return (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
+            <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto relative" onClick={(e) => e.stopPropagation()}>
+                <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
+                
+                <div className="text-center mb-6">
+                    <div className="inline-block p-3 bg-red-100 rounded-full mb-2">
+                        <Briefcase className="w-8 h-8 text-red-600" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800">Trousse de Secours 🚑</h2>
+                    <p className="text-gray-500 text-sm">À ouvrir en cas d'urgence émotionnelle</p>
+                </div>
+
+                {!openPill ? (
+                    <div className="grid grid-cols-1 gap-3">
+                        {pills.map(pill => (
+                            <button
+                                key={pill.id}
+                                onClick={() => setOpenPill(pill.id)}
+                                className={`${pill.color} text-white p-4 rounded-xl flex items-center gap-4 transition-transform hover:scale-105 shadow-md`}
+                            >
+                                <span className="text-3xl">{pill.icon}</span>
+                                <span className="font-bold text-lg">{pill.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                ) : (
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 animate-in fade-in slide-in-from-bottom-4">
+                        <button onClick={() => setOpenPill(null)} className="text-sm text-gray-400 mb-4 flex items-center gap-1">
+                            ← Retour
+                        </button>
+                        {(() => {
+                            const pill = pills.find(p => p.id === openPill);
+                            return pill ? (
+                                <div>
+                                    <div className="text-4xl mb-4 text-center">{pill.icon}</div>
+                                    <h3 className="text-xl font-bold text-center mb-4">{pill.label}</h3>
+                                    <p className="text-gray-700 leading-relaxed text-center italic bg-white p-4 rounded-lg shadow-sm">
+                                        "{pill.content}"
+                                    </p>
+                                </div>
+                            ) : null;
+                        })()}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
 };
 
 // === COMPONANT MOTUS (SUTOM) ===
@@ -1034,6 +1334,60 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
+// === MENU EXTRAS (BONUS) ===
+const ExtrasMenu = ({ 
+    onOpenScratch, 
+    onOpenCrystal, 
+    onOpenMap, 
+    onOpenEmergency, 
+    onClose 
+}: { 
+    onOpenScratch: () => void, 
+    onOpenCrystal: () => void, 
+    onOpenMap: () => void, 
+    onOpenEmergency: () => void,
+    onClose: () => void 
+}) => {
+    return (
+        <div className="absolute top-16 left-4 z-40 bg-white/90 backdrop-blur rounded-xl shadow-xl border border-rose-200 p-4 w-64 animate-in fade-in slide-in-from-top-4">
+             <div className="flex justify-between items-center mb-3 border-b border-gray-200 pb-2">
+                 <h3 className="font-bold text-gray-700 flex items-center gap-2"><Briefcase className="w-4 h-4"/> Souvenirs</h3>
+                 <button onClick={onClose} className="text-gray-400 hover:text-rose-500"><X className="w-4 h-4"/></button>
+             </div>
+             <div className="flex flex-col gap-2">
+                 <button onClick={onOpenScratch} className="flex items-center gap-3 p-2 hover:bg-rose-50 rounded-lg text-left transition-colors">
+                     <span className="text-xl">🎫</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Ticket à Gratter</div>
+                         <div className="text-xs text-gray-500">Tente ta chance !</div>
+                     </div>
+                 </button>
+                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-2 hover:bg-indigo-50 rounded-lg text-left transition-colors">
+                     <span className="text-xl">🔮</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Boule de Cristal</div>
+                         <div className="text-xs text-gray-500">Un petit compliment ?</div>
+                     </div>
+                 </button>
+                 <button onClick={onOpenMap} className="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg text-left transition-colors">
+                     <span className="text-xl">🗺️</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Map de l'Amour</div>
+                         <div className="text-xs text-gray-500">Nos lieux cultes</div>
+                     </div>
+                 </button>
+                 <button onClick={onOpenEmergency} className="flex items-center gap-3 p-2 hover:bg-red-50 rounded-lg text-left transition-colors">
+                     <span className="text-xl">💊</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Gélules de Secours</div>
+                         <div className="text-xs text-gray-500">En cas d'urgence ❤️</div>
+                     </div>
+                 </button>
+             </div>
+        </div>
+    );
+};
+
 // === COMPOSANT PRINCIPAL ===
 export default function Home() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -1078,7 +1432,7 @@ export default function Home() {
   const [lastConnection, setLastConnection] = useState<string | null>(null);
   const [lastDevice, setLastDevice] = useState<string>('');
 
-  // === ETATS POUR LES NOUVEAUX EASTER EGGS ===
+  // === ETATS POUR LES EASTER EGGS EXISTANTS ===
   const [clickCountProgression, setClickCountProgression] = useState(0);
   const [clickCountSurprise, setClickCountSurprise] = useState(0);
   const [clickCountClock, setClickCountClock] = useState(0);
@@ -1086,6 +1440,13 @@ export default function Home() {
   const [showMotus, setShowMotus] = useState(false);
   const [showCouponPizza, setShowCouponPizza] = useState(false);
   const [showCouponMassage, setShowCouponMassage] = useState(false);
+
+  // === ETATS POUR LES NOUVEAUX BONUS (NEW) ===
+  const [showExtrasMenu, setShowExtrasMenu] = useState(false);
+  const [showScratchCard, setShowScratchCard] = useState(false);
+  const [showCrystalBall, setShowCrystalBall] = useState(false);
+  const [showLoveMap, setShowLoveMap] = useState(false);
+  const [showEmergencyKit, setShowEmergencyKit] = useState(false);
 
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
@@ -1499,11 +1860,17 @@ export default function Home() {
       {showPuzzle && <SlidingPuzzle onClose={() => setShowPuzzle(false)} imageUrl="/photo-puzzle.jpg" />}
       {showTutorial && <VideoTutorialModal onClose={() => setShowTutorial(false)} />}
       
-      {/* NOUVELLES MODALES */}
+      {/* NOUVELLES MODALES (EASTER EGGS) */}
       {showMotus && <MotusGame onClose={() => setShowMotus(false)} />}
       {showCouponPizza && <CouponModal type="pizza" onClose={() => setShowCouponPizza(false)} />}
       {showCouponMassage && <CouponModal type="massage" onClose={() => setShowCouponMassage(false)} />}
       
+      {/* NOUVELLES MODALES (BONUS MENU) */}
+      {showScratchCard && <ScratchCard onClose={() => setShowScratchCard(false)} />}
+      {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
+      {showLoveMap && <LoveMap onClose={() => setShowLoveMap(false)} />}
+      {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
+
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
@@ -1572,13 +1939,35 @@ export default function Home() {
       {isAuthenticated && !selectedDay && (
         <div className="max-w-6xl mx-auto py-8 px-4 pb-24 relative z-10"> {/* Padding bottom augmenté pour le footer */}
           <div className="sticky top-0 z-50 bg-white/50 backdrop-blur-md rounded-xl p-3 mb-6 shadow-lg flex justify-between items-center w-full">
-            <div className="w-1/3 flex justify-start gap-2">
+            <div className="w-1/3 flex justify-start gap-2 relative">
+              {/* MENU BOITE A OUTILS / EXTRAS */}
+              <div className="relative">
+                <button
+                    onClick={() => setShowExtrasMenu(!showExtrasMenu)}
+                    className="bg-white text-rose-600 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-rose-50 transition-all flex items-center justify-center gap-1.5 shadow-md border border-rose-100"
+                    title="Boîte à souvenirs & Bonus"
+                >
+                    <Briefcase className="w-5 h-5" />
+                    <span className="hidden sm:inline">Bonus</span>
+                </button>
+
+                {showExtrasMenu && (
+                    <ExtrasMenu 
+                        onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard(true); }}
+                        onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
+                        onOpenMap={() => { setShowExtrasMenu(false); setShowLoveMap(true); }}
+                        onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
+                        onClose={() => setShowExtrasMenu(false)}
+                    />
+                )}
+              </div>
+
               <button
                 onClick={() => setShowGallery(true)}
                 className="bg-gradient-to-r from-rose-400 to-pink-500 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
                 title="Galerie Photos"
               >
-                <span className="text-lg">📸</span> Galerie
+                <span className="text-lg">📸</span> <span className="hidden sm:inline">Galerie</span>
               </button>
               
               {/* BOUTON PLAYLIST YOUTUBE */}
@@ -1590,7 +1979,6 @@ export default function Home() {
                 title="Notre Playlist Youtube 🎶"
               >
                 <Youtube className="w-5 h-5" />
-                <span className="hidden sm:inline">Playlist</span>
               </a>
 
               {isAdmin && (
@@ -1599,7 +1987,6 @@ export default function Home() {
                   className="bg-yellow-400 text-black px-3 py-2 rounded-lg text-sm font-semibold hover:bg-yellow-500 transition-all flex items-center gap-1.5 justify-center"
                 >
                   <RefreshCcw className="w-4 h-4" />
-                  Admin
                 </button>
               )}
             </div>
