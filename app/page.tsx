@@ -954,7 +954,7 @@ const CALENDAR_DATA = [
     gift: "Photo #7 + Loriana", 
     giftMessage: "t'es tombé sur un bloc caché ! 2 cadeaux en 1 ca me rappelle le jour ou j'avais installé pleins de jeu sur la switch et je l'avais ramené chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
     keywords: [], 
-    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "regarde c'était au tout début. J'ai montré la photo à ma mamie elle a dit qu'on a tant grandi.", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-01", day: 16, 
