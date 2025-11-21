@@ -524,10 +524,10 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-31", day: 15, 
-    letter: "LETTRE DU JOUR 15 (VEILLE NOUVEL AN)", 
+    letter: "Aujourd'hui quand je t'écris je suis venu te voir le vendredi pr qu'on parle. Je t'ai re enfin reconnu enfin tu n'imagines pas. Voila ca devient mon journal intime ce calendrier jpp en tout cas Déborah j'ai jamais arrete de faire ca la je suis a 2500 lignes de codes jpp et vraiment je t'ai jamais oublié. Ca me saoule juste jeudi dcp t'as mangé a ton lycee samedi t'as un anniv dimanche t'as entrainement on peut jms sortir. Mais voila tu veux que je te dise quoi.En tout cas j'espere que tu passeras un bon jour de l'an avec ta famille ! te fais pas trop belle a chaque fois tu te fais a ton prime quand je suis pas la. Demain lancement d'une nouvelle série de 7 jours sur le calendrier.", 
     hint: "Récupérer la lettre T", 
     gift: "Photo #7 + Loriana", 
-    giftMessage: "cadeau double!", 
+    giftMessage: "t'es tombé sur un bloc caché ! Deux cadeaux en un Ca me rappelle le jour ou j'avais installé pleins de jeu sur la switch et je l'avais ramené chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
   },
