@@ -213,9 +213,9 @@ const ScratchCard = ({ onClose, type = 'default' }: { onClose: () => void, type?
   const contentData = useMemo(() => {
     switch (type) {
       case 'pizza':
-        return { title: "Bon pour une Pizza Boisée 🍕", secretText: "Valable pour une (1) soirée pizza boisée avec ton chéri. Miam miam !", code: "PIZZA-LOVER", color: "from-orange-400 to-red-500", emoji: "🍕" };
+        return { title: "Bon 🍕", secretText: "Valable pour une (1) sortie pizza boisée avec ton chéri. Mmmhhh", code: "PIZZA-BOISEE", color: "from-orange-400 to-red-500", emoji: "🍕" };
       case 'massage':
-        return { title: "Bon pour un Massage 💆‍♂️", secretText: "Valable pour une (1) séance de massage relaxant donnée par mes soins. Durée illimitée.", code: "RELAX-MAX", color: "from-teal-400 to-blue-500", emoji: "💆‍♀️" };
+        return { title: "Bon 💆‍♂️", secretText: "Valable pour une (1) séance de massage relaxant donnée par mes soins. Durée illimitée.", code: "RELAX-MAX", color: "from-teal-400 to-blue-500", emoji: "💆‍♀️" };
       default:
         return { title: "Ticket Magique 🎫", secretText: "Je t'aime + que tout\n(Bon valable pour un gros câlin)", code: "LOVE-U", color: "from-rose-100 to-purple-100", emoji: "🥰" };
     }
