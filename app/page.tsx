@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Check } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -134,6 +134,182 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
   return <p className="text-gray-700 italic leading-relaxed whitespace-pre-line">{displayedText}</p>;
 };
 
+// === VOICE PLAYER (LECTEUR VOCAL) ===
+const VoicePlayer = ({ day }: { day: number }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [error, setError] = useState(false);
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play().catch((e) => {
+        console.error("Erreur lecture:", e);
+        setError(true);
+      });
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  if (error) return null; // Cache le lecteur si pas de fichier
+
+  return (
+    <div className="mt-6 mb-6 bg-rose-50 rounded-2xl p-4 flex items-center gap-4 border border-rose-200 shadow-sm relative overflow-hidden">
+      <audio
+        ref={audioRef}
+        src={`/voix_jour${day}.mp3`}
+        onEnded={() => setIsPlaying(false)}
+        onPause={() => setIsPlaying(false)}
+        onPlay={() => setIsPlaying(true)}
+        onError={() => setError(true)}
+      />
+      <button
+        onClick={togglePlay}
+        className="relative z-10 w-12 h-12 flex items-center justify-center bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-all shadow-md hover:scale-105 active:scale-95"
+      >
+        {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 ml-1 fill-current" />}
+      </button>
+      
+      <div className="flex-1 flex flex-col justify-center z-10">
+        <span className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1">Note Vocale</span>
+        <div className="flex items-center gap-1 h-6">
+          {[...Array(12)].map((_, i) => (
+              <div
+                  key={i}
+                  className={`w-1 bg-rose-400 rounded-full transition-all duration-300 ${isPlaying ? 'animate-wave' : 'h-1.5 opacity-50'}`}
+                  style={{
+                      height: isPlaying ? `${Math.random() * 20 + 8}px` : '4px',
+                      animationDelay: `${i * 0.05}s`
+                  }}
+              />
+          ))}
+        </div>
+      </div>
+
+      {/* Déco de fond */}
+      <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white/50 to-transparent pointer-events-none" />
+      
+      <style jsx>{`
+        @keyframes wave {
+            0%, 100% { height: 6px; opacity: 0.6; }
+            50% { height: 24px; opacity: 1; }
+        }
+        .animate-wave {
+            animation: wave 0.6s ease-in-out infinite;
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// === COMPONANT MOTUS (SUTOM) ===
+const MotusGame = ({ onClose }: { onClose: () => void }) => {
+  const TARGET_WORD = "BELLECOUR";
+  const [guess, setGuess] = useState("");
+  const [isWon, setIsWon] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (guess.toUpperCase() === TARGET_WORD) {
+      setIsWon(true);
+    } else {
+      setErrorMsg("Ce n'est pas le bon mot... Essaie encore !");
+      setGuess("");
+      setTimeout(() => setErrorMsg(""), 2000);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
+      <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-md w-full text-center relative" onClick={(e) => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
+        
+        {!isWon ? (
+          <>
+            <h2 className="text-3xl font-bold text-rose-600 mb-2">MOTUS DU COUPLE</h2>
+            <p className="text-gray-600 mb-6 italic">Un lieu important pour nous... (9 lettres)</p>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex justify-center gap-1 mb-4">
+                {TARGET_WORD.split('').map((_, i) => (
+                  <div key={i} className="w-8 h-10 border-2 border-gray-300 rounded flex items-center justify-center text-xl font-bold text-gray-700 uppercase bg-gray-50">
+                    {guess[i] || ""}
+                  </div>
+                ))}
+              </div>
+              
+              <input 
+                type="text" 
+                maxLength={9}
+                value={guess}
+                onChange={(e) => setGuess(e.target.value.toUpperCase())}
+                className="w-full px-4 py-3 text-center text-xl tracking-widest border-2 border-rose-200 rounded-xl focus:border-rose-500 focus:outline-none uppercase"
+                placeholder="TAPE ICI"
+                autoFocus
+              />
+              
+              {errorMsg && <p className="text-red-500 font-medium animate-bounce">{errorMsg}</p>}
+              
+              <button type="submit" className="w-full bg-rose-500 text-white py-3 rounded-xl font-bold hover:bg-rose-600 transition-all">
+                VALIDER
+              </button>
+            </form>
+          </>
+        ) : (
+          <div className="animate-in fade-in zoom-in duration-500">
+            <h2 className="text-3xl font-bold text-green-500 mb-4">GAGNÉ ! 🎉</h2>
+            <p className="text-gray-700 mb-4">Tu as trouvé ! Voici ta récompense...</p>
+            <div className="rounded-xl overflow-hidden shadow-lg mb-4 border-4 border-rose-200 rotate-2">
+                <img src="/photo_secrete.jpg" alt="Photo Secrète" className="w-full h-auto" />
+            </div>
+            <a 
+              href="/photo_secrete.jpg" 
+              download="notre-photo-secrete.jpg"
+              className="block w-full bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-md flex items-center justify-center gap-2"
+            >
+               📥 Télécharger la photo
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// === COUPON MODAL (BOITE A BONS) ===
+const CouponModal = ({ type, onClose }: { type: 'pizza' | 'massage', onClose: () => void }) => {
+  const content = type === 'pizza' 
+    ? { title: "Bon pour une Pizza Boisée 🍕", desc: "Valable pour une (1) soirée pizza boisée avec ton chéri. Miam miam !", color: "from-orange-400 to-red-500" }
+    : { title: "Bon pour un Massage 💆‍♂️", desc: "Valable pour une (1) séance de massage relaxant donnée par mes soins. Durée illimitée.", color: "from-teal-400 to-blue-500" };
+
+  return (
+    <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
+      <div className="bg-white rounded-xl p-1 shadow-2xl max-w-sm w-full transform rotate-1 hover:rotate-0 transition-transform duration-300" onClick={(e) => e.stopPropagation()}>
+        <div className={`border-4 border-dashed border-gray-300 rounded-lg p-6 bg-gradient-to-br ${content.color} text-white relative overflow-hidden`}>
+            {/* Cercles effet ticket */}
+            <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full"></div>
+            <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full"></div>
+            
+            <div className="text-center">
+                <Ticket className="w-12 h-12 mx-auto mb-2 opacity-90" />
+                <h3 className="text-2xl font-bold mb-2 font-satisfy tracking-wide">{content.title}</h3>
+                <p className="text-white/90 font-medium text-sm leading-relaxed border-t border-white/30 pt-3 mt-3">
+                    {content.desc}
+                </p>
+                <div className="mt-4 bg-white/20 py-1 px-3 rounded-full text-xs font-mono inline-block">
+                    CODE: {type === 'pizza' ? 'PIZZA-LOVER' : 'RELAX-MAX'}
+                </div>
+            </div>
+        </div>
+        <p className="text-center text-gray-500 text-xs mt-2 pb-1">Fais une capture d'écran pour l'utiliser !</p>
+      </div>
+    </div>
+  );
+};
+
 // === SNOWFALL EFFECT ===
 const Snowfall = () => {
   const [flakes, setFlakes] = useState<{id: number, left: number, fontSize: number, duration: number, delay: number}[]>([]);
@@ -188,7 +364,7 @@ const CustomCursorStyles = () => (
 );
 
 // === COMPTE A REBOURS (PIED DE PAGE) ===
-const ReunionCountdown = () => {
+const ReunionCountdown = ({ onClockClick }: { onClockClick: () => void }) => {
     const [timeLeft, setTimeLeft] = useState("");
     
     useEffect(() => {
@@ -215,7 +391,9 @@ const ReunionCountdown = () => {
     return (
         <div className="w-full mt-12 mb-8 text-center pb-safe">
             <div className="inline-flex items-center justify-center gap-3 bg-white/80 backdrop-blur-sm px-6 py-3 rounded-full shadow-lg border border-rose-200">
-                <Clock className="w-5 h-5 text-rose-500 animate-pulse" />
+                <button onClick={onClockClick} className="focus:outline-none transition-transform active:scale-90 hover:scale-110">
+                   <Clock className="w-5 h-5 text-rose-500 animate-pulse" />
+                </button>
                 <span className="text-gray-600 font-medium">Je te serre dans mes bras dans :</span>
                 <span className="font-mono font-bold text-rose-600 text-lg">{timeLeft}</span>
             </div>
@@ -527,7 +705,7 @@ const CALENDAR_DATA = [
     letter: "Aujourd'hui quand je t'écris je suis venu te voir le vendredi pr qu'on parle. Je t'ai re enfin reconnu enfin tu n'imagines pas. Voila ca devient mon journal intime ce calendrier jpp en tout cas Déborah j'ai jamais arrete de faire ca la je suis a 2500 lignes de codes jpp et vraiment je t'ai jamais oublié. Ca me saoule juste jeudi dcp t'as mangé a ton lycee samedi t'as un anniv dimanche t'as entrainement on peut jms sortir. Mais voila tu veux que je te dise quoi.En tout cas j'espere que tu passeras un bon jour de l'an avec ta famille ! te fais pas trop belle a chaque fois tu te fais a ton prime quand je suis pas la. Demain lancement d'une nouvelle série de 7 jours sur le calendrier.", 
     hint: "Récupérer la lettre T", 
     gift: "Photo #7 + Loriana", 
-    giftMessage: "t'es tombé sur un bloc caché ! Deux cadeaux en un Ca me rappelle le jour ou j'avais installé pleins de jeu sur la switch et je l'avais ramené chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
+    giftMessage: "t'es tombé sur un bloc caché ! 2 cadeaux en 1 ca me rappelle le jour ou j'avais installé pleins de jeu sur la switch et je l'avais ramené chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
   },
@@ -900,6 +1078,15 @@ export default function Home() {
   const [lastConnection, setLastConnection] = useState<string | null>(null);
   const [lastDevice, setLastDevice] = useState<string>('');
 
+  // === ETATS POUR LES NOUVEAUX EASTER EGGS ===
+  const [clickCountProgression, setClickCountProgression] = useState(0);
+  const [clickCountSurprise, setClickCountSurprise] = useState(0);
+  const [clickCountClock, setClickCountClock] = useState(0);
+  
+  const [showMotus, setShowMotus] = useState(false);
+  const [showCouponPizza, setShowCouponPizza] = useState(false);
+  const [showCouponMassage, setShowCouponMassage] = useState(false);
+
   const adminCode = 'ramzi2010';
   const userCode = 'minou';
 
@@ -1065,6 +1252,36 @@ export default function Home() {
     if (newCount === 3) {
       setShowMemoryGame(true);
       setStarClickCount(0);
+    }
+  };
+
+  // === CLICK HANDLERS POUR EASTER EGGS ===
+  const handleProgressionClick = () => {
+    const newCount = clickCountProgression + 1;
+    setClickCountProgression(newCount);
+    if (newCount === 3) {
+      setShowCouponPizza(true);
+      createParticles('stars');
+      setClickCountProgression(0);
+    }
+  };
+
+  const handleSurpriseClick = () => {
+    const newCount = clickCountSurprise + 1;
+    setClickCountSurprise(newCount);
+    if (newCount === 3) {
+      setShowMotus(true);
+      setClickCountSurprise(0);
+    }
+  };
+
+  const handleClockClick = () => {
+    const newCount = clickCountClock + 1;
+    setClickCountClock(newCount);
+    if (newCount === 3) {
+      setShowCouponMassage(true);
+      createParticles('hearts');
+      setClickCountClock(0);
     }
   };
 
@@ -1274,12 +1491,18 @@ export default function Home() {
       )}
       {showFireworks && <Fireworks />}
 
+      {/* MODALES */}
       {showPasswordHint && <PasswordHint onClose={() => setShowPasswordHint(false)} />}
       {showGallery && <PhotoGallery onClose={() => setShowGallery(false)} foundDays={foundDays} />}
       {zoomedPhoto && <PhotoZoom photoUrl={zoomedPhoto} onClose={() => setZoomedPhoto(null)} />}
       {showMemoryGame && <MemoryGame onClose={() => setShowMemoryGame(false)} />}
       {showPuzzle && <SlidingPuzzle onClose={() => setShowPuzzle(false)} imageUrl="/photo-puzzle.jpg" />}
       {showTutorial && <VideoTutorialModal onClose={() => setShowTutorial(false)} />}
+      
+      {/* NOUVELLES MODALES */}
+      {showMotus && <MotusGame onClose={() => setShowMotus(false)} />}
+      {showCouponPizza && <CouponModal type="pizza" onClose={() => setShowCouponPizza(false)} />}
+      {showCouponMassage && <CouponModal type="massage" onClose={() => setShowCouponMassage(false)} />}
       
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
@@ -1514,14 +1737,24 @@ export default function Home() {
 
           {countdown && (
             <div className="sticky top-16 z-40 bg-white/70 backdrop-blur-sm rounded-2xl p-4 mb-6 text-center shadow-lg border-2 border-rose-300">
-              <p className="text-lg font-semibold text-gray-700">Prochaine surprise dans :</p>
+              <p 
+                className="text-lg font-semibold text-gray-700 select-none cursor-default active:scale-95 transition-transform"
+                onClick={handleSurpriseClick}
+              >
+                Prochaine surprise dans :
+              </p>
               <p className="text-2xl font-bold text-rose-500">{countdown}</p>
             </div>
           )}
           
           <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-xl p-6 mb-8 border-2 border-white/50">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-semibold text-gray-700">Progression</span>
+              <span 
+                className="text-sm font-semibold text-gray-700 select-none cursor-default active:scale-95 transition-transform"
+                onClick={handleProgressionClick}
+              >
+                Progression
+              </span>
               <span className="text-sm font-semibold text-rose-600 flex items-center gap-1">
                 <Sparkles className="w-4 h-4 fill-rose-500 text-rose-500" />
                 {foundDays.length} / {CALENDAR_DATA.length}
@@ -1590,8 +1823,8 @@ export default function Home() {
               Les étoiles <span onClick={handleStarClick} className="cursor-pointer" title="Cliquer 3 fois pour une surprise (Jeu Puzzle)">⭐</span> marquent les jours spéciaux
             </p>
 
-            {/* COMPTEUR RETROUVAILLES (EN BAS DU SCROLL) */}
-            <ReunionCountdown />
+            {/* COMPTEUR RETROUVAILLES AVEC EASTER EGG MASSAGE */}
+            <ReunionCountdown onClockClick={handleClockClick} />
 
           </div>
         </div>
@@ -1631,6 +1864,11 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-rose-800 mb-2">💌 Lettre</h3>
                   {/* TYPEWRITER EFFECT */}
                   <TypewriterText text={selectedDay.letter} />
+                  
+                  {/* LECTEUR VOCAL AJOUTÉ ICI */}
+                  <div className="border-t border-rose-200 mt-4 pt-4">
+                    <VoicePlayer day={selectedDay.day} />
+                  </div>
                 </div>
 
                 <div className="post-it rounded-2xl p-6">
