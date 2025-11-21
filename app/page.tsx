@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -1357,6 +1357,19 @@ export default function Home() {
               >
                 <span className="text-lg">📸</span> Galerie
               </button>
+              
+              {/* BOUTON PLAYLIST YOUTUBE */}
+              <a
+                href="https://youtube.com/playlist?list=PLSuo-sS57x_6EuhkdTkNTmYYb45CvDz0S&si=wGK5xKLRBp9hHtVm"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-gradient-to-r from-red-500 to-pink-600 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
+                title="Notre Playlist Youtube 🎶"
+              >
+                <Youtube className="w-5 h-5" />
+                <span className="hidden sm:inline">Playlist</span>
+              </a>
+
               {isAdmin && (
                 <button
                   onClick={handleResetAdmin}
