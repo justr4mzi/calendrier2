@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Check, MapPin, Pill, Briefcase, Eraser, Smile } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -389,60 +389,6 @@ const CrystalBall = ({ onClose }: { onClose: () => void }) => {
     );
 };
 
-// === 3. MAP DE L'AMOUR ===
-const LoveMap = ({ onClose }: { onClose: () => void }) => {
-    // Positions en pourcentage (top, left)
-    const locations = [
-        { id: 1, x: 45, y: 40, title: "Part-Dieu", desc: "Le début de tout. Nos premiers rencards, le shopping, le tram..." },
-        { id: 2, x: 30, y: 60, title: "Bellecour", desc: "Le lieu mythique. La statue, les rendez-vous sous la queue du cheval." },
-        { id: 3, x: 70, y: 20, title: "Chez toi", desc: "Là où on a passé nos meilleures soirées chill." },
-        { id: 4, x: 10, y: 80, title: "Futur", desc: "L'Algérie ? Une maison ? L'avenir nous le dira ❤️" }
-    ];
-    
-    const [selectedLoc, setSelectedLoc] = useState<any>(null);
-
-    return (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
-            <div className="bg-white rounded-3xl p-4 shadow-2xl max-w-md w-full h-[80vh] flex flex-col relative" onClick={(e) => e.stopPropagation()}>
-                <button onClick={onClose} className="absolute top-4 right-4 z-10 bg-white rounded-full p-1 text-gray-700 shadow-md"><X /></button>
-                <h2 className="text-2xl font-bold text-rose-600 mb-4 text-center flex items-center justify-center gap-2">
-                    <MapPin className="fill-rose-500 text-rose-600" /> Map de l'Amour
-                </h2>
-                
-                <div className="relative flex-1 bg-blue-50 rounded-2xl overflow-hidden border-4 border-white shadow-inner bg-[url('https://img.freepik.com/free-vector/city-map-background-blue-tone_99087-108.jpg')] bg-cover">
-                    {/* Carte fictive stylisée */}
-                    {locations.map(loc => (
-                        <button
-                            key={loc.id}
-                            onClick={() => setSelectedLoc(loc)}
-                            className="absolute transform -translate-x-1/2 -translate-y-1/2 hover:scale-125 transition-transform group"
-                            style={{ top: `${loc.y}%`, left: `${loc.x}%` }}
-                        >
-                            <div className="w-8 h-8 bg-rose-500 rounded-full border-2 border-white shadow-lg flex items-center justify-center text-white animate-bounce">
-                                <Heart className="w-4 h-4 fill-white" />
-                            </div>
-                            <span className="absolute top-8 left-1/2 -translate-x-1/2 bg-white/90 px-2 py-0.5 rounded text-xs font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                                {loc.title}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-
-                <div className="mt-4 h-32 bg-gray-50 rounded-xl p-4 border border-gray-100 flex items-center justify-center text-center">
-                    {selectedLoc ? (
-                        <div>
-                            <h3 className="font-bold text-rose-600 text-lg mb-1">{selectedLoc.title}</h3>
-                            <p className="text-gray-600 text-sm">{selectedLoc.desc}</p>
-                        </div>
-                    ) : (
-                        <p className="text-gray-400 italic text-sm">Clique sur un cœur sur la carte pour voir le souvenir...</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
-};
-
 // === 4. GELULES DE SECOURS (EMERGENCY KIT) ===
 const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
     const [openPill, setOpenPill] = useState<string | null>(null);
@@ -461,7 +407,7 @@ const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
                 
                 <div className="text-center mb-6">
                     <div className="inline-block p-3 bg-red-100 rounded-full mb-2">
-                        <Briefcase className="w-8 h-8 text-red-600" />
+                        <Pill className="w-8 h-8 text-red-600" />
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800">Trousse de Secours 🚑</h2>
                     <p className="text-gray-500 text-sm">À ouvrir en cas d'urgence émotionnelle</p>
@@ -1338,46 +1284,37 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
 const ExtrasMenu = ({ 
     onOpenScratch, 
     onOpenCrystal, 
-    onOpenMap, 
     onOpenEmergency, 
     onClose 
 }: { 
     onOpenScratch: () => void, 
     onOpenCrystal: () => void, 
-    onOpenMap: () => void, 
     onOpenEmergency: () => void,
     onClose: () => void 
 }) => {
     return (
-        <div className="absolute top-16 left-4 z-40 bg-white/90 backdrop-blur rounded-xl shadow-xl border border-rose-200 p-4 w-64 animate-in fade-in slide-in-from-top-4">
+        <div className="absolute bottom-20 left-4 z-50 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-rose-200 p-4 w-64 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex justify-between items-center mb-3 border-b border-gray-200 pb-2">
                  <h3 className="font-bold text-gray-700 flex items-center gap-2"><Briefcase className="w-4 h-4"/> Souvenirs</h3>
                  <button onClick={onClose} className="text-gray-400 hover:text-rose-500"><X className="w-4 h-4"/></button>
              </div>
              <div className="flex flex-col gap-2">
-                 <button onClick={onOpenScratch} className="flex items-center gap-3 p-2 hover:bg-rose-50 rounded-lg text-left transition-colors">
-                     <span className="text-xl">🎫</span>
+                 <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
+                     <span className="text-2xl">🎫</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Ticket à Gratter</div>
                          <div className="text-xs text-gray-500">Tente ta chance !</div>
                      </div>
                  </button>
-                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-2 hover:bg-indigo-50 rounded-lg text-left transition-colors">
-                     <span className="text-xl">🔮</span>
+                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl text-left transition-colors border border-transparent hover:border-indigo-100">
+                     <span className="text-2xl">🔮</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Boule de Cristal</div>
                          <div className="text-xs text-gray-500">Un petit compliment ?</div>
                      </div>
                  </button>
-                 <button onClick={onOpenMap} className="flex items-center gap-3 p-2 hover:bg-blue-50 rounded-lg text-left transition-colors">
-                     <span className="text-xl">🗺️</span>
-                     <div className="leading-tight">
-                         <div className="font-bold text-gray-800 text-sm">Map de l'Amour</div>
-                         <div className="text-xs text-gray-500">Nos lieux cultes</div>
-                     </div>
-                 </button>
-                 <button onClick={onOpenEmergency} className="flex items-center gap-3 p-2 hover:bg-red-50 rounded-lg text-left transition-colors">
-                     <span className="text-xl">💊</span>
+                 <button onClick={onOpenEmergency} className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl text-left transition-colors border border-transparent hover:border-red-100">
+                     <span className="text-2xl">💊</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Gélules de Secours</div>
                          <div className="text-xs text-gray-500">En cas d'urgence ❤️</div>
@@ -1445,7 +1382,6 @@ export default function Home() {
   const [showExtrasMenu, setShowExtrasMenu] = useState(false);
   const [showScratchCard, setShowScratchCard] = useState(false);
   const [showCrystalBall, setShowCrystalBall] = useState(false);
-  const [showLoveMap, setShowLoveMap] = useState(false);
   const [showEmergencyKit, setShowEmergencyKit] = useState(false);
 
   const adminCode = 'ramzi2010';
@@ -1829,6 +1765,28 @@ export default function Home() {
       {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
       {isClient && isAuthenticated && !isAdmin && <FlyingKiss onClick={handleKissClick} />}
 
+      {/* === BOUTON BONUS FLOTTANT (FIXE EN BAS A GAUCHE) === */}
+      {isClient && isAuthenticated && !selectedDay && (
+        <div className="fixed bottom-4 left-4 z-50">
+            <button
+                onClick={() => setShowExtrasMenu(!showExtrasMenu)}
+                className="bg-white/90 backdrop-blur text-rose-600 p-4 rounded-full shadow-lg border-2 border-rose-200 hover:scale-110 transition-transform flex items-center justify-center"
+                title="Ouvrir la valise à souvenirs"
+            >
+                <Briefcase className="w-6 h-6" />
+            </button>
+            
+            {showExtrasMenu && (
+                <ExtrasMenu 
+                    onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard(true); }}
+                    onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
+                    onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
+                    onClose={() => setShowExtrasMenu(false)}
+                />
+            )}
+        </div>
+      )}
+
       {particles.map(p => (
         <div 
           key={p.id}
@@ -1868,7 +1826,6 @@ export default function Home() {
       {/* NOUVELLES MODALES (BONUS MENU) */}
       {showScratchCard && <ScratchCard onClose={() => setShowScratchCard(false)} />}
       {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
-      {showLoveMap && <LoveMap onClose={() => setShowLoveMap(false)} />}
       {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
 
       {/* LOGIN VIEW */}
@@ -1939,29 +1896,8 @@ export default function Home() {
       {isAuthenticated && !selectedDay && (
         <div className="max-w-6xl mx-auto py-8 px-4 pb-24 relative z-10"> {/* Padding bottom augmenté pour le footer */}
           <div className="sticky top-0 z-50 bg-white/50 backdrop-blur-md rounded-xl p-3 mb-6 shadow-lg flex justify-between items-center w-full">
-            <div className="w-1/3 flex justify-start gap-2 relative">
-              {/* MENU BOITE A OUTILS / EXTRAS */}
-              <div className="relative">
-                <button
-                    onClick={() => setShowExtrasMenu(!showExtrasMenu)}
-                    className="bg-white text-rose-600 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-rose-50 transition-all flex items-center justify-center gap-1.5 shadow-md border border-rose-100"
-                    title="Boîte à souvenirs & Bonus"
-                >
-                    <Briefcase className="w-5 h-5" />
-                    <span className="hidden sm:inline">Bonus</span>
-                </button>
-
-                {showExtrasMenu && (
-                    <ExtrasMenu 
-                        onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard(true); }}
-                        onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
-                        onOpenMap={() => { setShowExtrasMenu(false); setShowLoveMap(true); }}
-                        onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
-                        onClose={() => setShowExtrasMenu(false)}
-                    />
-                )}
-              </div>
-
+            {/* HEADER GAUCHE (CLEAN) */}
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowGallery(true)}
                 className="bg-gradient-to-r from-rose-400 to-pink-500 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
@@ -1991,6 +1927,7 @@ export default function Home() {
               )}
             </div>
 
+            {/* HEADER DROITE (SON + LOGOUT) */}
             <div className="flex gap-2 items-center">
               <button
                 onClick={() => {
@@ -2012,7 +1949,7 @@ export default function Home() {
                   setVolume(parseFloat(e.target.value));
                   setIsMuted(false);
                 }}
-                className="w-20 h-1 accent-rose-400"
+                className="w-20 h-1 accent-rose-400 hidden sm:block" // Cache le slider sur mobile pour gagner de la place
                 title="Volume Musique"
               />
 
