@@ -355,12 +355,12 @@ const CrystalBall = ({ onClose }: { onClose: () => void }) => {
     "Tu es la plus belle chose qui me soit arrivée.",
     "Ton sourire illumine ma journée, vraiment.",
     "T'es intelligente, drôle et magnifique. Le combo parfait.",
-    "J'aime la façon dont tu prends soin des gens.",
+    "J'aime quand tu prends soin de moi, je me sens vraiment aimé.",
     "Même en pyjama, t'es la plus belle femme du monde.",
-    "T'as un charme de fou, tu t'en rends même pas compte.",
+    "T'as un beauté de fou, tu t'en rends même pas compte.",
     "Je suis fier de la femme que tu deviens.",
-    "Tes yeux... je pourrais m'y perdre pendant des heures.",
-    "T'es ma meilleure amie et mon amour en même temps."
+    "Tes yeux... je pourrais les regarder pendant des heures.",
+    "T'es vraiment la femme de ma vie."
   ];
 
   const shakeBall = () => {
@@ -414,10 +414,10 @@ const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
   const [openPill, setOpenPill] = useState<string | null>(null);
 
   const pills = [
-    { id: 'sad', icon: '😢', label: "Je suis triste", color: "bg-blue-500", content: "Mon amour, sache que la tristesse est passagère. Je suis là, même loin. Ferme les yeux, imagine mes bras autour de toi. Je t'aime plus que tout. Respire un grand coup. Ça va aller ❤️" },
-    { id: 'angry', icon: '😡', label: "Je suis énervée", color: "bg-red-500", content: "Wooo on respire ! Je sais que t'as tes raisons. Si c'est contre moi, désolé. Si c'est autre chose, dis-toi que t'es une reine et que rien ne mérite de gâcher ton teint. Va boire un verre d'eau !" },
-    { id: 'miss', icon: '🥺', label: "Tu me manques", color: "bg-purple-500", content: "Tu me manques aussi terriblement. Regarde le compte à rebours en bas de la page. Chaque seconde qui passe nous rapproche. Tiens bon, nos retrouvailles vont être légendaires." },
-    { id: 'sleep', icon: '😴', label: "J'arrive pas à dormir", color: "bg-indigo-900", content: "Éteins tout. Pense à notre meilleur souvenir. Imagine-nous sur une plage ou dans un lit douillet. Laisse ma voix (dans les notes vocales) te bercer. Bonne nuit ma princesse 🌙" },
+    { id: 'sad', icon: '😢', label: "Je suis triste", color: "bg-blue-500", content: "Mon coeur sache que ca va aller tu peux toujours tout me parler n'oublies jamais vraiment n'hésite jamais Déborah je ferai tout pour toi ❤️" },
+    { id: 'angry', icon: '😡', label: "Je suis énervée", color: "bg-red-500", content: "Si t'es enervé contre moi ou bien quelqu'un de ta famille essaye de repenser a nos moments si doux et on essayera d'arranger ca ensemble je te le promet Déborah" },
+    { id: 'miss', icon: '🥺', label: "Tu me manques", color: "bg-purple-500", content: "Tu me manques aussi terriblement. Regarde le compte à rebours en bas de la page. Chaque seconde qui passe nous rapproche. Tiens bon, je suis sure que tu m'accuilleras super bien au retour" },
+    { id: 'sleep', icon: '😴', label: "J'arrive pas à dormir", color: "bg-indigo-900", content: "Éteins tout. Coupe les réseaux et pense à notre meilleur souvenir. Imagine-nous sur un lit avec moi qui te sert fort. Bonne nuit ma princesse 🌙" },
   ];
 
   return (
