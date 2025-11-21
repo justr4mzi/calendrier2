@@ -421,7 +421,7 @@ const CALENDAR_DATA = [
     photoUrl: "/photo_jour_7.jpg", 
     photoComment: "Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
     photoDownload: true, extraPhoto1: null,
-    perfumeAnswer: 2 
+    perfumeAnswer: 1
   },
   { 
     date: "2025-12-24", day: 8, 
@@ -496,7 +496,7 @@ const CALENDAR_DATA = [
     photoComment: "On était chez toi c'était vraiment trop bien et t'es trop belle", 
     photoDownload: true, 
     extraPhoto1: null,
-    perfumeAnswer: 1
+    perfumeAnswer: 2
   },
   { 
     date: "2025-12-29", day: 13, 
@@ -527,7 +527,7 @@ const CALENDAR_DATA = [
     letter: "LETTRE DU JOUR 15 (VEILLE NOUVEL AN)", 
     hint: "Récupérer la lettre T", 
     gift: "Photo #7 + Loriana", 
-    giftMessage: "MESSAGE CADEAU JOUR 15 (À remplir)", 
+    giftMessage: "cadeau double!", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
   },
