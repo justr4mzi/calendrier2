@@ -583,7 +583,7 @@ const CALENDAR_DATA = [
     gift: "Visionneuse Photo", 
     giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE (À remplir)", 
     keywords: ["photo", "visionneuse", "viewer", "camera"], 
-    hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_21.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: false, extraPhoto1: null 
+    hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-07", day: 22, 
