@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
-// === UTILITAIRE : DÉTECTER L'APPAREIL ===
+// === UTILITAIRE : DÃ‰TECTER L'APPAREIL ===
 const getDeviceType = () => {
   if (typeof navigator === 'undefined') return 'Inconnu';
   const ua = navigator.userAgent;
@@ -15,7 +15,7 @@ const getDeviceType = () => {
 
 // === API HELPER FUNCTIONS ===
 
-// Lire les données
+// Lire les donnÃ©es
 const fetchData = async () => {
   try {
     const response = await fetch('/api/sync');
@@ -36,7 +36,7 @@ const fetchData = async () => {
   }
 };
 
-// Sauvegarder les jours trouvés
+// Sauvegarder les jours trouvÃ©s
 const saveFoundDays = async (days: number[]) => {
   try {
     await fetch('/api/sync', {
@@ -49,7 +49,7 @@ const saveFoundDays = async (days: number[]) => {
   }
 };
 
-// Sauvegarder le temps passé
+// Sauvegarder le temps passÃ©
 const saveTotalTime = async (time: number) => {
   try {
     await fetch('/api/sync', {
@@ -62,7 +62,7 @@ const saveTotalTime = async (time: number) => {
   }
 };
 
-// Incrémenter le compteur de connexion + Device Tracker
+// IncrÃ©menter le compteur de connexion + Device Tracker
 const incrementLoginCount = async (device: string) => {
   try {
     await fetch('/api/sync', {
@@ -71,7 +71,7 @@ const incrementLoginCount = async (device: string) => {
       body: JSON.stringify({ action: 'increment_login', device }),
     });
   } catch (e) {
-    console.error("Erreur incrément login:", e);
+    console.error("Erreur incrÃ©ment login:", e);
   }
 };
 
@@ -101,7 +101,7 @@ const saveFinalMessage = async (message: string) => {
   }
 };
 
-// Réinitialiser TOUT
+// RÃ©initialiser TOUT
 const resetAllData = async () => {
   try {
     await fetch('/api/sync', {
@@ -114,7 +114,7 @@ const resetAllData = async () => {
   }
 };
 
-// === TYPEWRITER EFFECT (Machine à écrire) ===
+// === TYPEWRITER EFFECT (Machine Ã  Ã©crire) ===
 const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) => {
   const [displayedText, setDisplayedText] = useState("");
   
@@ -188,7 +188,7 @@ const VoicePlayer = ({ day }: { day: number }) => {
         </div>
       </div>
 
-      {/* Déco de fond */}
+      {/* DÃ©co de fond */}
       <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white/50 to-transparent pointer-events-none" />
       
       <style jsx>{`
@@ -221,7 +221,7 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
     canvas.width = width;
     canvas.height = height;
 
-    // Couche grise à gratter
+    // Couche grise Ã  gratter
     ctx.fillStyle = '#cbd5e1'; // gris
     ctx.fillRect(0, 0, width, height);
     
@@ -230,7 +230,7 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
     ctx.font = 'bold 24px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('✨ GRATTE ICI ✨', width / 2, height / 2);
+    ctx.fillText('âœ¨ GRATTE ICI âœ¨', width / 2, height / 2);
 
     let isDrawing = false;
 
@@ -259,7 +259,7 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
     };
 
     const checkScratchPercent = () => {
-      // Optimisation: on ne check pas à chaque pixel, c'est lourd, mais ok pour ce petit usage
+      // Optimisation: on ne check pas Ã  chaque pixel, c'est lourd, mais ok pour ce petit usage
       const imageData = ctx.getImageData(0, 0, width, height);
       const pixels = imageData.data;
       let transparentPixels = 0;
@@ -275,7 +275,7 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
     const stopDrawing = () => { isDrawing = false; };
     const draw = (e: MouseEvent | TouchEvent) => { 
       if (!isDrawing) return; 
-      e.preventDefault(); // Empêche le scroll sur mobile
+      e.preventDefault(); // EmpÃªche le scroll sur mobile
       const pos = getPos(e); 
       scratch(pos.x, pos.y); 
     };
@@ -299,15 +299,15 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
       <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-sm w-full text-center relative overflow-hidden" onClick={(e) => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X /></button>
         
-        <h2 className="text-2xl font-bold text-rose-600 mb-2">Ticket Magique 🎫</h2>
-        <p className="text-gray-500 mb-4 text-sm">Gratte la zone ci-dessous pour découvrir ton message !</p>
+        <h2 className="text-2xl font-bold text-rose-600 mb-2">Ticket Magique ðŸŽ«</h2>
+        <p className="text-gray-500 mb-4 text-sm">Gratte la zone ci-dessous pour dÃ©couvrir ton message !</p>
         
         <div className="relative w-full h-[200px] rounded-xl overflow-hidden bg-gradient-to-br from-rose-100 to-purple-100 border-2 border-dashed border-rose-300">
-            {/* CONTENU CACHÉ SOUS LE GRATTAGE */}
+            {/* CONTENU CACHÃ‰ SOUS LE GRATTAGE */}
             <div className="absolute inset-0 flex items-center justify-center p-4 flex-col">
-                <span className="text-4xl mb-2">🥰</span>
+                <span className="text-4xl mb-2">ðŸ¥°</span>
                 <p className="font-satisfy text-2xl text-rose-600 font-bold">Je t'aime + que tout</p>
-                <p className="text-xs text-gray-500 mt-2">(Bon valable pour un gros câlin)</p>
+                <p className="text-xs text-gray-500 mt-2">(Bon valable pour un gros cÃ¢lin)</p>
             </div>
             
             {/* CANVAS DE GRATTAGE */}
@@ -319,7 +319,7 @@ const ScratchCard = ({ onClose }: { onClose: () => void }) => {
 
         {isRevealed && (
             <div className="mt-4 animate-bounce text-green-600 font-bold">
-                🎉 Gagné ! 🎉
+                ðŸŽ‰ GagnÃ© ! ðŸŽ‰
             </div>
         )}
       </div>
@@ -333,15 +333,15 @@ const CrystalBall = ({ onClose }: { onClose: () => void }) => {
     const [isShaking, setIsShaking] = useState(false);
 
     const compliments = [
-        "Tu es la plus belle chose qui me soit arrivée.",
-        "Ton sourire illumine ma journée, vraiment.",
-        "T'es intelligente, drôle et magnifique. Le combo parfait.",
-        "J'aime la façon dont tu prends soin des gens.",
-        "Même en pyjama, t'es la plus belle femme du monde.",
-        "T'as un charme de fou, tu t'en rends même pas compte.",
+        "Tu es la plus belle chose qui me soit arrivÃ©e.",
+        "Ton sourire illumine ma journÃ©e, vraiment.",
+        "T'es intelligente, drÃ´le et magnifique. Le combo parfait.",
+        "J'aime la faÃ§on dont tu prends soin des gens.",
+        "MÃªme en pyjama, t'es la plus belle femme du monde.",
+        "T'as un charme de fou, tu t'en rends mÃªme pas compte.",
         "Je suis fier de la femme que tu deviens.",
         "Tes yeux... je pourrais m'y perdre pendant des heures.",
-        "T'es ma meilleure amie et mon amour en même temps."
+        "T'es ma meilleure amie et mon amour en mÃªme temps."
     ];
 
     const shakeBall = () => {
@@ -362,7 +362,7 @@ const CrystalBall = ({ onClose }: { onClose: () => void }) => {
                 
                 {!compliment ? (
                     <>
-                        <div className={`text-6xl mb-4 ${isShaking ? 'animate-spin' : ''}`}>🔮</div>
+                        <div className={`text-6xl mb-4 ${isShaking ? 'animate-spin' : ''}`}>ðŸ”®</div>
                         <h2 className="text-xl font-bold text-indigo-200 mb-6">La Boule de Cristal</h2>
                         <button 
                             onClick={shakeBall}
@@ -394,10 +394,10 @@ const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
     const [openPill, setOpenPill] = useState<string | null>(null);
 
     const pills = [
-        { id: 'sad', icon: '😢', label: "Je suis triste", color: "bg-blue-500", content: "Mon amour, sache que la tristesse est passagère. Je suis là, même loin. Ferme les yeux, imagine mes bras autour de toi. Je t'aime plus que tout. Respire un grand coup. Ça va aller ❤️" },
-        { id: 'angry', icon: '😡', label: "Je suis énervée", color: "bg-red-500", content: "Wooo on respire ! Je sais que t'as tes raisons. Si c'est contre moi, désolé. Si c'est autre chose, dis-toi que t'es une reine et que rien ne mérite de gâcher ton teint. Va boire un verre d'eau !" },
-        { id: 'miss', icon: '🥺', label: "Tu me manques", color: "bg-purple-500", content: "Tu me manques aussi terriblement. Regarde le compte à rebours en bas de la page. Chaque seconde qui passe nous rapproche. Tiens bon, nos retrouvailles vont être légendaires." },
-        { id: 'sleep', icon: '😴', label: "J'arrive pas à dormir", color: "bg-indigo-900", content: "Éteins tout. Pense à notre meilleur souvenir. Imagine-nous sur une plage ou dans un lit douillet. Laisse ma voix (dans les notes vocales) te bercer. Bonne nuit ma princesse 🌙" },
+        { id: 'sad', icon: 'ðŸ˜¢', label: "Je suis triste", color: "bg-blue-500", content: "Mon amour, sache que la tristesse est passagÃ¨re. Je suis lÃ , mÃªme loin. Ferme les yeux, imagine mes bras autour de toi. Je t'aime plus que tout. Respire un grand coup. Ã‡a va aller â¤ï¸" },
+        { id: 'angry', icon: 'ðŸ˜¡', label: "Je suis Ã©nervÃ©e", color: "bg-red-500", content: "Wooo on respire ! Je sais que t'as tes raisons. Si c'est contre moi, dÃ©solÃ©. Si c'est autre chose, dis-toi que t'es une reine et que rien ne mÃ©rite de gÃ¢cher ton teint. Va boire un verre d'eau !" },
+        { id: 'miss', icon: 'ðŸ¥º', label: "Tu me manques", color: "bg-purple-500", content: "Tu me manques aussi terriblement. Regarde le compte Ã  rebours en bas de la page. Chaque seconde qui passe nous rapproche. Tiens bon, nos retrouvailles vont Ãªtre lÃ©gendaires." },
+        { id: 'sleep', icon: 'ðŸ˜´', label: "J'arrive pas Ã  dormir", color: "bg-indigo-900", content: "Ã‰teins tout. Pense Ã  notre meilleur souvenir. Imagine-nous sur une plage ou dans un lit douillet. Laisse ma voix (dans les notes vocales) te bercer. Bonne nuit ma princesse ðŸŒ™" },
     ];
 
     return (
@@ -409,8 +409,8 @@ const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
                     <div className="inline-block p-3 bg-red-100 rounded-full mb-2">
                         <Pill className="w-8 h-8 text-red-600" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800">Trousse de Secours 🚑</h2>
-                    <p className="text-gray-500 text-sm">À ouvrir en cas d'urgence émotionnelle</p>
+                    <h2 className="text-2xl font-bold text-gray-800">Trousse de Secours ðŸš‘</h2>
+                    <p className="text-gray-500 text-sm">Ã€ ouvrir en cas d'urgence Ã©motionnelle</p>
                 </div>
 
                 {!openPill ? (
@@ -429,7 +429,7 @@ const EmergencyKit = ({ onClose }: { onClose: () => void }) => {
                 ) : (
                     <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 animate-in fade-in slide-in-from-bottom-4">
                         <button onClick={() => setOpenPill(null)} className="text-sm text-gray-400 mb-4 flex items-center gap-1">
-                            ← Retour
+                            â† Retour
                         </button>
                         {(() => {
                             const pill = pills.find(p => p.id === openPill);
@@ -506,17 +506,17 @@ const MotusGame = ({ onClose }: { onClose: () => void }) => {
           </>
         ) : (
           <div className="animate-in fade-in zoom-in duration-500">
-            <h2 className="text-3xl font-bold text-green-500 mb-4">GAGNÉ ! 🎉</h2>
-            <p className="text-gray-700 mb-4">Tu as trouvé ! Voici ta récompense...</p>
+            <h2 className="text-3xl font-bold text-green-500 mb-4">GAGNÃ‰ ! ðŸŽ‰</h2>
+            <p className="text-gray-700 mb-4">Tu as trouvÃ© ! Voici ta rÃ©compense...</p>
             <div className="rounded-xl overflow-hidden shadow-lg mb-4 border-4 border-rose-200 rotate-2">
-                <img src="/photo_secrete.jpg" alt="Photo Secrète" className="w-full h-auto" />
+                <img src="/photo_secrete.jpg" alt="Photo SecrÃ¨te" className="w-full h-auto" />
             </div>
             <a 
               href="/photo_secrete.jpg" 
               download="notre-photo-secrete.jpg"
               className="block w-full bg-blue-500 text-white py-3 rounded-xl font-bold hover:bg-blue-600 transition-all shadow-md flex items-center justify-center gap-2"
             >
-               📥 Télécharger la photo
+               ðŸ“¥ TÃ©lÃ©charger la photo
             </a>
           </div>
         )}
@@ -528,8 +528,8 @@ const MotusGame = ({ onClose }: { onClose: () => void }) => {
 // === COUPON MODAL (BOITE A BONS) ===
 const CouponModal = ({ type, onClose }: { type: 'pizza' | 'massage', onClose: () => void }) => {
   const content = type === 'pizza' 
-    ? { title: "Bon pour une Pizza Boisée 🍕", desc: "Valable pour une (1) soirée pizza boisée avec ton chéri. Miam miam !", color: "from-orange-400 to-red-500" }
-    : { title: "Bon pour un Massage 💆‍♂️", desc: "Valable pour une (1) séance de massage relaxant donnée par mes soins. Durée illimitée.", color: "from-teal-400 to-blue-500" };
+    ? { title: "Bon pour une Pizza BoisÃ©e ðŸ•", desc: "Valable pour une (1) soirÃ©e pizza boisÃ©e avec ton chÃ©ri. Miam miam !", color: "from-orange-400 to-red-500" }
+    : { title: "Bon pour un Massage ðŸ’†â€â™‚ï¸", desc: "Valable pour une (1) sÃ©ance de massage relaxant donnÃ©e par mes soins. DurÃ©e illimitÃ©e.", color: "from-teal-400 to-blue-500" };
 
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4" onClick={onClose}>
@@ -550,7 +550,7 @@ const CouponModal = ({ type, onClose }: { type: 'pizza' | 'massage', onClose: ()
                 </div>
             </div>
         </div>
-        <p className="text-center text-gray-500 text-xs mt-2 pb-1">Fais une capture d'écran pour l'utiliser !</p>
+        <p className="text-center text-gray-500 text-xs mt-2 pb-1">Fais une capture d'Ã©cran pour l'utiliser !</p>
       </div>
     </div>
   );
@@ -584,7 +584,7 @@ const Snowfall = () => {
             animationDelay: `${flake.delay}s`,
           }}
         >
-          ❄️
+          â„ï¸
         </div>
       ))}
       <style jsx>{`
@@ -619,7 +619,7 @@ const ReunionCountdown = ({ onClockClick }: { onClockClick: () => void }) => {
             const now = new Date();
             const diff = targetDate.getTime() - now.getTime();
             if (diff <= 0) {
-                setTimeLeft("Je suis là ! ❤️");
+                setTimeLeft("Je suis lÃ  ! â¤ï¸");
                 clearInterval(timer);
             } else {
                 const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -658,7 +658,7 @@ const MobileAppMeta = () => (
   </>
 );
 
-// === BULLES ANIMÉES ===
+// === BULLES ANIMÃ‰ES ===
 const BubblesBackground = () => (
   <div className="bubbles-background">
     <div className="bubble"></div>
@@ -740,7 +740,7 @@ const SlidingPuzzle = ({ onClose, imageUrl }: { onClose: () => void, imageUrl: s
         }
       `}</style>
       <div className="bg-white rounded-2xl p-8 shadow-2xl text-center" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-2xl font-bold text-rose-500 mb-4">Easter Egg ! 🧩</h2>
+        <h2 className="text-2xl font-bold text-rose-500 mb-4">Easter Egg ! ðŸ§©</h2>
         <div className="puzzle-grid mx-auto my-4">
           {grid.map((tile, index) => {
             const row = Math.floor(tile / GRID_SIZE);
@@ -755,7 +755,7 @@ const SlidingPuzzle = ({ onClose, imageUrl }: { onClose: () => void, imageUrl: s
             );
           })}
         </div>
-        {isSolved && <p className="text-2xl font-bold text-green-500 my-4 animate-bounce">Bravo, tu as réussi ! ❤️</p>}
+        {isSolved && <p className="text-2xl font-bold text-green-500 my-4 animate-bounce">Bravo, tu as rÃ©ussi ! â¤ï¸</p>}
         <button onClick={onClose} className="bg-rose-500 text-white py-2 px-6 rounded-xl font-semibold hover:bg-rose-600 transition-all">
           Fermer
         </button>
@@ -764,7 +764,7 @@ const SlidingPuzzle = ({ onClose, imageUrl }: { onClose: () => void, imageUrl: s
   );
 };
 
-// === MODALE TUTO VIDÉO ===
+// === MODALE TUTO VIDÃ‰O ===
 const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
   <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
     <div className="bg-white rounded-3xl p-2 shadow-2xl w-full max-w-sm relative" onClick={(e) => e.stopPropagation()}>
@@ -785,74 +785,74 @@ const VideoTutorialModal = ({ onClose }: { onClose: () => void }) => (
           allowFullScreen
         ></iframe>
       </div>
-      <p className="text-center text-sm text-gray-500 mt-2 pb-2">Appuie sur le carré avec la flèche (Partager) puis "Sur l'écran d'accueil"</p>
+      <p className="text-center text-sm text-gray-500 mt-2 pb-2">Appuie sur le carrÃ© avec la flÃ¨che (Partager) puis "Sur l'Ã©cran d'accueil"</p>
     </div>
   </div>
 );
 
-// === DONNÉES DU CALENDRIER ===
+// === DONNÃ‰ES DU CALENDRIER ===
 const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
-    letter: "Coucou Déborah, j'espère que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuies sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
-    hint: "Récupérer la lettre B", gift: "Switch",
-    giftMessage: "Voilà amuse toi bien, je t'ai installé pleins de jeux incroyables et faits pour toi. Hésite pas à l'utiliser le plus possible des vacances, elle est à toi. Hésite pas si t'as des questions et tout, ton copain est là. Mets toi peut être comme objectif de finir un jeu pendant les vacances, tu verras ça va vraiment t'aider dans ton addiction aux réseaux comme insta ou tiktok et tu seras tellement fière de toi.",
+    letter: "Coucou DÃ©borah, j'espÃ¨re que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisÃ©. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuies sur le bouton 'Cadeau rÃ©cupÃ©rÃ©' UNIQUEMENT quand tu as vraiment rÃ©cupÃ©rÃ© le cadeau dans le bac, pas avant !",
+    hint: "RÃ©cupÃ©rer la lettre B", gift: "Switch",
+    giftMessage: "VoilÃ  amuse toi bien, je t'ai installÃ© pleins de jeux incroyables et faits pour toi. HÃ©site pas Ã  l'utiliser le plus possible des vacances, elle est Ã  toi. HÃ©site pas si t'as des questions et tout, ton copain est lÃ . Mets toi peut Ãªtre comme objectif de finir un jeu pendant les vacances, tu verras Ã§a va vraiment t'aider dans ton addiction aux rÃ©seaux comme insta ou tiktok et tu seras tellement fiÃ¨re de toi.",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
     date: "2025-12-18", day: 2,
-    letter: "Le deuxième jour ! J'espère que t'as kiffé le concept en tout cas il te réserve encore de belles surprises hehe. Petit cadeau aujourd'hui pas énorme mais comme ça tu vas te régaler ;) Je pars en Algérie aujourd'hui, en tout cas je t'oublie jamais je serai là tous les jours pour toi avec ça mmh avoue tu kiffes sah j'ai bien galéré c'est des heures de codage et de galère hein oublie pas j'espère en tout cas je vais bien arriver en Algérie voila voila j'irai avec ma mère.",
-    hint: "Récupérer la lettre D", gift: "Reese's",
-    giftMessage: "Bon appétit mon coeur mange bien comme ça tu prends des forces pour les cours",
-    keywords: ["chocolat", "reese", "beurre de cacahuète", "bonbon"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
+    letter: "Le deuxiÃ¨me jour ! J'espÃ¨re que t'as kiffÃ© le concept en tout cas il te rÃ©serve encore de belles surprises hehe. Petit cadeau aujourd'hui pas Ã©norme mais comme Ã§a tu vas te rÃ©galer ;) Je pars en AlgÃ©rie aujourd'hui, en tout cas je t'oublie jamais je serai lÃ  tous les jours pour toi avec Ã§a mmh avoue tu kiffes sah j'ai bien galÃ©rÃ© c'est des heures de codage et de galÃ¨re hein oublie pas j'espÃ¨re en tout cas je vais bien arriver en AlgÃ©rie voila voila j'irai avec ma mÃ¨re.",
+    hint: "RÃ©cupÃ©rer la lettre D", gift: "Reese's",
+    giftMessage: "Bon appÃ©tit mon coeur mange bien comme Ã§a tu prends des forces pour les cours",
+    keywords: ["chocolat", "reese", "beurre de cacahuÃ¨te", "bonbon"], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
     date: "2025-12-19", day: 3,
-    letter: "Troisième jourrrr jsuis en Algérie normalement, de ton côté j'espère que ça va bien, courage dernier jour de cours avant les vacances. Petit cadeau aujourd'hui pour passer un bon matin :)",
-    hint: "Récupérer la lettre F et G", gift: "Photo #1 + Stickers",
-    giftMessage: "BONUS : des petits tatouages de moi bébé hehe avoue t'es choquée tu t'y attendais pas",
-    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour là je t'avais prêté mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucré la madame.", photoDownload: true, extraPhoto1: null,
+    letter: "TroisiÃ¨me jourrrr jsuis en AlgÃ©rie normalement, de ton cÃ´tÃ© j'espÃ¨re que Ã§a va bien, courage dernier jour de cours avant les vacances. Petit cadeau aujourd'hui pour passer un bon matin :)",
+    hint: "RÃ©cupÃ©rer la lettre F et G", gift: "Photo #1 + Stickers",
+    giftMessage: "BONUS : des petits tatouages de moi bÃ©bÃ© hehe avoue t'es choquÃ©e tu t'y attendais pas",
+    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_3.jpg", photoComment: "Tu te souviens ce jour lÃ  je t'avais prÃªtÃ© mon bonnet, comment il t'allait trop bien c'est trop mmhhh bien sucrÃ© la madame.", photoDownload: true, extraPhoto1: null,
   },
   {
     date: "2025-12-20", day: 4,
-    letter: "Premier jour des vacances ! J'espère que ça va bien se passer j'espère que t'as pu jouer à la switch et tout je suis trop content si c'est le cas franchement j'espère que tu vas réussir à vaincre tes addictions grâce à ça et voila. Aujourd'hui objet un peu troll franchement mais au moins la prochaine fois on pourra pas se tromper.",
-    hint: "Récupérer la lettre A", gift: "Mesureur de bague",
-    giftMessage: "C'était un mesureur de taille de doigt pour les bagues :) À ta place j'aurai envoyé à ramzi la taille comme ça la prochaine fois y'a pas de gna gna c'était pas la bonne",
+    letter: "Premier jour des vacances ! J'espÃ¨re que Ã§a va bien se passer j'espÃ¨re que t'as pu jouer Ã  la switch et tout je suis trop content si c'est le cas franchement j'espÃ¨re que tu vas rÃ©ussir Ã  vaincre tes addictions grÃ¢ce Ã  Ã§a et voila. Aujourd'hui objet un peu troll franchement mais au moins la prochaine fois on pourra pas se tromper.",
+    hint: "RÃ©cupÃ©rer la lettre A", gift: "Mesureur de bague",
+    giftMessage: "C'Ã©tait un mesureur de taille de doigt pour les bagues :) Ã€ ta place j'aurai envoyÃ© Ã  ramzi la taille comme Ã§a la prochaine fois y'a pas de gna gna c'Ã©tait pas la bonne",
     keywords: ["bague", "mesureur", "taille", "doigt", "doigts"], hasGuess: true, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
   {
     date: "2025-12-21", day: 5,
-    letter: "C'est Dimanche ! Tout est fermé en France alors qu'en Algérie c'est le premier jour de la semaine c'est fou la différence. Ca me donne envie d'aller en Algérie avec toi haha. Bon assez parlé je te laisse voir le petit cadeau.",
-    hint: "Récupérer la lettre H", gift: "Photo #2",
-    giftMessage: "C'est cool les photos c'est mieux que uniquement sur le téléphone, je comprends la fille dans La Boum haha",
-    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo-jour-5.jpg", photoComment: "Notre fameux fond d'écran papapa", photoDownload: true, extraPhoto1: null,
+    letter: "C'est Dimanche ! Tout est fermÃ© en France alors qu'en AlgÃ©rie c'est le premier jour de la semaine c'est fou la diffÃ©rence. Ca me donne envie d'aller en AlgÃ©rie avec toi haha. Bon assez parlÃ© je te laisse voir le petit cadeau.",
+    hint: "RÃ©cupÃ©rer la lettre H", gift: "Photo #2",
+    giftMessage: "C'est cool les photos c'est mieux que uniquement sur le tÃ©lÃ©phone, je comprends la fille dans La Boum haha",
+    keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo-jour-5.jpg", photoComment: "Notre fameux fond d'Ã©cran papapa", photoDownload: true, extraPhoto1: null,
   },
   { 
     date: "2025-12-22", day: 6, 
-    letter: "Lundiii ! je sais pas du tout tu fais quoi peut être tu vas bouger de chez toi ou non en attendant j'espère que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite ça arrivera pas encore beaucoup de fois)", 
-    hint: "Récupérer la lettre C et E", 
-    gift: "Schweppes Citron + Porte-clé", 
-    giftMessage: "Bon apppp! et papapa t'as vu le porte clé j'ai le même il le complète le jour où on s'est mis en couple Déborah.", 
+    letter: "Lundiii ! je sais pas du tout tu fais quoi peut Ãªtre tu vas bouger de chez toi ou non en attendant j'espÃ¨re que tu t'amuses bien. Aujourd'hui pas de photo mais de beaux cadeaux (ET oui 2 ajd hehe profite Ã§a arrivera pas encore beaucoup de fois)", 
+    hint: "RÃ©cupÃ©rer la lettre C et E", 
+    gift: "Schweppes Citron + Porte-clÃ©", 
+    giftMessage: "Bon apppp! et papapa t'as vu le porte clÃ© j'ai le mÃªme il le complÃ¨te le jour oÃ¹ on s'est mis en couple DÃ©borah.", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2025-12-23", day: 7, 
-    letter: "C'est mardi et ça fait une semaine que tu ouvres tous les jours le calendrier ! J'espère que tu kiffes en tout cas et que tout se passe bien. J'ai plus de environ 50 h de codage, de galères et quasiment 2000 lignes de code. Il y a 3 easter egg sur la page aussi. À toi de les trouver :)", 
-    hint: "Récupérer la lettre K", 
-    gift: "Photo #3 + Défi Olfactif", 
+    letter: "C'est mardi et Ã§a fait une semaine que tu ouvres tous les jours le calendrier ! J'espÃ¨re que tu kiffes en tout cas et que tout se passe bien. J'ai plus de environ 50 h de codage, de galÃ¨res et quasiment 2000 lignes de code. Il y a 3 easter egg sur la page aussi. Ã€ toi de les trouver :)", 
+    hint: "RÃ©cupÃ©rer la lettre K", 
+    gift: "Photo #3 + DÃ©fi Olfactif", 
     giftMessage: "Petite photo avec une surprise pour ton nez ! ", 
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: false, 
     photoUrl: "/photo_jour_7.jpg", 
-    photoComment: "Comment t'es magnifique Déborah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
+    photoComment: "Comment t'es magnifique DÃ©borah. La photo me rappelle la chanson de aupinard si belle dans l'appareil : Regarde, y a que toi dans cette pellicule", 
     photoDownload: true, extraPhoto1: null,
     perfumeAnswer: 1
   },
   { 
     date: "2025-12-24", day: 8, 
-    letter: "Demain c'est noël je crois! Tiens petit cadeau pour te faire belle ! Tu vas surement rejoindre ta famille donc profite", 
-    hint: "Récupérer la lettre J", 
+    letter: "Demain c'est noÃ«l je crois! Tiens petit cadeau pour te faire belle ! Tu vas surement rejoindre ta famille donc profite", 
+    hint: "RÃ©cupÃ©rer la lettre J", 
     gift: "Vernis Rouge", 
-    giftMessage: "Tiens j'espère que t'aimeras ! Petite photo bonus en guise d'exemple :)", 
+    giftMessage: "Tiens j'espÃ¨re que t'aimeras ! Petite photo bonus en guise d'exemple :)", 
     keywords: ["vernis", "ongles", "rouge", "manucure"], 
     hasGuess: false, videoUrl: null, 
     isSpecial: true, 
@@ -863,11 +863,11 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-25", day: 9, 
-    letter: "C'est Noël ! profite bien même si cet été est pas du tout dans mes convictions et que je veux pas la fêter. Profite bien du petit cadeau.", 
-    hint: "Récupérer la lettre M", 
-    gift: "Chocolat Dubaï", 
-    giftMessage: "Papapappa chocolat dubai c'est maman elle m'a dit tiens pour Déborah la meilleure maman du monde bonne app", 
-    keywords: ["chocolat", "dubai", "dubaï"], 
+    letter: "C'est NoÃ«l ! profite bien mÃªme si cet Ã©tÃ© est pas du tout dans mes convictions et que je veux pas la fÃªter. Profite bien du petit cadeau.", 
+    hint: "RÃ©cupÃ©rer la lettre M", 
+    gift: "Chocolat DubaÃ¯", 
+    giftMessage: "Papapappa chocolat dubai c'est maman elle m'a dit tiens pour DÃ©borah la meilleure maman du monde bonne app", 
+    keywords: ["chocolat", "dubai", "dubaÃ¯"], 
     hasGuess: false, 
     videoUrl: null, 
     isSpecial: true, 
@@ -878,8 +878,8 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-26", day: 10, 
-    letter: "10 jours déjà de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espère vraiment que ce sera réglé d'ici là.", 
-    hint: "Récupérer la lettre I", 
+    letter: "10 jours dÃ©jÃ  de calendrier ! En tout cas au moment ou je fais ce site, notre relation est mis en pause depuis des semaines maintenant. J'espÃ¨re vraiment que ce sera rÃ©glÃ© d'ici lÃ .", 
+    hint: "RÃ©cupÃ©rer la lettre I", 
     gift: "Photo #4 + Petit chocolat Lindt", 
     giftMessage: "Une nouvelle photoo! Et un petit chocolat pour la route hehe", 
     keywords: [], 
@@ -887,16 +887,16 @@ const CALENDAR_DATA = [
     videoUrl: null, 
     isSpecial: false, 
     photoUrl: "/photo_jour_10.jpg", 
-    photoComment: "Tu te rappelles ? C'était au tram le retour à la part dieu. On était rentré avec ma sœur et ma mère. On avait passé une super journée et t'as appelé ma mère tata hehe", 
+    photoComment: "Tu te rappelles ? C'Ã©tait au tram le retour Ã  la part dieu. On Ã©tait rentrÃ© avec ma sÅ“ur et ma mÃ¨re. On avait passÃ© une super journÃ©e et t'as appelÃ© ma mÃ¨re tata hehe", 
     photoDownload: true, 
     extraPhoto1: null 
   },
   { 
     date: "2025-12-27", day: 11, 
-    letter: "Quelle belle journée j'espère ! en tout cas aujourd'hui cadeau pas mal j'espère qu'il marchera je l'espère vraiment ça serait incroyable hehe aussi oublie pas je t'aime. Mmmh à ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
-    hint: "Récupérer la lettre P", 
+    letter: "Quelle belle journÃ©e j'espÃ¨re ! en tout cas aujourd'hui cadeau pas mal j'espÃ¨re qu'il marchera je l'espÃ¨re vraiment Ã§a serait incroyable hehe aussi oublie pas je t'aime. Mmmh Ã  ton avis c'est quoi? Azy devine jsuis sure tu trouveras jamais.", 
+    hint: "RÃ©cupÃ©rer la lettre P", 
     gift: "Adjusteurs de bague", 
-    giftMessage: "Y'en a un doré et un transparent, tu peux choisir celui qui rend le mieux.", 
+    giftMessage: "Y'en a un dorÃ© et un transparent, tu peux choisir celui qui rend le mieux.", 
     keywords: ["ajusteur", "bague", "taille"], 
     hasGuess: true, 
     videoUrl: "/ajusteur.mp4", 
@@ -908,122 +908,122 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2025-12-28", day: 12, 
-    letter: "Aujourd'hui je voulais parler de à quel point t'as changé ma vie. Ma vie a été totalement bouleversée depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai à vie.", 
-    hint: "Récupérer la lettre L", 
-    gift: "Photo #5 + Défi Olfactif", 
+    letter: "Aujourd'hui je voulais parler de Ã  quel point t'as changÃ© ma vie. Ma vie a Ã©tÃ© totalement bouleversÃ©e depuis que je te connais. T'es la meilleure rencontre de ma vie et je t'aimerai Ã  vie.", 
+    hint: "RÃ©cupÃ©rer la lettre L", 
+    gift: "Photo #5 + DÃ©fi Olfactif", 
     giftMessage: "Petite photoooo ! Et sens la bien ...", 
     keywords: [], 
     hasGuess: false, 
     videoUrl: null, 
     isSpecial: false, 
     photoUrl: "/photo_jour_12.jpg", 
-    photoComment: "On était chez toi c'était vraiment trop bien et t'es trop belle", 
+    photoComment: "On Ã©tait chez toi c'Ã©tait vraiment trop bien et t'es trop belle", 
     photoDownload: true, 
     extraPhoto1: null,
     perfumeAnswer: 2
   },
   { 
     date: "2025-12-29", day: 13, 
-    letter: "Aujourd'hui j'aimerais parler à quel point tu as évolué. Hier j'ai parlé de moi mais on doit parler de toi aussi. Tu t'es tellement épanouie je suis tellement admiratif de toi Déborah.", 
-    hint: "Récupérer la lettre Q et R", 
+    letter: "Aujourd'hui j'aimerais parler Ã  quel point tu as Ã©voluÃ©. Hier j'ai parlÃ© de moi mais on doit parler de toi aussi. Tu t'es tellement Ã©panouie je suis tellement admiratif de toi DÃ©borah.", 
+    hint: "RÃ©cupÃ©rer la lettre Q et R", 
     gift: "Masque visage + Photo #6", 
-    giftMessage: "Aujourd'hui cadeaux 2 en 1 !!! Une petite photo et avec un petit masque hehe je l'ai sélectionné spécialement pour toi j'espère que tu vas aimer. J'ai cherché à varier le plus possible et j'espère que ça te fera plaisir.", 
+    giftMessage: "Aujourd'hui cadeaux 2 en 1 !!! Une petite photo et avec un petit masque hehe je l'ai sÃ©lectionnÃ© spÃ©cialement pour toi j'espÃ¨re que tu vas aimer. J'ai cherchÃ© Ã  varier le plus possible et j'espÃ¨re que Ã§a te fera plaisir.", 
     keywords: [], 
     hasGuess: false, 
     videoUrl: null, 
     isSpecial: false, 
     photoUrl: "/photo_jour_13.jpg", 
-    photoComment: "Un dérivé de la photo de notre fond d'écran ! Tu t'en souviens de cette photo?", 
+    photoComment: "Un dÃ©rivÃ© de la photo de notre fond d'Ã©cran ! Tu t'en souviens de cette photo?", 
     photoDownload: true, 
     extraPhoto1: null 
   },
   { 
     date: "2025-12-30", day: 14, 
-    letter: "Au jour où j'écris cette lettre on s'est pas parlé de la journée on est en embrouille totale j'en peux vraiment plus j'ai finis à 15h j'ai attendu Déborah jusqu'à 17h30 mais malheureusement elle est rentrée avec sa mère je suis rentré en JD du coup mais voila j'ai pas voulu lui dire car elle allait culpabiliser et c'est ce qu'elle me reprochait donc voila message un peu déprimant aujourd'hui mais y'a des jours avec et des jours sans. Toujours un petit cadeau bien sûr", 
-    hint: "Récupérer la lettre N", 
+    letter: "Au jour oÃ¹ j'Ã©cris cette lettre on s'est pas parlÃ© de la journÃ©e on est en embrouille totale j'en peux vraiment plus j'ai finis Ã  15h j'ai attendu DÃ©borah jusqu'Ã  17h30 mais malheureusement elle est rentrÃ©e avec sa mÃ¨re je suis rentrÃ© en JD du coup mais voila j'ai pas voulu lui dire car elle allait culpabiliser et c'est ce qu'elle me reprochait donc voila message un peu dÃ©primant aujourd'hui mais y'a des jours avec et des jours sans. Toujours un petit cadeau bien sÃ»r", 
+    hint: "RÃ©cupÃ©rer la lettre N", 
     gift: "Gaufrette", 
-    giftMessage: "Petite gaufrettes ! elles sont archi bonnes sah régale toi et essaye de tout finir jette pas", 
+    giftMessage: "Petite gaufrettes ! elles sont archi bonnes sah rÃ©gale toi et essaye de tout finir jette pas", 
     keywords: ["gaufrette", "biscuit", "manger"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2025-12-31", day: 15, 
-    letter: "Aujourd'hui quand je t'écris je suis venu te voir le vendredi pr qu'on parle. Je t'ai re enfin reconnu enfin tu n'imagines pas. Voila ca devient mon journal intime ce calendrier jpp en tout cas Déborah j'ai jamais arrete de faire ca la je suis a 2500 lignes de codes jpp et vraiment je t'ai jamais oublié. Ca me saoule juste jeudi dcp t'as mangé a ton lycee samedi t'as un anniv dimanche t'as entrainement on peut jms sortir. Mais voila tu veux que je te dise quoi.En tout cas j'espere que tu passeras un bon jour de l'an avec ta famille ! te fais pas trop belle a chaque fois tu te fais a ton prime quand je suis pas la. Demain lancement d'une nouvelle série de 7 jours sur le calendrier.", 
-    hint: "Récupérer la lettre T", 
+    letter: "Aujourd'hui quand je t'Ã©cris je suis venu te voir le vendredi pr qu'on parle. Je t'ai re enfin reconnu enfin tu n'imagines pas. Voila ca devient mon journal intime ce calendrier jpp en tout cas DÃ©borah j'ai jamais arrete de faire ca la je suis a 2500 lignes de codes jpp et vraiment je t'ai jamais oubliÃ©. Ca me saoule juste jeudi dcp t'as mangÃ© a ton lycee samedi t'as un anniv dimanche t'as entrainement on peut jms sortir. Mais voila tu veux que je te dise quoi.En tout cas j'espere que tu passeras un bon jour de l'an avec ta famille ! te fais pas trop belle a chaque fois tu te fais a ton prime quand je suis pas la. Demain lancement d'une nouvelle sÃ©rie de 7 jours sur le calendrier.", 
+    hint: "RÃ©cupÃ©rer la lettre T", 
     gift: "Photo #7 + Loriana", 
-    giftMessage: "t'es tombé sur un bloc caché ! 2 cadeaux en 1 ca me rappelle le jour ou j'avais installé pleins de jeu sur la switch et je l'avais ramené chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
+    giftMessage: "t'es tombÃ© sur un bloc cachÃ© ! 2 cadeaux en 1 ca me rappelle le jour ou j'avais installÃ© pleins de jeu sur la switch et je l'avais ramenÃ© chez toi. En tout cas j'espere que t'en profite bien. Bonne app ", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_15.jpg", photoComment: "COMMENTAIRE_PHOTO_7_ICI", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-01", day: 16, 
     letter: "LETTRE DU JOUR 16 (NOUVEL AN)", 
-    hint: "Récupérer la lettre S", 
+    hint: "RÃ©cupÃ©rer la lettre S", 
     gift: "Nuisette", 
-    giftMessage: "MESSAGE CADEAU NUISETTE (À remplir)", 
-    keywords: ["nuisette", "lingerie", "vêtement", "pyjama"], 
+    giftMessage: "MESSAGE CADEAU NUISETTE (Ã€ remplir)", 
+    keywords: ["nuisette", "lingerie", "vÃªtement", "pyjama"], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-02", day: 17, 
     letter: "LETTRE DU JOUR 17", 
-    hint: "Récupérer la lettre U", 
+    hint: "RÃ©cupÃ©rer la lettre U", 
     gift: "Photo #8 + Petit chocolat Lindt", 
-    giftMessage: "MESSAGE CADEAU JOUR 17 (À remplir)", 
+    giftMessage: "MESSAGE CADEAU JOUR 17 (Ã€ remplir)", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-03", day: 18, 
     letter: "LETTRE DU JOUR 18", 
-    hint: "Récupérer la lettre O", 
+    hint: "RÃ©cupÃ©rer la lettre O", 
     gift: "Canette IZEM Cerise", 
-    giftMessage: "MESSAGE CADEAU IZEM (À remplir)", 
+    giftMessage: "MESSAGE CADEAU IZEM (Ã€ remplir)", 
     keywords: ["canette", "boisson", "ism", "izem", "cerise"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-04", day: 19, 
     letter: "LETTRE DU JOUR 19", 
-    hint: "Récupérer la lettre V", 
+    hint: "RÃ©cupÃ©rer la lettre V", 
     gift: "Photo #9 + Petit chocolat Lindt", 
-    giftMessage: "MESSAGE CADEAU JOUR 19 (À remplir)", 
+    giftMessage: "MESSAGE CADEAU JOUR 19 (Ã€ remplir)", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-05", day: 20, 
     letter: "LETTRE DU JOUR 20", 
-    hint: "Récupérer la lettre W", 
+    hint: "RÃ©cupÃ©rer la lettre W", 
     gift: "Maillot de foot", 
-    giftMessage: "MESSAGE CADEAU MAILLOT (À remplir)", 
-    keywords: ["maillot", "foot", "vêtement", "t-shirt"], 
+    giftMessage: "MESSAGE CADEAU MAILLOT (Ã€ remplir)", 
+    keywords: ["maillot", "foot", "vÃªtement", "t-shirt"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-06", day: 21, 
     letter: "LETTRE DU JOUR 21 (TON RETOUR)", 
-    hint: "Récupérer la lettre Z", 
+    hint: "RÃ©cupÃ©rer la lettre Z", 
     gift: "Visionneuse Photo", 
-    giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE (À remplir)", 
+    giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE (Ã€ remplir)", 
     keywords: ["photo", "visionneuse", "viewer", "camera"], 
     hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-07", day: 22, 
     letter: "LETTRE DU JOUR 22", 
-    hint: "Récupérer la lettre X", 
+    hint: "RÃ©cupÃ©rer la lettre X", 
     gift: "Schweppes Grenade", 
-    giftMessage: "MESSAGE CADEAU SCHWEPPES (À remplir)", 
+    giftMessage: "MESSAGE CADEAU SCHWEPPES (Ã€ remplir)", 
     keywords: ["schweppes", "grenade", "canette", "boisson"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-08", day: 23, 
     letter: "LETTRE DU JOUR 23 (FINALE)", 
-    hint: "Récupérer la lettre Y", 
+    hint: "RÃ©cupÃ©rer la lettre Y", 
     gift: "Photo #10 (Finale)", 
-    giftMessage: "MESSAGE CADEAU JOUR 23 (À remplir)", 
+    giftMessage: "MESSAGE CADEAU JOUR 23 (Ã€ remplir)", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null,
     perfumeAnswer: 3
@@ -1033,11 +1033,11 @@ const CALENDAR_DATA = [
 // === FEUX D'ARTIFICE ===
 const Fireworks = () => (
   <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
-    <div className="absolute top-1/4 left-1/4 text-5xl animate-ping">🎆</div>
-    <div className="absolute top-1/2 left-1/2 text-7xl animate-bounce">🎇</div>
-    <div className="absolute bottom-1/4 right-1/4 text-6xl animate-ping">✨</div>
-    <div className="absolute top-1/3 right-1/3 text-5xl animate-bounce">🎉</div>
-    <div className="absolute bottom-1/2 left-1/3 text-6xl animate-ping">🎊</div>
+    <div className="absolute top-1/4 left-1/4 text-5xl animate-ping">ðŸŽ†</div>
+    <div className="absolute top-1/2 left-1/2 text-7xl animate-bounce">ðŸŽ‡</div>
+    <div className="absolute bottom-1/4 right-1/4 text-6xl animate-ping">âœ¨</div>
+    <div className="absolute top-1/3 right-1/3 text-5xl animate-bounce">ðŸŽ‰</div>
+    <div className="absolute bottom-1/2 left-1/3 text-6xl animate-ping">ðŸŽŠ</div>
   </div>
 );
 
@@ -1048,19 +1048,19 @@ const FlyingKiss = ({ onClick }: { onClick: () => void }) => {
 
     useEffect(() => {
         const moveAndShow = () => {
-            const top = Math.random() * 80 + 10; // 10% à 90%
+            const top = Math.random() * 80 + 10; // 10% Ã  90%
             const left = Math.random() * 80 + 10;
             setPosition({ top: `${top}%`, left: `${left}%` });
             setVisible(true);
 
-            // Disparaît après 3 secondes si pas cliqué
+            // DisparaÃ®t aprÃ¨s 3 secondes si pas cliquÃ©
             setTimeout(() => setVisible(false), 3000);
         };
 
-        // Apparaît toutes les 10 à 25 secondes
+        // ApparaÃ®t toutes les 10 Ã  25 secondes
         const interval = setInterval(moveAndShow, Math.random() * 15000 + 10000);
         
-        // Première apparition rapide
+        // PremiÃ¨re apparition rapide
         const initialTimer = setTimeout(moveAndShow, 5000);
 
         return () => {
@@ -1081,7 +1081,7 @@ const FlyingKiss = ({ onClick }: { onClick: () => void }) => {
             style={{ top: position.top, left: position.left }}
             className="fixed z-[60] text-4xl animate-bounce cursor-pointer transition-transform hover:scale-125 drop-shadow-lg"
         >
-            😘
+            ðŸ˜˜
         </button>
     );
 };
@@ -1144,7 +1144,7 @@ const PhotoGallery = ({ onClose, foundDays }: { onClose: () => void, foundDays: 
           <X className="w-6 h-6" />
         </button>
         
-        <h2 className="text-3xl font-bold text-rose-500 mb-6 text-center">📸 Galerie Photos</h2>
+        <h2 className="text-3xl font-bold text-rose-500 mb-6 text-center">ðŸ“¸ Galerie Photos</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
           {photos.map(day => {
@@ -1169,7 +1169,7 @@ const PhotoGallery = ({ onClose, foundDays }: { onClose: () => void, foundDays: 
                   </div>
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center aspect-[1/1.3] p-4 rounded-xl shadow-lg">
-                    <span className="text-6xl text-gray-700">❓</span>
+                    <span className="text-6xl text-gray-700">â“</span>
                   </div>
                 )}
               </div>
@@ -1198,16 +1198,16 @@ const PhotoZoom = ({ photoUrl, onClose }: { photoUrl: string, onClose: () => voi
       onClick={onClose}
       className="absolute top-4 right-4 bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-200 transition-all text-2xl"
     >
-      ×
+      Ã—
     </button>
   </div>
 );
 
-// === ANIMATION DÉBORAH ===
+// === ANIMATION DÃ‰BORAH ===
 const DeborahAnimation = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
     <div className="text-9xl animate-bounce">
-      💕 Déborah 💕
+      ðŸ’• DÃ©borah ðŸ’•
     </div>
   </div>
 );
@@ -1220,7 +1220,7 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
   const [moves, setMoves] = useState(0);
   
   useEffect(() => {
-    const emojis = ['💕', '🌹', '💖', '✨', '🎁', '💝', '🌸', '⭐'];
+    const emojis = ['ðŸ’•', 'ðŸŒ¹', 'ðŸ’–', 'âœ¨', 'ðŸŽ', 'ðŸ’', 'ðŸŒ¸', 'â­'];
     const shuffled = [...emojis, ...emojis].sort(() => Math.random() - 0.5);
     setCards(shuffled as any);
   }, []);
@@ -1247,7 +1247,7 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={onClose}>
       <div className="bg-white rounded-3xl p-8 shadow-2xl max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
-        <h2 className="text-3xl font-bold text-rose-500 mb-4 text-center">🧠 Memory Game</h2>
+        <h2 className="text-3xl font-bold text-rose-500 mb-4 text-center">ðŸ§  Memory Game</h2>
         <p className="text-center text-gray-600 mb-4">Coups: {moves}</p>
         
         <div className="grid grid-cols-4 gap-3 mb-6">
@@ -1268,7 +1268,7 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
         
         {isWon && (
           <div className="text-center mb-4">
-            <p className="text-2xl font-bold text-green-500">🎉 Bravo ! Tu as gagné en {moves} coups !</p>
+            <p className="text-2xl font-bold text-green-500">ðŸŽ‰ Bravo ! Tu as gagnÃ© en {moves} coups !</p>
           </div>
         )}
         
@@ -1300,24 +1300,24 @@ const ExtrasMenu = ({
              </div>
              <div className="flex flex-col gap-2">
                  <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
-                     <span className="text-2xl">🎫</span>
+                     <span className="text-2xl">ðŸŽ«</span>
                      <div className="leading-tight">
-                         <div className="font-bold text-gray-800 text-sm">Ticket à Gratter</div>
+                         <div className="font-bold text-gray-800 text-sm">Ticket Ã  Gratter</div>
                          <div className="text-xs text-gray-500">Tente ta chance !</div>
                      </div>
                  </button>
                  <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl text-left transition-colors border border-transparent hover:border-indigo-100">
-                     <span className="text-2xl">🔮</span>
+                     <span className="text-2xl">ðŸ”®</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Boule de Cristal</div>
                          <div className="text-xs text-gray-500">Un petit compliment ?</div>
                      </div>
                  </button>
                  <button onClick={onOpenEmergency} className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl text-left transition-colors border border-transparent hover:border-red-100">
-                     <span className="text-2xl">💊</span>
+                     <span className="text-2xl">ðŸ’Š</span>
                      <div className="leading-tight">
-                         <div className="font-bold text-gray-800 text-sm">Gélules de Secours</div>
-                         <div className="text-xs text-gray-500">En cas d'urgence ❤️</div>
+                         <div className="font-bold text-gray-800 text-sm">GÃ©lules de Secours</div>
+                         <div className="text-xs text-gray-500">En cas d'urgence â¤ï¸</div>
                      </div>
                  </button>
              </div>
@@ -1404,7 +1404,7 @@ export default function Home() {
     loadInitialData();
   }, [isClient]);
 
-  // === CHRONOMÈTRE ESPION ===
+  // === CHRONOMÃˆTRE ESPION ===
   useEffect(() => {
     if (isAuthenticated && !isAdmin) {
       const timer = setInterval(() => {
@@ -1421,14 +1421,14 @@ export default function Home() {
     }
   }, [isAuthenticated, isAdmin, totalTime]);
 
-  // === DÉTECTION ÉVÉNEMENTS SPÉCIAUX (DÉCO) ===
+  // === DÃ‰TECTION Ã‰VÃ‰NEMENTS SPÃ‰CIAUX (DÃ‰CO) ===
   useEffect(() => {
     if (isClient) {
         const today = new Date();
-        const month = today.getMonth(); // 11 = Décembre
+        const month = today.getMonth(); // 11 = DÃ©cembre
         const day = today.getDate();
 
-        // Feux d'artifice le 31 déc et 1er janv
+        // Feux d'artifice le 31 dÃ©c et 1er janv
         if ((month === 11 && day === 31) || (month === 0 && day === 1)) {
             setShowFireworks(true);
         }
@@ -1454,7 +1454,7 @@ export default function Home() {
     const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     const dateStr = isToday ? "Aujourd'hui" : date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
     
-    return `${dateStr} à ${timeStr} sur ${device}`;
+    return `${dateStr} Ã  ${timeStr} sur ${device}`;
   };
 
   // === SAUVEGARDE VERS VERCEL KV (Jours seulement) ===
@@ -1463,7 +1463,7 @@ export default function Home() {
     saveFoundDays(foundDays);
   }, [foundDays, isDataReady]);
   
-  // === GESTION DE L'OPACITÉ DU BOUTON AU SCROLL ===
+  // === GESTION DE L'OPACITÃ‰ DU BOUTON AU SCROLL ===
   useEffect(() => {
     const handleScroll = () => {
       if (typeof window === 'undefined') return;
@@ -1508,9 +1508,9 @@ export default function Home() {
   // === PARTICULES ===
   const createParticles = (type: 'hearts' | 'stars' | 'petals' = 'hearts') => {
     const emojis = {
-      hearts: ['💕', '💖', '💗', '💝', '❤️'],
-      stars: ['✨', '⭐', '🌟', '💫', '⚡'],
-      petals: ['🌸', '🌺', '🌼', '🌷', '🌹']
+      hearts: ['ðŸ’•', 'ðŸ’–', 'ðŸ’—', 'ðŸ’', 'â¤ï¸'],
+      stars: ['âœ¨', 'â­', 'ðŸŒŸ', 'ðŸ’«', 'âš¡'],
+      petals: ['ðŸŒ¸', 'ðŸŒº', 'ðŸŒ¼', 'ðŸŒ·', 'ðŸŒ¹']
     };
     const newParticles = Array.from({length: 20}, (_, i) => ({
       id: Date.now() + i,
@@ -1601,7 +1601,7 @@ export default function Home() {
           setCountdown(`${d}j ${h}h ${m}m ${s}s`);
         } else setCountdown("Nouvelle case disponible !");
       } else {
-        setCountdown("Tous les cadeaux ont été ouverts !");
+        setCountdown("Tous les cadeaux ont Ã©tÃ© ouverts !");
         clearInterval(timer);
       }
     }, 1000);
@@ -1621,7 +1621,7 @@ export default function Home() {
       setPlayMusic(true); 
       setIsMuted(false);
 
-      // Incrémenter le compteur SI c'est "minou" qui se connecte
+      // IncrÃ©menter le compteur SI c'est "minou" qui se connecte
       if (lowerCode === userCode) {
         const device = getDeviceType();
         incrementLoginCount(device);
@@ -1632,11 +1632,11 @@ export default function Home() {
       setFailedAttempts(newFailedAttempts);
       
       if (newFailedAttempts === 1) {
-        setLoginError('Mot de passe incorrect, essaie encore mon coeur ❤️');
+        setLoginError('Mot de passe incorrect, essaie encore mon coeur â¤ï¸');
       } else if (newFailedAttempts === 2) {
-        setLoginError("Wsh t'abuses deux fois tu rates... t'as besoin d'un indice ? 🤨");
+        setLoginError("Wsh t'abuses deux fois tu rates... t'as besoin d'un indice ? ðŸ¤¨");
       } else {
-        setLoginError(`Toujours pas... C'est la ${newFailedAttempts}ème tentative, tu devrais vraiment utiliser l'indice.`);
+        setLoginError(`Toujours pas... C'est la ${newFailedAttempts}Ã¨me tentative, tu devrais vraiment utiliser l'indice.`);
       }
     }
   };
@@ -1648,7 +1648,7 @@ export default function Home() {
   };
 
   const handleResetAdmin = async () => {
-    if (isAdmin && confirm("Es-tu sûr de vouloir TOUT réinitialiser (jours + compteur + temps + historique + bisous + message) ?")) {
+    if (isAdmin && confirm("Es-tu sÃ»r de vouloir TOUT rÃ©initialiser (jours + compteur + temps + historique + bisous + message) ?")) {
       await resetAllData();
       setFoundDays([]);
       setLoginCount(0);
@@ -1721,7 +1721,7 @@ export default function Home() {
       await saveFinalMessage(finalMessageInput);
       setFinalMessageStored(finalMessageInput);
       
-      // Une fois le message envoyé, on marque le jour comme trouvé pour débloquer le cadeau
+      // Une fois le message envoyÃ©, on marque le jour comme trouvÃ© pour dÃ©bloquer le cadeau
       markAsFound();
   };
 
@@ -1771,7 +1771,7 @@ export default function Home() {
             <button
                 onClick={() => setShowExtrasMenu(!showExtrasMenu)}
                 className="bg-white/90 backdrop-blur text-rose-600 p-4 rounded-full shadow-lg border-2 border-rose-200 hover:scale-110 transition-transform flex items-center justify-center"
-                title="Ouvrir la valise à souvenirs"
+                title="Ouvrir la valise Ã  souvenirs"
             >
                 <Briefcase className="w-6 h-6" />
             </button>
@@ -1805,7 +1805,7 @@ export default function Home() {
 
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-50 flex items-center justify-center">
-          <div className="text-6xl animate-bounce">🎉 ✨ 💖 ✨ 🎉</div>
+          <div className="text-6xl animate-bounce">ðŸŽ‰ âœ¨ ðŸ’– âœ¨ ðŸŽ‰</div>
         </div>
       )}
       {showFireworks && <Fireworks />}
@@ -1833,17 +1833,17 @@ export default function Home() {
         <div className="min-h-screen flex flex-col justify-center py-12 p-4 relative z-10"> 
           <div className="floating-form rounded-3xl shadow-2xl p-8 max-w-md w-full relative mx-auto">
             <div className="text-center mb-8 title-adjust-login overflow-visible relative">
-              {isChristmas && <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-6xl">🎅</div>}
+              {isChristmas && <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-6xl">ðŸŽ…</div>}
               <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" /> 
               <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-none">
                 <span className="text-6xl md:text-7xl block title-fix-span">Calendrier</span>
-                <span className="text-6xl md:text-7xl block">de Déborah</span>
+                <span className="text-6xl md:text-7xl block">de DÃ©borah</span>
               </h1>
-              <p className="text-gray-600 italic mt-2">Pour ma chérie ❤️</p>
+              <p className="text-gray-600 italic mt-2">Pour ma chÃ©rie â¤ï¸</p>
             </div>
             
             <div className="space-y-4">
-              <p className="text-gray-700 text-center">Entre le mot de passe pour découvrir tes surprises...</p>
+              <p className="text-gray-700 text-center">Entre le mot de passe pour dÃ©couvrir tes surprises...</p>
               <input
                 type="password"
                 value={code}
@@ -1866,7 +1866,7 @@ export default function Home() {
                 onClick={handleLogin}
                 className="w-full bg-gradient-to-r from-rose-400 to-pink-500 text-white py-3 rounded-xl font-semibold hover:from-rose-500 hover:to-pink-600 transition-all animate-bubble"
               >
-                Déverrouiller ✨
+                DÃ©verrouiller âœ¨
               </button>
             </div>
 
@@ -1885,7 +1885,7 @@ export default function Home() {
                 className="flex items-center justify-center gap-2 w-full text-gray-500 text-xs hover:text-rose-600 transition-all py-2"
               >
                 <Play className="w-3 h-3" />
-                Mettre le calendrier sur téléphone (Tutoriel)
+                Mettre le calendrier sur tÃ©lÃ©phone (Tutoriel)
               </button>
             </div>
           </div>
@@ -1894,7 +1894,7 @@ export default function Home() {
 
       {/* CALENDAR OR DAY VIEW */}
       {isAuthenticated && !selectedDay && (
-        <div className="max-w-6xl mx-auto py-8 px-4 pb-24 relative z-10"> {/* Padding bottom augmenté pour le footer */}
+        <div className="max-w-6xl mx-auto py-8 px-4 pb-24 relative z-10"> {/* Padding bottom augmentÃ© pour le footer */}
           <div className="sticky top-0 z-50 bg-white/50 backdrop-blur-md rounded-xl p-3 mb-6 shadow-lg flex justify-between items-center w-full">
             {/* HEADER GAUCHE (CLEAN) */}
             <div className="flex items-center gap-2">
@@ -1903,7 +1903,7 @@ export default function Home() {
                 className="bg-gradient-to-r from-rose-400 to-pink-500 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
                 title="Galerie Photos"
               >
-                <span className="text-lg">📸</span> <span className="hidden sm:inline">Galerie</span>
+                <span className="text-lg">ðŸ“¸</span> <span className="hidden sm:inline">Galerie</span>
               </button>
               
               {/* BOUTON PLAYLIST YOUTUBE */}
@@ -1912,7 +1912,7 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-gradient-to-r from-red-500 to-pink-600 text-white px-3 py-2 rounded-lg text-sm font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-1.5 shadow-md"
-                title="Notre Playlist Youtube 🎶"
+                title="Notre Playlist Youtube ðŸŽ¶"
               >
                 <Youtube className="w-5 h-5" />
               </a>
@@ -1956,7 +1956,7 @@ export default function Home() {
               <button
                 onClick={handleLogout}
                 className="text-rose-600 p-2 rounded-lg text-sm font-semibold hover:bg-white transition-all flex items-center justify-center hover:shadow-md"
-                title="Déconnexion"
+                title="DÃ©connexion"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -1985,7 +1985,7 @@ export default function Home() {
                     <div className="flex items-center gap-3">
                         <Heart className="w-6 h-6 text-pink-600" />
                         <div>
-                        <p className="font-bold text-gray-800 text-sm">Bisous Reçus</p>
+                        <p className="font-bold text-gray-800 text-sm">Bisous ReÃ§us</p>
                         <p className="text-xs text-gray-600">Nb fois :</p>
                         </div>
                     </div>
@@ -1994,13 +1994,13 @@ export default function Home() {
                     </span>
                 </div>
 
-                {/* Bloc Temps Passé */}
+                {/* Bloc Temps PassÃ© */}
                 <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-rose-500 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <Clock className="w-6 h-6 text-rose-600" />
                         <div>
-                        <p className="font-bold text-gray-800 text-sm">Temps passé</p>
-                        <p className="text-xs text-gray-600">Durée :</p>
+                        <p className="font-bold text-gray-800 text-sm">Temps passÃ©</p>
+                        <p className="text-xs text-gray-600">DurÃ©e :</p>
                         </div>
                     </div>
                     <span className="text-lg font-bold text-rose-600 bg-rose-100 px-3 py-1 rounded-lg whitespace-nowrap">
@@ -2008,12 +2008,12 @@ export default function Home() {
                     </span>
                 </div>
 
-                {/* Bloc Dernière Vue */}
+                {/* Bloc DerniÃ¨re Vue */}
                 <div className="bg-white/80 backdrop-blur rounded-xl p-4 shadow-md border-l-4 border-blue-500 flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         {lastDevice === 'Mobile' ? <Smartphone className="w-6 h-6 text-blue-600" /> : <Monitor className="w-6 h-6 text-blue-600" />}
                         <div>
-                        <p className="font-bold text-gray-800 text-sm">Dernière vue</p>
+                        <p className="font-bold text-gray-800 text-sm">DerniÃ¨re vue</p>
                         <p className="text-xs text-gray-600">
                             {formatLastSeen(lastConnection, lastDevice)}
                         </p>
@@ -2025,7 +2025,7 @@ export default function Home() {
                 {finalMessageStored && (
                     <div className="col-span-1 md:col-span-4 bg-white/90 backdrop-blur rounded-xl p-4 shadow-md border-2 border-gold-400 relative">
                         <h3 className="text-rose-600 font-bold flex items-center gap-2 mb-2">
-                            <MessageCircleHeart className="w-5 h-5" /> Message Final reçu :
+                            <MessageCircleHeart className="w-5 h-5" /> Message Final reÃ§u :
                         </h3>
                         <p className="italic text-gray-700 bg-gray-50 p-3 rounded-lg border border-gray-200">"{finalMessageStored}"</p>
                     </div>
@@ -2034,27 +2034,27 @@ export default function Home() {
           )}
           
           <div className="text-center mb-8 title-adjust-calendar overflow-visible relative"> 
-            {isChristmas && <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-7xl drop-shadow-md z-20">🎅</div>}
+            {isChristmas && <div className="absolute -top-12 left-1/2 -translate-x-1/2 text-7xl drop-shadow-md z-20">ðŸŽ…</div>}
             <h1 className="font-satisfy text-7xl font-bold bg-gradient-to-r from-rose-500 to-purple-500 bg-clip-text text-transparent drop-shadow-sm leading-tight">
               <span className="text-7xl md:text-8xl block title-fix-span-top mt-2">Calendrier</span>
-              <span className="text-7xl md:text-8xl block">de Déborah</span>
+              <span className="text-7xl md:text-8xl block">de DÃ©borah</span>
             </h1>
-            <p className="text-gray-600 text-lg italic mt-2">17 décembre 2025 - 8 janvier 2026</p>
+            <p className="text-gray-600 text-lg italic mt-2">17 dÃ©cembre 2025 - 8 janvier 2026</p>
             <p 
               className="text-rose-600 font-semibold text-xl mt-4 cursor-pointer hover:scale-105 transition-transform" 
               onClick={handleDeborahClick} 
               title="Cliquer 2 fois rapidement pour une animation !" 
             >
-              Pour ma chérie 
+              Pour ma chÃ©rie 
               <span 
                 className="cursor-pointer inline-block mx-1 transition-transform hover:scale-125"
                 onClick={(e) => { 
                   e.stopPropagation(); 
                   handleHeartClick(); 
                 }}
-                title="Cliquer 3 fois pour une surprise (Jeu Mémory)!"
+                title="Cliquer 3 fois pour une surprise (Jeu MÃ©mory)!"
               >
-                ❤️
+                â¤ï¸
               </span>
             </p>
           </div>
@@ -2130,7 +2130,7 @@ export default function Home() {
                         }) : '...'}
                       </span>
                       {day.isSpecial && (
-                        <span title="Jour Spécial">
+                        <span title="Jour SpÃ©cial">
                           <Sparkles className="w-4 h-4 text-yellow-200 mt-1" />
                         </span>
                       )}
@@ -2142,9 +2142,9 @@ export default function Home() {
           </div>
 
           <div className="mt-8 text-center text-gray-600 text-sm pb-8">
-            <p>Chaque jour se débloque automatiquement à minuit 🌙</p>
+            <p>Chaque jour se dÃ©bloque automatiquement Ã  minuit ðŸŒ™</p>
             <p className="mt-1">
-              Les étoiles <span onClick={handleStarClick} className="cursor-pointer" title="Cliquer 3 fois pour une surprise (Jeu Puzzle)">⭐</span> marquent les jours spéciaux
+              Les Ã©toiles <span onClick={handleStarClick} className="cursor-pointer" title="Cliquer 3 fois pour une surprise (Jeu Puzzle)">â­</span> marquent les jours spÃ©ciaux
             </p>
 
             {/* COMPTEUR RETROUVAILLES AVEC EASTER EGG MASSAGE */}
@@ -2165,7 +2165,7 @@ export default function Home() {
               onClick={() => setSelectedDay(null)} 
               className="text-rose-600 hover:text-rose-700 font-semibold px-3 py-2 transition-all duration-300 text-center" 
             >
-              ← Retour au calendrier
+              â† Retour au calendrier
             </button>
           </div>
 
@@ -2173,7 +2173,7 @@ export default function Home() {
             <div className="paper-texture rounded-3xl shadow-2xl p-8 mt-16">
               <div className="text-center mb-6">
                 <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-rose-400 to-pink-500 rounded-full mb-4 relative">
-                  {isChristmas && <div className="absolute -top-6 -right-2 text-5xl rotate-12">🎅</div>}
+                  {isChristmas && <div className="absolute -top-6 -right-2 text-5xl rotate-12">ðŸŽ…</div>}
                   <span className="text-4xl font-bold text-white">{selectedDay.day}</span>
                 </div>
                 <h2 className="text-2xl font-bold text-gray-800 mb-2 capitalize">
@@ -2185,44 +2185,44 @@ export default function Home() {
 
               <div className="space-y-6">
                 <div className="torn-paper rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-rose-800 mb-2">💌 Lettre</h3>
+                  <h3 className="text-lg font-semibold text-rose-800 mb-2">ðŸ’Œ Lettre</h3>
                   {/* TYPEWRITER EFFECT */}
                   <TypewriterText text={selectedDay.letter} />
                   
-                  {/* LECTEUR VOCAL AJOUTÉ ICI */}
+                  {/* LECTEUR VOCAL AJOUTÃ‰ ICI */}
                   <div className="border-t border-rose-200 mt-4 pt-4">
                     <VoicePlayer day={selectedDay.day} />
                   </div>
                 </div>
 
                 <div className="post-it rounded-2xl p-6">
-                  <h3 className="text-lg font-semibold text-yellow-900 mb-2">🔍 Indice</h3>
+                  <h3 className="text-lg font-semibold text-yellow-900 mb-2">ðŸ” Indice</h3>
                   <p className="text-gray-700 leading-relaxed">{selectedDay.hint}</p>
                 </div>
 
                 {selectedDay.hasGuess && !foundDays.includes(selectedDay.day) && (
                   <div className="bg-blue-50 rounded-2xl p-6">
-                    <h3 className="text-lg font-semibold text-blue-800 mb-4">🎯 Devine de quoi il s'agit !</h3>
+                    <h3 className="text-lg font-semibold text-blue-800 mb-4">ðŸŽ¯ Devine de quoi il s'agit !</h3>
                     <input
                       type="text"
                       value={guessInput}
                       onChange={(e) => setGuessInput(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleGuess()}
-                      placeholder="Ta réponse..."
+                      placeholder="Ta rÃ©ponse..."
                       className="w-full px-4 py-3 border-2 border-blue-200 rounded-xl focus:border-blue-400 focus:outline-none mb-3 text-base"
                     />
                     <button onClick={handleGuess} className="w-full bg-gradient-to-r from-blue-400 to-blue-500 text-white py-3 rounded-xl font-semibold hover:from-blue-500 hover:to-blue-600 transition-all">
-                      Vérifier
+                      VÃ©rifier
                     </button>
                     
                     {guessResult === 'correct' && (
                       <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-xl text-center font-semibold">
-                        Bravo mon amour ! ❤️ Tu as trouvé !
+                        Bravo mon amour ! â¤ï¸ Tu as trouvÃ© !
                       </div>
                     )}
                     {guessResult === 'incorrect' && (
                       <div className="mt-4 p-4 bg-orange-100 text-orange-800 rounded-xl text-center">
-                        Pas encore... Réessaie ou clique sur "Montrer" 😊
+                        Pas encore... RÃ©essaie ou clique sur "Montrer" ðŸ˜Š
                       </div>
                     )}
                   </div>
@@ -2238,12 +2238,12 @@ export default function Home() {
                                 Capsule Temporelle
                             </h3>
                             <p className="text-gray-600 text-sm mb-4 italic">
-                                Pour débloquer l'ultime cadeau, tu dois m'écrire un message sincère sur ton ressenti et notre futur. Ce message sera sauvegardé pour moi. ❤️
+                                Pour dÃ©bloquer l'ultime cadeau, tu dois m'Ã©crire un message sincÃ¨re sur ton ressenti et notre futur. Ce message sera sauvegardÃ© pour moi. â¤ï¸
                             </p>
                             <textarea 
                                 value={finalMessageInput}
                                 onChange={(e) => setFinalMessageInput(e.target.value)}
-                                placeholder="Écris ton cœur ici..."
+                                placeholder="Ã‰cris ton cÅ“ur ici..."
                                 className="w-full h-40 p-4 rounded-xl border-2 border-purple-200 focus:border-purple-500 focus:outline-none text-gray-700 mb-4 resize-none"
                             />
                             <button 
@@ -2252,14 +2252,14 @@ export default function Home() {
                                 className="w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Send className="w-5 h-5" />
-                                Envoyer & Découvrir
+                                Envoyer & DÃ©couvrir
                             </button>
                         </div>
                     ) : (
                         // === BOUTON CLASSIQUE ===
                         <button onClick={markAsFound} className="w-full bg-gradient-to-r from-green-400 to-emerald-500 text-white py-4 rounded-xl font-semibold hover:from-green-500 hover:to-emerald-600 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl">
                             <Gift className="w-5 h-5" />
-                            {selectedDay.hasGuess ? "Montrer comment / Cadeau récupéré ✓" : "Cadeau récupéré ✓"}
+                            {selectedDay.hasGuess ? "Montrer comment / Cadeau rÃ©cupÃ©rÃ© âœ“" : "Cadeau rÃ©cupÃ©rÃ© âœ“"}
                         </button>
                     )}
                   </>
@@ -2269,7 +2269,7 @@ export default function Home() {
                   <div className="space-y-4">
                     <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl text-center shadow-inner">
                       <Sparkles className="w-12 h-12 text-green-500 mx-auto mb-3" />
-                      <h3 className="text-xl font-bold text-green-800 mb-2">Cadeau trouvé !</h3>
+                      <h3 className="text-xl font-bold text-green-800 mb-2">Cadeau trouvÃ© !</h3>
                       <p className="font-satisfy text-4xl font-bold text-gray-800 mb-4">{selectedDay.gift}</p>
                       
                       {selectedDay.giftMessage && (
@@ -2279,10 +2279,10 @@ export default function Home() {
 
                           {selectedDay.videoUrl && selectedDay.videoUrl.endsWith('.mp4') && (
                             <div className="mt-4">
-                              <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">📹 Comment l'utiliser</h3>
+                              <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">ðŸ“¹ Comment l'utiliser</h3>
                               <video className="aspect-video w-full rounded-xl shadow-lg" controls autoPlay>
                                 <source src={selectedDay.videoUrl} type="video/mp4" />
-                                Ton navigateur ne supporte pas les vidéos.
+                                Ton navigateur ne supporte pas les vidÃ©os.
                               </video>
                             </div>
                           )}
@@ -2293,10 +2293,10 @@ export default function Home() {
                     {/* GAME OLFACTIF */}
                     {selectedDay.perfumeAnswer && (
                         <div className="mt-6 bg-amber-50 p-6 rounded-2xl border-2 border-amber-200 text-center shadow-md">
-                             <h3 className="font-bold text-amber-800 mb-2 text-lg flex items-center justify-center gap-2">👃 Quiz Olfactif !</h3>
+                             <h3 className="font-bold text-amber-800 mb-2 text-lg flex items-center justify-center gap-2">ðŸ‘ƒ Quiz Olfactif !</h3>
                              <p className="text-sm text-amber-700 mb-4">
-                                Cette photo a une odeur particulière... C'est lequel de mes parfums ?
-                                <br/><span className="text-xs italic opacity-70">(J'espère qu'il y a encore l'odeur mdrr)</span>
+                                Cette photo a une odeur particuliÃ¨re... C'est lequel de mes parfums ?
+                                <br/><span className="text-xs italic opacity-70">(J'espÃ¨re qu'il y a encore l'odeur mdrr)</span>
                              </p>
                              
                              {!perfumeResult ? (
@@ -2313,9 +2313,9 @@ export default function Home() {
                                  </div>
                              ) : (
                                  <div className={`p-4 rounded-xl font-bold ${perfumeResult === 'correct' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                                     {perfumeResult === 'correct' ? "Bravo mon coeur ! Tu me connais bien toi ❤️" : "Oups... Respire encore un coup !"}
+                                     {perfumeResult === 'correct' ? "Bravo mon coeur ! Tu me connais bien toi â¤ï¸" : "Oups... Respire encore un coup !"}
                                      {perfumeResult === 'incorrect' && (
-                                         <button onClick={() => setPerfumeResult(null)} className="block mx-auto mt-2 text-xs underline">Réessayer</button>
+                                         <button onClick={() => setPerfumeResult(null)} className="block mx-auto mt-2 text-xs underline">RÃ©essayer</button>
                                      )}
                                  </div>
                              )}
@@ -2324,14 +2324,14 @@ export default function Home() {
 
                     {selectedDay.extraPhoto1 && (
                       <div className="bg-gray-50 rounded-2xl p-6 shadow-md">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">💅 Inspiration</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">ðŸ’… Inspiration</h3>
                         <img src={selectedDay.extraPhoto1} alt="Inspiration" className="w-full rounded-xl shadow-md" />
                       </div>
                     )}
 
                     {selectedDay.photoUrl && (
                       <div className="bg-transparent rounded-2xl p-6">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">📸 Souvenir...</h3>
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3 text-center">ðŸ“¸ Souvenir...</h3>
                         <div className="relative mx-auto max-w-md">
                           <div 
                             className="polaroid cursor-pointer hover:scale-105 transition-transform"
@@ -2343,7 +2343,7 @@ export default function Home() {
                             )}
                           </div>
                           <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 bg-black/60 text-white px-2 py-1 rounded text-xs pointer-events-none z-10">
-                              🔍 Cliquer pour agrandir
+                              ðŸ” Cliquer pour agrandir
                           </div>
                         </div>
                         {selectedDay.photoDownload && (
@@ -2354,7 +2354,7 @@ export default function Home() {
                             rel="noopener noreferrer"
                             className="mt-4 block w-full bg-blue-500 text-white py-2 rounded-xl font-semibold hover:bg-blue-600 transition-all text-center shadow-md"
                           >
-                            📥 Télécharger la photo
+                            ðŸ“¥ TÃ©lÃ©charger la photo
                           </a>
                         )}
                       </div>
@@ -2372,7 +2372,7 @@ export default function Home() {
         <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-20">
           <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center">
             <Heart className="w-24 h-24 text-rose-500 mx-auto mb-4 animate-pulse" />
-            <p className="text-gray-700 font-semibold">Chargement des données...</p>
+            <p className="text-gray-700 font-semibold">Chargement des donnÃ©es...</p>
           </div>
         </div>
       )}
