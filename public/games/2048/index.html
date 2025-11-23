@@ -1,229 +1,99 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/keyframes.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/media.css">
+    <link rel="shortcut icon" href="./favicon.ico">
     <title>2048</title>
-    
-    <!-- 1. On revient à un viewport standard pour éviter les écrans noirs -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
-    <link rel="stylesheet" type="text/css" href="css/game.css">
+</head>
 
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-        background: #faf8ef;
-        color: #776e65;
-        font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
-        font-size: 18px;
-        overflow: hidden; /* Empêche le scroll */
-        touch-action: none; /* Bloque les gestes parasites */
-        
-        /* Centrage absolu */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        width: 100vw;
-      }
-
-      /* Conteneur principal qui sera "zoomé" par le script */
-      #game-container {
-        width: 500px; /* Largeur native du jeu */
-        margin: 0 auto;
-        transform-origin: center center; /* On zoome depuis le milieu */
-      }
-
-      h1.title {
-        font-size: 80px;
-        font-weight: bold;
-        margin: 0;
-        display: block;
-        float: left;
-      }
-
-      .scores-container {
-        float: right;
-        text-align: right;
-      }
-
-      .score-container, .best-container {
-        position: relative;
-        display: inline-block;
-        background: #bbada0;
-        padding: 15px 25px;
-        font-size: 25px;
-        height: 25px;
-        line-height: 47px;
-        font-weight: bold;
-        border-radius: 3px;
-        color: white;
-        margin-top: 8px;
-        text-align: center;
-      }
-      
-      .score-container:after, .best-container:after {
-        position: absolute;
-        width: 100%;
-        top: 10px;
-        left: 0;
-        text-transform: uppercase;
-        font-size: 13px;
-        line-height: 13px;
-        text-align: center;
-        color: #eee4da;
-      }
-
-      .score-container:after { content: "Score"; }
-      .best-container:after { content: "Best"; }
-
-      .game-intro {
-        float: left;
-        line-height: 42px;
-        margin-bottom: 0;
-      }
-
-      .restart-button {
-        display: inline-block;
-        background: #8f7a66;
-        border-radius: 3px;
-        padding: 0 20px;
-        text-decoration: none;
-        color: #f9f6f2;
-        height: 40px;
-        line-height: 42px;
-        display: block;
-        text-align: center;
-        float: right;
-        border: none;
-        outline: none;
-        font-weight: bold;
-        font-size: 18px;
-        cursor: pointer;
-      }
-
-      .game-explanation {
-        margin-top: 50px;
-      }
-      
-      /* Ajustements pour que le header ne soit pas cassé */
-      .heading:after {
-        content: "";
-        display: block;
-        clear: both;
-      }
-    </style>
-  </head>
-
-  <body>
-
-    <!-- 2. On emballe tout le jeu dans un conteneur qu'on va redimensionner -->
-    <div id="game-container">
-      <div class="heading">
-        <h1 class="title">2048</h1>
-        <div class="scores-container">
-          <div class="score-container">0</div>
-          <div class="best-container">0</div>
+<body>
+    <div class="container">
+        <div class="heading">
+            <h1 class="title">
+                <a href="">2048</a>
+            </h1>
+            <div class="scores-container">
+                <div class="score-container">
+                    <p class="title">SCORE</p>
+                    <P class="score">0</P>
+                    <div class="score-addition">
+                        +4
+                    </div>
+                </div>
+                <div class="best-container">
+                    <p class="title">BEST</p>
+                    <P class="score">66666</P>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="above-game">
-        <p class="game-intro">Join the numbers and get to the <strong>2048 tile!</strong></p>
-        <button class="restart-button">New Game</button>
-      </div>
-
-      <div class="game-container">
-        <div class="game-message">
-          <p></p>
-          <div class="lower">
-            <a class="keep-playing-button">Keep going</a>
-            <a class="retry-button">Try again</a>
-          </div>
+        <div class="game-intro">
+            <a href="" class="restart-btn">New Game</a>
+            <h2 class="subtitle">
+                Play 2048 Game Online
+            </h2>
+            <p class="above-game">
+                Join the numbers and get to the <strong>2048</strong> tile!
+            </p>
         </div>
+        <div class="game-container">
+            <div class="grid-container">
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+                <div class="grid-row">
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                    <div class="grid-cell"></div>
+                </div>
+            </div>
+            <div class="tile-container">
 
-        <div class="grid-container">
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
-          <div class="grid-row">
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-            <div class="grid-cell"></div>
-          </div>
+            </div>
+            <div class="failure-container pop-container">
+                <p>:(</span></p>
+                <p>FIALURE</p>
+            </div>
+            <div class="winning-container pop-container">
+                <p>:)</p>
+                <p>WINNING</p>
+            </div>
         </div>
-
-        <div class="tile-container"></div>
-      </div>
-
-      <p class="game-explanation">
-        <strong class="important">How to play:</strong> Use your <strong>arrow keys</strong> or <strong>swipe</strong> to move the tiles.
-      </p>
+        <div class="footer">
+            <span>
+                Crafted with by
+                <a href="https://gd4ark.github.io/about/">@4Ark</a>/<a href="https://github.com/gd4Ark/2048">GitHub</a>
+            </span>
+        </div>
     </div>
+    <script src="js/config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/event.js"></script>
+    <script src="js/view.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
+</body>
 
-    <!-- Scripts du jeu -->
-    <script src="js/bind_polyfill.js"></script>
-    <script src="js/classlist_polyfill.js"></script>
-    <script src="js/animframe_polyfill.js"></script>
-    <script src="js/keyboard_input_manager.js"></script>
-    <script src="js/html_actuator.js"></script>
-    <script src="js/grid.js"></script>
-    <script src="js/tile.js"></script>
-    <script src="js/local_storage_manager.js"></script>
-    <script src="js/game_manager.js"></script>
-    <script src="js/application.js"></script>
-
-    <!-- 3. SCRIPT MAGIQUE DE REDIMENSIONNEMENT -->
-    <script>
-      function resizeGame() {
-        var gameContainer = document.getElementById("game-container");
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        
-        // Largeur standard du jeu 2048 (500px + marges = ~520px)
-        var targetWidth = 520; 
-        
-        // On calcule le ratio de réduction nécessaire
-        var scale = Math.min(1, (width - 20) / targetWidth);
-        
-        // On applique le zoom
-        gameContainer.style.transform = "scale(" + scale + ")";
-      }
-
-      // On lance le redimensionnement au chargement et si on tourne l'écran
-      window.addEventListener("resize", resizeGame);
-      window.addEventListener("load", resizeGame);
-      
-      // Empêche le scroll tactile sur tout le document
-      document.body.addEventListener("touchmove", function(e) {
-        e.preventDefault();
-      }, { passive: false });
-      
-      // Lance une première fois
-      resizeGame();
-      
-      // Relance le jeu (parfois nécessaire)
-      document.querySelector('.restart-button').addEventListener('click', function() {
-        location.reload();
-      });
-    </script>
-
-  </body>
 </html>
