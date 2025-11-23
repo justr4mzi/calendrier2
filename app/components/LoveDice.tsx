@@ -34,11 +34,16 @@ const MODES = {
     borderColor: "border-red-200",
     actions: [
       "Mordre doucement",
+      "Mordiller intensément",
       "Chuchoter quelque chose de provocateur près de",
+      "Donner une fessée sur",
+      "Retirer un vêtement"
       "Lécher",
+      "Ferler les yeux et lécher"
       "Glisser les doigts lentement le long de",
       "Embrasser avec la langue",
       "Effleurer avec les ongles",
+      "Embrasser partout sauf",
       "Sucer"
     ],
     zones: [
@@ -46,12 +51,15 @@ const MODES = {
       "la Nuque"
       "le Creux du dos",
       "la Hanche",
-      "l'Oreille",
       "les Lèvres",
       "l'Intérieur de la cuisse",
       "le Ventre",
       "la Taille",
-      "le Bas du dos"
+      "les Seins/Pecs",
+      "les Fesses",
+      "le Pubis",
+      "les Tétons",
+      "Partout où tu veux"
     ]
   }
 };
