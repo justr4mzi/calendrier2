@@ -15,50 +15,50 @@ const GAMES_LIST = [
     color: 'bg-rose-500', 
     type: 'custom' 
   },
-  // 1. 2048 (Lien officiel GitHub, très rapide)
+  // 1. 2048 (Version officielle, propre et rapide)
   { 
     id: '2048', 
     name: '2048', 
     icon: <Grid3X3 className="w-6 h-6" />, 
     color: 'bg-orange-400', 
     type: 'arcade', 
-    url: 'https://gabrielecirulli.github.io/2048/' 
+    url: 'https://saming.github.io/2048/' 
   },
-  // 2. Crossy Road (Version CodePen optimisée "Road Cross")
+  // 2. Crossy Road (Un clone 3D impressionnant hébergé sur GitHub)
   { 
     id: 'crossy', 
     name: 'Crossy Road', 
     icon: <Gamepad2 className="w-6 h-6" />, 
     color: 'bg-blue-500', 
     type: 'arcade', 
-    url: 'https://codepen.io/HunorMarton/full/xxOMQKg' 
+    url: 'https://mkarmona.github.io/crossy-road/' 
   },
-  // 3. Candy Crush (Clone Match-3 propre)
+  // 3. Candy Crush (Un clone simple et fonctionnel)
   { 
     id: 'candy', 
     name: 'Candy Crush', 
     icon: <Candy className="w-6 h-6" />, 
     color: 'bg-pink-500', 
     type: 'arcade', 
-    url: 'https://bullfreak.github.io/candy-crush/' 
+    url: 'https://kalpeshsingh.github.io/Candy-Crush-Game/' 
   },
-  // 4. Tower Blocks (Le même, mais on va régler la lenteur à l'étape 2)
+  // 4. Tower Blocks (La version "Pro" sans barre, hébergée indépendamment)
   { 
     id: 'tower', 
     name: 'Tower Blocks', 
     icon: <Building className="w-6 h-6" />, 
     color: 'bg-purple-500', 
     type: 'arcade', 
-    url: 'https://codepen.io/ste-vg/full/ppLQNW' 
+    url: 'https://iamkun.github.io/tower-game/' 
   },
-  // 5. Tir à l'arc (Version CodePen animée)
+  // 5. Tir à l'arc (Jeu simple et efficace)
   { 
     id: 'archery', 
     name: 'Tir à l\'arc', 
     icon: <Target className="w-6 h-6" />, 
     color: 'bg-green-500', 
     type: 'arcade', 
-    url: 'https://codepen.io/ste-vg/full/GRooLza' 
+    url: 'https://dionjwa.github.io/Archery/' 
   },
 ];
 
