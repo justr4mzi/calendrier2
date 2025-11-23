@@ -44,12 +44,12 @@ const GAMES_LIST = [
     url: '/games/blockblast/index.html' 
   },
   { 
-    id: 'tower', 
-    name: 'Tower Blocks', 
+    id: 'perfecttidy', 
+    name: 'Perfect Tidy', 
     icon: <Building className="w-6 h-6" />, 
-    color: 'bg-purple-500', 
+    color: 'bg-green-600', 
     type: 'arcade', 
-    url: '/games/tower/index.html' 
+    url: '/games/perfect-tidy/index.html' 
   },
   { 
     id: 'circle', 
