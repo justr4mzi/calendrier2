@@ -1377,6 +1377,9 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  // === GESTION DU VOLUME EN JEU ===
+  const [isInGame, setIsInGame] = useState(false);
+  const effectiveVolume = isInGame ? (volume * 0.1) : volume; // Le son baisse à 10% quand on joue
   
   // === NOUVEAUX ETATS ===
   const [kissCount, setKissCount] = useState(0);
@@ -1785,7 +1788,7 @@ export default function Home() {
       <Snowfall /> {/* Effet Neige */}
       <BubblesBackground />
 
-      {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
+      {isClient && <LofiPlayer play={isPlayingMusic} volume={effectiveVolume} isMuted={isMuted} />}
       {isClient && isAuthenticated && !isAdmin && <FlyingKiss onClick={handleKissClick} />}
 
       {/* === BOUTON BONUS FLOTTANT === */}
@@ -1847,7 +1850,13 @@ export default function Home() {
       {showScratchCard && <ScratchCard onClose={() => setShowScratchCard(null)} type={showScratchCard} />}
       {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
       {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
-      {showGames && <GameLauncher onClose={() => setShowGames(false)} />}
+      {showGames && (
+        <GameLauncher 
+            onClose={() => setShowGames(false)} 
+            onGameStart={() => setIsInGame(true)} // Baisse le son
+            onGameEnd={() => setIsInGame(false)}   // Remet le son
+        />
+      )}
 
       {/* LOGIN VIEW */}
       {!isAuthenticated && (

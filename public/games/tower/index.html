@@ -3,31 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,user-scalable=no">
-<script src="https://codepen.io/steveg3003/pen/zBVakw"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    
+    <!-- === SCRIPT TURBO PERFORMANCE === -->
+    <script>
+      // Force le navigateur à utiliser une résolution standard (x1) au lieu de la HD (x3)
+      // Cela rend le jeu beaucoup plus fluide sur mobile sans perdre trop en qualité.
+      Object.defineProperty(window, 'devicePixelRatio', {
+        get: function() { return 1.5; } // 1.5 est un bon équilibre fluidité/beauté
+      });
+    </script>
+
     <title>Block Tower</title>
     
-    
     <link rel="stylesheet" href="style.css" />
+    
+    <style>
+        /* Force le plein écran et bloque le scroll */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #d6dee1; /* Couleur du ciel */
+            touch-action: none; /* Bloque les gestes parasites */
+        }
+        #container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* Cache le footer "Project By" pour gagner de la place */
+        footer {
+            display: none !important;
+        }
+    </style>
 </head>
 <body>
-    <script  src="app.js" async></script>
-<div id="container">
-	<div id="game"></div>
-	<div id="score">0</div>
-	<div id="instructions">Click (or press the spacebar) to place the block</div>
-	<div class="game-over">
-		<h2>Game Over</h2>
-		<p>You did great, you're the best.</p>
-		<p>Click or spacebar to start again</p>
-	</div>
-	<div class="game-ready">
-		<div id="start-button">Start</div>
-		<div></div>
-	</div>
-</div>
-<footer>Project By: TomNgo03</footer>
+    
+    <div id="container">
+        <div id="game"></div>
+        <div id="score">0</div>
+        <div id="instructions">Tap to place</div>
+        <div class="game-over">
+            <h2>Game Over</h2>
+            <p>You did great, you're the best.</p>
+            <p>Tap to start again</p>
+        </div>
+        <div class="game-ready">
+            <div id="start-button">Start</div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Librairies externes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
+    
+    <!-- Script du jeu -->
+    <script src="script.js"></script>
+    
 </body>
 </html>
