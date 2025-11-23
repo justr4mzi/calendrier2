@@ -10,11 +10,11 @@ const MODES = {
     textColor: "text-rose-600",
     borderColor: "border-rose-200",
     actions: [
-      "Bisou délicat sur",
+      "Petit bisous sur",
       "Long câlin sur",
       "Massage de 2 min sur",
-      "Caresse douce sur",
-      "Mots d'amour à",
+      "Papoille douce sur",
+      "Tracer un cœur du bout du doigt sur",
       "Chatouilles sur"
     ],
     zones: [
@@ -34,18 +34,23 @@ const MODES = {
     borderColor: "border-red-200",
     actions: [
       "Mordre doucement",
+      "Chuchoter quelque chose de provocateur près de",
       "Lécher",
+      "Glisser les doigts lentement le long de",
       "Embrasser avec la langue",
       "Effleurer avec les ongles",
-      "Sucer",
-      "Masser à l'huile"
+      "Sucer"
     ],
     zones: [
       "le Cou",
+      "la Nuque"
+      "le Creux du dos",
+      "la Hanche",
       "l'Oreille",
       "les Lèvres",
       "l'Intérieur de la cuisse",
       "le Ventre",
+      "la Taille",
       "le Bas du dos"
     ]
   }
