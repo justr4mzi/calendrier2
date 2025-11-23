@@ -48,7 +48,7 @@ const MODES = {
     ],
     zones: [
       "le Cou",
-      "la Nuque"
+      "la Nuque",
       "le Creux du dos",
       "la Hanche",
       "les Lèvres",
