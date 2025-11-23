@@ -8,7 +8,6 @@ interface GameLauncherProps {
 }
 
 const GAMES_LIST = [
-  // On garde ton Quiz personnalisé (c'est mieux pour le couple !)
   { 
     id: 'quiz', 
     name: 'Quiz du Couple', 
@@ -16,38 +15,34 @@ const GAMES_LIST = [
     color: 'bg-rose-500', 
     type: 'custom' 
   },
-  
-  // 1. 2048 (Lien de ta capture d'écran 1)
+  // 1. 2048 (Lien officiel GitHub, très rapide)
   { 
     id: '2048', 
     name: '2048', 
     icon: <Grid3X3 className="w-6 h-6" />, 
     color: 'bg-orange-400', 
     type: 'arcade', 
-    url: 'https://codewithfaraz.com/preview/create-your-own-2048-game-online-with-html-css-and-javascript-source-code' 
+    url: 'https://gabrielecirulli.github.io/2048/' 
   },
-
-  // 2. Crossy Road (Lien de ta capture d'écran 6)
+  // 2. Crossy Road (Version CodePen optimisée "Road Cross")
   { 
     id: 'crossy', 
     name: 'Crossy Road', 
     icon: <Gamepad2 className="w-6 h-6" />, 
     color: 'bg-blue-500', 
     type: 'arcade', 
-    url: 'https://codewithfaraz.com/preview/create-a-crossy-road-game-clone-with-html-css-and-javascript' 
+    url: 'https://codepen.io/HunorMarton/full/xxOMQKg' 
   },
-
-  // 3. Candy Crush (Lien de ta capture d'écran 4)
+  // 3. Candy Crush (Clone Match-3 propre)
   { 
     id: 'candy', 
     name: 'Candy Crush', 
     icon: <Candy className="w-6 h-6" />, 
     color: 'bg-pink-500', 
     type: 'arcade', 
-    url: 'https://codewithfaraz.com/preview/creating-a-candy-crush-clone-html-css-and-javascript-tutorial-source-code' 
+    url: 'https://bullfreak.github.io/candy-crush/' 
   },
-
-  // 4. Tower Blocks (Lien CodePen de ta capture d'écran 2 - Version plein écran)
+  // 4. Tower Blocks (Le même, mais on va régler la lenteur à l'étape 2)
   { 
     id: 'tower', 
     name: 'Tower Blocks', 
@@ -56,15 +51,14 @@ const GAMES_LIST = [
     type: 'arcade', 
     url: 'https://codepen.io/ste-vg/full/ppLQNW' 
   },
-
-  // 5. Archery Game (Lien de ta capture d'écran 3)
+  // 5. Tir à l'arc (Version CodePen animée)
   { 
     id: 'archery', 
     name: 'Tir à l\'arc', 
     icon: <Target className="w-6 h-6" />, 
     color: 'bg-green-500', 
     type: 'arcade', 
-    url: 'https://codewithfaraz.com/preview/create-an-archery-game-using-html-css-and-javascript' 
+    url: 'https://codepen.io/ste-vg/full/GRooLza' 
   },
 ];
 
