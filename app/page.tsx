@@ -361,7 +361,31 @@ const CrystalBall = ({ onClose }: { onClose: () => void }) => {
     "T'as un beauté de fou, tu t'en rends même pas compte.",
     "Je suis fier de la femme que tu deviens.",
     "Tes yeux... je pourrais les regarder pendant des heures.",
-    "T'es vraiment la femme de ma vie."
+    "T'es vraiment la femme de ma vie.",
+    "Ton rire est vraiment la meilleure musique possible.",
+    "Avec toi, chaque instant devient un souvenir inoubliable.",
+    "T'as ce petit truc en plus qui me fait retomber amoureux.",
+    "J'adore la façon dont tes yeux brillent quand tu me regardes.",
+    "Tu me rends meilleur, juste en étant toi-même.",
+    "Ton intelligence me fascine autant que ta beauté.",
+    "Je suis complètement accro à ton odeur.",
+    "Tu es mon rayon de soleil, même quand il pleut des cordes.",
+    "J'aime tout chez toi, vraiment tout.",
+    "T'as un cœur en or, ne change jamais ça.",
+    "Quand je suis avec toi, je me sens en securité.",
+    "Ta voix est le plus doux des apaisements.",
+    "Je pourrais t'écouter parler pendant des heures sans m'ennuyer.",
+    "T'es vraiment la pièce manquante de mon puzzle.",
+    "Merci d'être toi, tout simplement.",
+    "J'ai une chance incroyable de t'avoir dans ma vie.",
+    "T'es mon rêve devenu réalité, jte parle sah.",
+    "Chaque seconde avec toi est un cadeau.",
+    "T'as une force incroyable qui m'inspire tous les jours.",
+    "Je t'aime un peu plus chaque jour qui passe.",
+    "Rien n'est impossible quand on est tous les deux.",
+    "T'as abusé de la boule là nan ? pour la peine tu dois m'envoyer maintenant une photo de toi.",
+    "T'as abusé de la boule là nan ? pour la peine tu dois m'envoyer maintenant tu penses à quoi.",
+    "T'as abusé de la boule là nan ? pour la peine tu dois m'envoyer maintenant quelque chose que t'as jamais osé me dire."
   ];
 
   const shakeBall = () => {
