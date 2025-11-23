@@ -18,7 +18,7 @@ var Stage = /** @class */ (function () {
             antialias: true,
             alpha: false
         });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.setClearColor('#D0CBC7', 1);
         this.container.appendChild(this.renderer.domElement);
         // scene
@@ -239,7 +239,12 @@ var Game = /** @class */ (function () {
         var removeSpeed = 0.2;
         var delayAmount = 0.02;
         var _loop_1 = function (i) {
-            TweenLite.to(oldBlocks[i].scale, removeSpeed, { x: 0, y: 0, z: 0, delay: (oldBlocks.length - i) * delayAmount, ease: Power1.easeIn, onComplete: function () { return _this.placedBlocks.remove(oldBlocks[i]); } });
+            TweenLite.to(oldBlocks[i].scale, removeSpeed, { x: 0, y: 0, z: 0, delay: (oldBlocks.length - i) * delayAmount, ease: Power1.easeIn, onComplete: function () { 
+    _this.placedBlocks.remove(oldBlocks[i]); 
+    // Ajoute ceci :
+    if (oldBlocks[i].geometry) oldBlocks[i].geometry.dispose();
+    if (oldBlocks[i].material) oldBlocks[i].material.dispose();
+} });
             TweenLite.to(oldBlocks[i].rotation, removeSpeed, { y: 0.5, delay: (oldBlocks.length - i) * delayAmount, ease: Power1.easeIn });
         };
         for (var i = 0; i < oldBlocks.length; i++) {
@@ -263,7 +268,12 @@ var Game = /** @class */ (function () {
             this.placedBlocks.add(newBlocks.placed);
         if (newBlocks.chopped) {
             this.choppedBlocks.add(newBlocks.chopped);
-            var positionParams = { y: '-=30', ease: Power1.easeIn, onComplete: function () { return _this.choppedBlocks.remove(newBlocks.chopped); } };
+            var positionParams = { y: '-=30', ease: Power1.easeIn, onComplete: function () { 
+    _this.choppedBlocks.remove(newBlocks.chopped);
+    // IMPORTANT : Nettoyage de la mémoire GPU
+    newBlocks.chopped.geometry.dispose();
+    newBlocks.chopped.material.dispose();
+} };
             var rotateRandomness = 10;
             var rotationParams = {
                 delay: 0.05,

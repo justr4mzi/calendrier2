@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X, Heart, Trophy, RefreshCcw } from 'lucide-react';
 
-// --- CONFIGURATION DES QUESTIONS ICI ---
+// --- TES QUESTIONS ICI ---
 const QUESTIONS = [
   {
     question: "Où avons-nous échangé notre premier baiser ?",
     options: ["Au cinéma", "Dans un parc", "Devant chez toi", "En voiture"],
-    correct: 2 // Index de la bonne réponse (0 = la première, 1 = la deuxième...)
+    correct: 2 
   },
   {
     question: "Quelle est ma couleur préférée ?",
@@ -68,9 +68,27 @@ const CoupleQuiz = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
       <div className="bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl relative overflow-hidden">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-rose-500">
-          <X className="w-6 h-6" />
-        </button>
+        
+        {/* === EN-TÊTE CORRIGÉ === */}
+        {/* Avant : Le bouton fermer était en absolute et écrasait le cœur */}
+        {/* Maintenant : On utilise Flexbox pour les espacer proprement */}
+        <div className="flex justify-between items-start mb-6">
+            <div>
+                <span className="text-rose-500 font-bold text-sm uppercase tracking-wider block">
+                    Question {currentQuestion + 1}/{QUESTIONS.length}
+                </span>
+            </div>
+            
+            <div className="flex items-center gap-3">
+                {/* Le cœur est à gauche du bouton fermer */}
+                <Heart className="w-6 h-6 text-rose-500 fill-rose-500 animate-pulse" />
+                
+                {/* Le bouton fermer est bien séparé */}
+                <button onClick={onClose} className="text-gray-400 hover:text-rose-500 transition-colors p-1 rounded-full hover:bg-gray-100">
+                    <X className="w-6 h-6" />
+                </button>
+            </div>
+        </div>
 
         {showScore ? (
           <div className="text-center py-8 animate-in zoom-in">
@@ -83,31 +101,39 @@ const CoupleQuiz = ({ onClose }: { onClose: () => void }) => {
               {score === QUESTIONS.length ? "Parfait ! Tu me connais par cœur ❤️" : "Pas mal, mais tu peux faire mieux ! 😘"}
             </p>
             
-            <button 
-              onClick={resetQuiz}
-              className="bg-rose-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 mx-auto hover:bg-rose-600 transition-all"
-            >
-              <RefreshCcw className="w-4 h-4" /> Recommencer
-            </button>
+            <div className="flex flex-col gap-3">
+                <button 
+                  onClick={resetQuiz}
+                  className="bg-rose-500 text-white px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-rose-600 transition-all w-full"
+                >
+                  <RefreshCcw className="w-4 h-4" /> Recommencer
+                </button>
+                <button 
+                  onClick={onClose}
+                  className="bg-gray-100 text-gray-600 px-6 py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-all w-full"
+                >
+                  Quitter
+                </button>
+            </div>
           </div>
         ) : (
           <div>
-             <div className="flex justify-between items-center mb-6">
-                <span className="text-rose-500 font-bold text-sm uppercase tracking-wider">Question {currentQuestion + 1}/{QUESTIONS.length}</span>
-                <Heart className="w-5 h-5 text-rose-500 fill-rose-500 animate-pulse" />
-             </div>
-
-             <h2 className="text-xl font-bold text-gray-800 mb-8 min-h-[60px]">
+             <h2 className="text-xl font-bold text-gray-800 mb-8 min-h-[60px] leading-tight">
                {QUESTIONS[currentQuestion].question}
              </h2>
 
              <div className="space-y-3">
                {QUESTIONS[currentQuestion].options.map((option, index) => {
-                 let buttonStyle = "bg-gray-100 hover:bg-gray-200 text-gray-700";
+                 let buttonStyle = "bg-gray-50 hover:bg-gray-100 text-gray-700 border-2 border-transparent";
+                 
                  if (isAnswered) {
-                   if (index === QUESTIONS[currentQuestion].correct) buttonStyle = "bg-green-500 text-white ring-2 ring-green-300";
-                   else if (index === selectedOption) buttonStyle = "bg-red-500 text-white";
-                   else buttonStyle = "bg-gray-100 text-gray-400 opacity-50";
+                   if (index === QUESTIONS[currentQuestion].correct) {
+                       buttonStyle = "bg-green-100 text-green-800 border-green-500 font-bold";
+                   } else if (index === selectedOption) {
+                       buttonStyle = "bg-red-100 text-red-800 border-red-500";
+                   } else {
+                       buttonStyle = "bg-gray-50 text-gray-400 opacity-50";
+                   }
                  }
 
                  return (
@@ -115,7 +141,7 @@ const CoupleQuiz = ({ onClose }: { onClose: () => void }) => {
                      key={index}
                      onClick={() => handleAnswer(index)}
                      disabled={isAnswered}
-                     className={`w-full p-4 rounded-xl text-left font-semibold transition-all duration-200 transform active:scale-98 ${buttonStyle}`}
+                     className={`w-full p-4 rounded-xl text-left font-medium transition-all duration-200 transform active:scale-98 ${buttonStyle}`}
                    >
                      {option}
                    </button>
