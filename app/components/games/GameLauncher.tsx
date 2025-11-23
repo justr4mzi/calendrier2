@@ -44,10 +44,10 @@ const GAMES_LIST = [
     url: '/games/blockblast/index.html' 
   },
   { 
-    id: 'perfecttidy', 
-    name: 'Perfect Tidy', 
-    icon: <Building className="w-6 h-6" />, 
-    color: 'bg-green-600', 
+    id: 'perfecttidy',
+    name: 'Perfect Tidy',
+    icon: <Package className="w-6 h-6" />, // Nouvelle icône
+    color: 'bg-green-600',
     type: 'arcade', 
     url: 'https://relaxgame.win/games/perfect-tidy/' 
   },
