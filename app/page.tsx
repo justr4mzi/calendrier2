@@ -1320,27 +1320,38 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
 const ExtrasMenu = ({ 
     onOpenScratch, 
     onOpenCrystal, 
-    onOpenEmergency,
-    onOpenGames,
-    onOpenDice, // <--- NOUVELLE PROP
+    onOpenEmergency, 
+    onOpenGames, 
+    onOpenDice,
     onOpenSecret,
     onClose 
 }: { 
     onOpenScratch: () => void, 
     onOpenCrystal: () => void, 
     onOpenEmergency: () => void,
-    onOpenGames: () => void, // <--- NOUVEAU TYPE
+    onOpenGames: () => void, 
     onOpenDice: () => void,
     onOpenSecret: () => void,
     onClose: () => void 
 }) => {
     return (
-        <div className="absolute bottom-20 left-4 z-50 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-rose-200 p-4 w-64 animate-in fade-in slide-in-from-bottom-4">
-             <div className="flex justify-between items-center mb-3 border-b border-gray-200 pb-2">
-                 <h3 className="font-bold text-gray-700 flex items-center gap-2"><Briefcase className="w-4 h-4"/> Valise</h3>
-                 <button onClick={onClose} className="text-gray-400 hover:text-rose-500"><X className="w-4 h-4"/></button>
+        <div className="absolute bottom-20 left-4 z-50 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-rose-200 p-4 w-72 animate-in fade-in slide-in-from-bottom-4 max-h-[80vh] overflow-y-auto">
+             
+             {/* En-tête */}
+             <div className="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                 <h3 className="font-bold text-gray-700 flex items-center gap-2 text-lg">
+                    <Briefcase className="w-5 h-5 text-rose-500"/> Valise
+                 </h3>
+                 <button onClick={onClose} className="text-gray-400 hover:text-rose-500 transition-colors p-1">
+                    <X className="w-5 h-5"/>
+                 </button>
              </div>
+
              <div className="flex flex-col gap-1">
+                 
+                 {/* --- SECTION 1 : JEUX & FUN --- */}
+                 <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider ml-2 mt-1 mb-1">Détente & Coquin</p>
+                 
                  <button onClick={onOpenGames} className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl text-left transition-colors border border-transparent hover:border-indigo-100 group">
                      <span className="text-2xl group-hover:scale-110 transition-transform">🎮</span>
                      <div className="leading-tight">
@@ -1348,6 +1359,20 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">2048, Quiz, etc.</div>
                      </div>
                  </button>
+                 
+                 <button onClick={onOpenDice} className="flex items-center gap-3 p-3 hover:bg-orange-50 rounded-xl text-left transition-colors border border-transparent hover:border-orange-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🎲</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Dés Coquins</div>
+                         <div className="text-xs text-gray-500">Soft ou Hot ? 🔥</div>
+                     </div>
+                 </button>
+
+                 <div className="h-px bg-gray-100 my-2 mx-2"></div>
+
+                 {/* --- SECTION 2 : MYSTÈRES & CADEAUX --- */}
+                 <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider ml-2 mb-1">Surprises</p>
+
                  <button onClick={onOpenSecret} className="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl text-left transition-colors border border-transparent hover:border-amber-100 group">
                      <span className="text-2xl group-hover:scale-110 transition-transform">🗝️</span>
                      <div className="leading-tight">
@@ -1355,8 +1380,15 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">Cadeau caché IRL</div>
                      </div>
                  </button>
-                 <div className="h-px bg-gray-100 my-1"></div>
-                 {/* === AJOUTE CECI JUSTE ICI === */}
+
+                 <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-emerald-50 rounded-xl text-left transition-colors border border-transparent hover:border-emerald-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🎫</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Ticket à Gratter</div>
+                         <div className="text-xs text-gray-500">Tente ta chance !</div>
+                     </div>
+                 </button>
+
                  <a 
                     href="https://www.youtube.com/playlist?list=PLSuo-sS57x_7116AqEP-7SjTY-BIPDSKM" 
                     target="_blank" 
@@ -1369,37 +1401,28 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">Playlist Youtube ❤️</div>
                      </div>
                  </a>
-                 {/* === FIN DE L'AJOUT === */}
 
-                 
-                 <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
-                     <span className="text-2xl">🎫</span>
-                     <div className="leading-tight">
-                         <div className="font-bold text-gray-800 text-sm">Ticket à Gratter</div>
-                         <div className="text-xs text-gray-500">Tente ta chance !</div>
-                     </div>
-                 </button>
-                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-purple-50 rounded-xl text-left transition-colors border border-transparent hover:border-purple-100">
-                     <span className="text-2xl">🔮</span>
+                 <div className="h-px bg-gray-100 my-2 mx-2"></div>
+
+                 {/* --- SECTION 3 : AMOUR --- */}
+                 <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider ml-2 mb-1">Love Zone</p>
+
+                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-purple-50 rounded-xl text-left transition-colors border border-transparent hover:border-purple-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🔮</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Boule de Cristal</div>
-                         <div className="text-xs text-gray-500">Un petit compliment ?</div>
+                         <div className="text-xs text-gray-500">Un petit compliment</div>
                      </div>
                  </button>
-                 <button onClick={onOpenEmergency} className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl text-left transition-colors border border-transparent hover:border-red-100">
-                     <span className="text-2xl">💊</span>
+                 
+                 <button onClick={onOpenEmergency} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">💊</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Gélules de Secours</div>
                          <div className="text-xs text-gray-500">En cas d'urgence ❤️</div>
                      </div>
                  </button>
-                 <button onClick={onOpenDice} className="flex items-center gap-3 p-3 hover:bg-orange-50 rounded-xl text-left transition-colors border border-transparent hover:border-orange-100">
-                 <span className="text-2xl">🎲</span>
-                 <div className="leading-tight">
-                     <div className="font-bold text-gray-800 text-sm">Dés Coquins</div>
-                     <div className="text-xs text-gray-500">Soft ou Hot ?</div>
-                 </div>
-             </button>
+
              </div>
         </div>
     );
