@@ -2,19 +2,173 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfect Circle Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Perfect Circle Game - Can You Draw a Perfect Circle?</title>
+    <meta name="description" content="Test your precision! Can you draw a perfect circle? Challenge yourself with this minimalist drawing game. Share your score and compete with friends!">
+    <meta name="keywords" content="perfect circle, drawing game, precision test, online game, challenge, NEAL.FUN">
+    <meta name="author" content="Perfect Circle Game">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://perfectcirclegame.com">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://perfectcirclegame.com">
+    <meta property="og:title" content="Perfect Circle Game - Can You Draw a Perfect Circle?">
+    <meta property="og:description" content="Test your precision! Can you draw a perfect circle? Challenge yourself with this minimalist drawing game. Share your score and compete with friends!">
+    <meta property="og:image" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MzAiIHZpZXdCb3g9IjAgMCAxMjAwIDYzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjMwIiBmaWxsPSIjMDAwMDAwIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjMzMzMiLz4KPHN0b3Agb2Zmc2V0PSIyNSUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmFhMzMiLz4KPHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzM2ZmMzMiLz4KPHN0b3Agb2Zmc2V0PSI3NSUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzMzg4ZmYiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmYzM2ZmIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHRleHQgeD0iNjAwIiB5PSIxODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNjY2NjY2MiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCI+Q2FuIHlvdSBkcmF3IGE8L3RleHQ+Cjx0ZXh0IHg9IjYwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9Ijg0IiBmb250LXdlaWdodD0iYm9sZCI+UEVSRUVDVCBDSVJDTE88L3RleHQ+CjxjaXJjbGUgY3g9IjYwMCIgY3k9IjQwMCIgcj0iMTAwIiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZGllbnQpIiBzdHJva2Utd2lkdGg9IjgiLz4KPHRleHQgeD0iNjAwIiB5PSI1NDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM5OTk5OTkiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzNiI+VGVzdCB5b3VyIHByZWNpc2lvbiBkcmF3aW5nIHNraWxsczwvdGV4dD4KPC9zdmc+">
+    <meta property="og:site_name" content="Perfect Circle Game">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://perfectcirclegame.com">
+    <meta name="twitter:title" content="Perfect Circle Game - Can You Draw a Perfect Circle?">
+    <meta name="twitter:description" content="Test your precision! Can you draw a perfect circle? Challenge yourself with this minimalist drawing game. Share your score and compete with friends!">
+    <meta name="twitter:image" content="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MzAiIHZpZXdCb3g9IjAgMCAxMjAwIDYzMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjMwIiBmaWxsPSIjMDAwMDAwIi8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjMzMzMiLz4KPHN0b3Agb2Zmc2V0PSIyNSUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZmFhMzMiLz4KPHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzM2ZmMzMiLz4KPHN0b3Agb2Zmc2V0PSI3NSUiIHN0eWxlPSJzdG9wLWNvbG9yOiMzMzg4ZmYiLz4KPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmYzM2ZmIi8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPHRleHQgeD0iNjAwIiB5PSIxODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNjY2NjY2MiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0OCI+Q2FuIHlvdSBkcmF3IGE8L3RleHQ+Cjx0ZXh0IHg9IjYwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9Ijg0IiBmb250LXdlaWdodD0iYm9sZCI+UEVSRUVDQ1QgQ0lSQ0xFPC90ZXh0Pgo8Y2lyY2xlIGN4PSI2MDAiIGN5PSI0MDAiIHI9IjEwMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWRpZW50KSIgc3Ryb2tlLXdpZHRoPSI4Ii8+Cjx0ZXh0IHg9IjYwMCIgeT0iNTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjOTk5OTk5IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzYiPlRlc3QgeW91ciBwcmVjaXNpb24gZHJhd2luZyBza2lsbHM8L3RleHQ+Cjwvc3ZnPg==">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Mobile optimizations -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Perfect Circle">
+    <meta name="theme-color" content="#000000">
+    <meta name="msapplication-navbutton-color" content="#000000">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <!-- Cache busting -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css?v=1" as="style">
+    <link rel="preload" href="script.js?v=1" as="script">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23ff3333'/><stop offset='25%25' style='stop-color:%23ffaa33'/><stop offset='50%25' style='stop-color:%2333ff33'/><stop offset='75%25' style='stop-color:%233388ff'/><stop offset='100%25' style='stop-color:%23ff33ff'/></linearGradient></defs><rect width='100' height='100' fill='%23000'/><circle cx='50' cy='50' r='35' fill='none' stroke='url(%23g)' stroke-width='4'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' style='stop-color:%23ff3333'/><stop offset='25%25' style='stop-color:%23ffaa33'/><stop offset='50%25' style='stop-color:%2333ff33'/><stop offset='75%25' style='stop-color:%233388ff'/><stop offset='100%25' style='stop-color:%23ff33ff'/></linearGradient></defs><rect width='100' height='100' fill='%23000'/><circle cx='50' cy='50' r='35' fill='none' stroke='url(%23g)' stroke-width='4'/></svg>">
+    
+    <!-- DNS prefetch for external resources -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//twitter.com">
+    
+    <!-- Structured data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Game",
+        "name": "Perfect Circle Game",
+        "description": "Test your precision! Can you draw a perfect circle? Challenge yourself with this minimalist drawing game.",
+        "url": "https://perfectcirclegame.com",
+        "genre": "Puzzle",
+        "playMode": "SinglePlayer",
+        "gamePlatform": "Web Browser",
+        "operatingSystem": "Any",
+        "applicationCategory": "Game"
+    }
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-HQM9MF6KXH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-HQM9MF6KXH');
+    </script>
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Perfect Circle Game</h1>
-    <div class="container">
-        <canvas id="gameCanvas" width="500" height="500"></canvas>
-        <div class="controls">
-            <div id="score">Score: 0%</div>
-            <button id="resetButton">Try Again</button>
+    <div class="game-container">
+        <!-- Header -->
+        <header class="header">
+            <p class="title">Can you draw a</p>
+            <h1 class="subtitle"><span class="highlight">PERFECT</span> CIRCLE?</h1>
+        </header>
+
+        <!-- Game Area -->
+        <main class="game-area">
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="400" height="400" aria-label="Drawing canvas for perfect circle game"></canvas>
+                <div class="canvas-overlay" id="canvasOverlay">
+                    <div class="start-message">
+                        <button class="start-btn" id="startBtn" aria-label="Start drawing">GO</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Score Display (initially hidden) -->
+        <div class="score-section" id="scoreSection" aria-live="polite">
+            <div class="score-display">
+                <div class="score-value" id="scoreValue">0%</div>
+                <div class="score-label" id="scoreLabel">Perfect Circle Score</div>
+            </div>
+            <div class="score-feedback" id="scoreFeedback"></div>
+        </div>
+
+        <!-- Controls (initially hidden) -->
+        <div class="controls" id="controls">
+            <button class="btn btn-primary" id="resetBtn">Try Again</button>
+            <button class="btn btn-secondary" id="shareBtn">Tweet</button>
+            <button class="btn btn-copy" id="copyBtn">Copy</button>
         </div>
     </div>
+
+    <!-- Stats Panel -->
+    <aside class="stats-panel" aria-label="Game statistics">
+        <h3>Stats</h3>
+        <div class="stat-item">
+            <span class="stat-label">Best:</span>
+            <span class="stat-value" id="bestScore">0%</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Attempts:</span>
+            <span class="stat-value" id="totalAttempts">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">Average:</span>
+            <span class="stat-value" id="averageScore">0%</span>
+        </div>
+    </aside>
+
+    <!-- Sound Controls -->
+    <div class="sound-controls">
+        <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound" title="Toggle Sound">
+            <span class="sound-icon">🔊</span>
+        </button>
+    </div>
+
+    <!-- Keyboard Hint -->
+    <div class="keyboard-hint" aria-hidden="true">
+        <small>Press <kbd>Space</kbd> to start • <kbd>S</kbd> to share • <kbd>M</kbd> to mute</small>
+    </div>
+
+    <!-- Hidden elements for accessibility -->
+    <div class="sr-only" aria-live="polite" id="announcements"></div>
+
+    <!-- Scripts -->
     <script src="script.js"></script>
+    
+    <!-- Performance monitoring -->
+    <script>
+        // Basic performance monitoring
+        window.addEventListener('load', function() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js').catch(function() {
+                    // Service worker registration failed, but that's okay
+                });
+            }
+        });
+    </script>
+
+    <!-- Ad Script -->
+    <script src="https://cdn.apitiny.net/scripts/v2.0/main.js" data-site-id="690ee8519b495f5baedde8eb" data-test-mode="false" async></script>
 </body>
 </html>
