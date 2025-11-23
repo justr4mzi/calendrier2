@@ -5,28 +5,28 @@ import { X, Heart, Trophy, RefreshCcw } from 'lucide-react';
 const QUESTIONS = [
   {
     question: "Où avons-nous échangé notre premier baiser ?",
-    options: ["Au cinéma", "Dans un parc", "Devant chez toi", "En voiture"],
+    options: ["À confluence", "Au parc", "Vers chez toi", "Au Arts appliqués"],
     correct: 2 
   },
   {
     question: "Quelle est ma couleur préférée ?",
-    options: ["Bleu", "Rouge", "Vert", "Rose"],
+    options: ["Bleu", "Rouge", "Violet", "Rose"],
     correct: 3
   },
   {
     question: "Quelle est notre date d'anniversaire ?",
-    options: ["14 Février", "1er Janvier", "Ta date ici", "Une autre date"],
-    correct: 2
+    options: ["15 mars", "9 mars", "8 mars", "12 mars"],
+    correct: 3
   },
   {
     question: "Quel est mon plat préféré que tu cuisines ?",
-    options: ["Les pâtes", "La pizza", "Le couscous", "Rien, je commande"],
-    correct: 0
+    options: ["Le riz au curry", "Jsp", "Tu sais cuisiné ca deja c pas mal", "Nan je rigole"],
+    correct: 1
   },
   {
     question: "Quel est le surnom que je te donne le plus ?",
-    options: ["Bébé", "Princesse", "Mon cœur", "Chérie"],
-    correct: 1
+    options: ["Mon amour", "Ma Déborah", "Mon cœur", "Ma Chérie"],
+    correct: 4
   }
 ];
 
