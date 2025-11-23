@@ -49,7 +49,7 @@ const GAMES_LIST = [
     icon: <Building className="w-6 h-6" />, 
     color: 'bg-green-600', 
     type: 'arcade', 
-    url: '/games/perfect-tidy/index.html' 
+    url: 'https://games.crazygames.com/en_US/pretty-tidy/index.html' 
   },
   { 
     id: 'circle', 
