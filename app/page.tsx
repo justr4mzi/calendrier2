@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import GameLauncher from './components/games/GameLauncher';
+import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
@@ -1319,13 +1320,15 @@ const ExtrasMenu = ({
     onOpenScratch, 
     onOpenCrystal, 
     onOpenEmergency,
-    onOpenGames, // <--- NOUVELLE PROP
+    onOpenGames,
+    onOpenDice, // <--- NOUVELLE PROP
     onClose 
 }: { 
     onOpenScratch: () => void, 
     onOpenCrystal: () => void, 
     onOpenEmergency: () => void,
     onOpenGames: () => void, // <--- NOUVEAU TYPE
+    onOpenDice: () => void,
     onClose: () => void 
 }) => {
     return (
@@ -1380,6 +1383,13 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">En cas d'urgence ❤️</div>
                      </div>
                  </button>
+                 <button onClick={onOpenDice} className="flex items-center gap-3 p-3 hover:bg-orange-50 rounded-xl text-left transition-colors border border-transparent hover:border-orange-100">
+                 <span className="text-2xl">🎲</span>
+                 <div className="leading-tight">
+                     <div className="font-bold text-gray-800 text-sm">Dés Coquins</div>
+                     <div className="text-xs text-gray-500">Soft ou Hot ?</div>
+                 </div>
+             </button>
              </div>
         </div>
     );
@@ -1417,6 +1427,7 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
+  const [showLoveDice, setShowLoveDice] = useState(false); // <--- AJOUTE ÇA
   // === GESTION INTELLIGENTE DU SON ===
   const [isInGame, setIsInGame] = useState(false);
   
@@ -1857,6 +1868,7 @@ export default function Home() {
               onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard('default'); }}
               onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
               onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
+              onOpenDice={() => { setShowExtrasMenu(false); setShowLoveDice(true); }}
               onOpenGames={() => { setShowExtrasMenu(false); setShowGames(true); }} // <--- AJOUTER CECI
               onClose={() => setShowExtrasMenu(false)}
           />
@@ -1900,6 +1912,7 @@ export default function Home() {
       {showScratchCard && <ScratchCard onClose={() => setShowScratchCard(null)} type={showScratchCard} />}
       {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
       {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
+      {showLoveDice && <LoveDice onClose={() => setShowLoveDice(false)} />}
       {showGames && (
         <GameLauncher 
             onClose={() => setShowGames(false)} 
