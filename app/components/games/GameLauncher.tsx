@@ -49,7 +49,7 @@ const GAMES_LIST = [
     icon: <Building className="w-6 h-6" />, 
     color: 'bg-purple-500', 
     type: 'arcade', 
-    url: 'https://iamkun.github.io/tower-game/' 
+    url: 'https://tomngo03.github.io/Tower-Block/' 
   },
   // 5. Tir à l'arc (Jeu simple et efficace)
   { 
