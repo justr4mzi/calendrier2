@@ -1318,6 +1318,22 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">2048, Quiz, etc.</div>
                      </div>
                  </button>
+                 
+                 {/* === AJOUTE CECI JUSTE ICI === */}
+                 <a 
+                    href="https://www.youtube.com/playlist?list=PLSuo-sS57x_7116AqEP-7SjTY-BIPDSKM" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl text-left transition-colors border border-transparent hover:border-red-100 group"
+                 >
+                     <span className="text-2xl group-hover:scale-110 transition-transform">📞</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Nos Appels</div>
+                         <div className="text-xs text-gray-500">Playlist Youtube ❤️</div>
+                     </div>
+                 </a>
+                 {/* === FIN DE L'AJOUT === */}
+
                  <div className="h-px bg-gray-100 my-1"></div>
                  <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
                      <span className="text-2xl">🎫</span>
