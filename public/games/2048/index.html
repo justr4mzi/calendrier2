@@ -2,22 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2048</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>2048 Game</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <div class="info">
-            <h1>2048</h1>
-            <div class="score-container">
-                <p class="score-title">Score</p>
-                <h2 id="score">0</h2>
-            </div>
+    <header>
+        <h1>2048</h1>
+        <div class="game-info">
+            <button id="newGameButton">New Game</button>
+            <p>Score: <span id="score">0</span></p>
         </div>
-        <p id="result">Join the numbers and get to the <b>2048</b> title!</p>
-        <div class="grid"></div>
+        <p id="hint">Hint: Use Arrow Keys to Move Tiles</p>
+    </header>
+    <div id="grid-container">
+        <div class="grid-cell" id="grid-cell-0-0"></div>
+        <div class="grid-cell" id="grid-cell-0-1"></div>
+        <div class="grid-cell" id="grid-cell-0-2"></div>
+        <div class="grid-cell" id="grid-cell-0-3"></div>
+        <div class="grid-cell" id="grid-cell-1-0"></div>
+        <div class="grid-cell" id="grid-cell-1-1"></div>
+        <div class="grid-cell" id="grid-cell-1-2"></div>
+        <div class="grid-cell" id="grid-cell-1-3"></div>
+        <div class="grid-cell" id="grid-cell-2-0"></div>
+        <div class="grid-cell" id="grid-cell-2-1"></div>
+        <div class="grid-cell" id="grid-cell-2-2"></div>
+        <div class="grid-cell" id="grid-cell-2-3"></div>
+        <div class="grid-cell" id="grid-cell-3-0"></div>
+        <div class="grid-cell" id="grid-cell-3-1"></div>
+        <div class="grid-cell" id="grid-cell-3-2"></div>
+        <div class="grid-cell" id="grid-cell-3-3"></div>
     </div>
-    <script src="src/script.js"></script>
+    <div id="gameover">GAME OVER<br>Press Space to Restart</div>
+    <script src="script.js"></script>
 </body>
 </html>
