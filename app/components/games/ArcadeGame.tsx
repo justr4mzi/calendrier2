@@ -29,7 +29,7 @@ const ArcadeGame = ({ url, title, onClose }: ArcadeGameProps) => {
         <div className="flex-1 bg-black relative">
             <iframe 
                 src={url} 
-                className="absolute inset-0 w-full h-full border-0"
+                className="absolute inset-0 w-full h-full border-0 touch-none"
                 allow="autoplay; fullscreen; gyroscope; accelerometer"
                 title={title}
             />
