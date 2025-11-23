@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// N'oublie pas d'importer les icônes nécessaires
 import { Gamepad2, X, Brain, Grid3X3, Building, Circle, Box } from 'lucide-react';
 import ArcadeGame from './ArcadeGame';
 import CoupleQuiz from './CoupleQuiz';
@@ -15,50 +16,45 @@ const GAMES_LIST = [
     color: 'bg-rose-500', 
     type: 'custom' 
   },
-  // 1. 2048 (Version de Kubowania - Capture 3)
   { 
     id: '2048', 
     name: '2048', 
     icon: <Grid3X3 className="w-6 h-6" />, 
     color: 'bg-orange-400', 
     type: 'arcade', 
-    url: 'https://kubowania.github.io/2048/' 
+    url: '/games/2048/index.html'  // <--- Lien local vers ton dossier public
   },
-  // 2. Crossy Road (Version de Dannz510 - Capture 5)
   { 
     id: 'crossy', 
     name: 'Crossy Road', 
     icon: <Gamepad2 className="w-6 h-6" />, 
     color: 'bg-blue-500', 
     type: 'arcade', 
-    url: 'https://dannz510.github.io/Crossy_road/' 
+    url: '/games/crossy/index.html' 
   },
-  // 3. Block Blast (Remplace Candy Crush - Capture 4)
   { 
     id: 'blockblast', 
     name: 'Block Blast', 
     icon: <Box className="w-6 h-6" />, 
     color: 'bg-indigo-500', 
     type: 'arcade', 
-    url: 'https://block-blast-three.vercel.app/' 
+    url: '/games/blockblast/index.html' 
   },
-  // 4. Tower Blocks (Version de TomNgo03 - Capture 1)
   { 
     id: 'tower', 
     name: 'Tower Blocks', 
     icon: <Building className="w-6 h-6" />, 
     color: 'bg-purple-500', 
     type: 'arcade', 
-    url: 'https://tomngo03.github.io/Tower-Block/' 
+    url: '/games/tower/index.html' 
   },
-  // 5. Perfect Circle (Remplace Tir à l'arc - Capture 2)
   { 
     id: 'circle', 
     name: 'Cercle Parfait', 
     icon: <Circle className="w-6 h-6" />, 
     color: 'bg-emerald-500', 
     type: 'arcade', 
-    url: 'https://akhil3517.github.io/Perfect-Circle/' 
+    url: '/games/circle/index.html' 
   },
 ];
 
@@ -69,6 +65,7 @@ const GameLauncher = ({ onClose }: GameLauncherProps) => {
     if (activeGame.type === 'custom') {
       return <CoupleQuiz onClose={() => setActiveGame(null)} />;
     }
+    // L'ArcadeGame utilisera l'iframe pour afficher le fichier local
     return <ArcadeGame url={activeGame.url} title={activeGame.name} onClose={() => setActiveGame(null)} />;
   }
 

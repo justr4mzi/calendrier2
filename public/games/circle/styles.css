@@ -1,0 +1,97 @@
+body {
+    background-color: #121212;
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    padding: 10px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 900px;
+}
+
+canvas {
+    border: 4px solid transparent;
+    cursor: crosshair;
+    animation: glow 1s infinite alternate;
+    max-width: 90vw;
+    max-height: 70vh;
+    width: 400px;
+    height: 400px;
+}
+
+@keyframes glow {
+    0% {
+        border-color: rgba(0, 255, 17, 0.5);
+        box-shadow: 0 0 10px rgba(225, 0, 255, 0.5);
+    }
+    100% {
+        border-color: rgb(0, 255, 251);
+        box-shadow: 0 0 20px rgb(255, 0, 217);
+    }
+}
+
+.controls {
+    margin: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#score {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: cyan;
+    color: black;
+    border: none;
+    border-radius: 15px;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: lightblue;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 20px;
+    }
+
+    canvas {
+        width: 90vw;
+        height: auto;
+    }
+
+    #score {
+        font-size: 16px;
+    }
+
+    button {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+}
+
