@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { X, Key, Gift, Lock, Sparkles, Check } from 'lucide-react';
 
 const SECRET_CODE = "1401"; // Le code qu'elle doit trouver
-const RIDDLE = "Je suis caché là où tu fais tes plus beaux rêves, sous ta tête mais pas dans ton esprit. Qui suis-je ?"; // Exemple : Sous l'oreiller
+const RIDDLE = "Je suis tout le temps à coter de toi quand tu dors. Je suis dans le dernier de la liste. Où-suis-je ?"; //
 
 const SecretCode = ({ onClose }: { onClose: () => void }) => {
   const [input, setInput] = useState("");
