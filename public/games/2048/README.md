@@ -1,49 +1,30 @@
-# 2048 Game
+# 2048
 
-![2048 Game](https://raw.githubusercontent.com/sys-user/2048-game/main/screenshots/screenshot.png)
+[Click here to play][live]
 
-一个基于HTML、CSS和JavaScript的2048小游戏。你可以通过箭头键移动方块，合并相同的数字，最终合成2048！
+[live]: http://noahwiener.github.io/2048/
 
-## 📲 如何运行
+## Summary
 
-1. 克隆或下载本仓库的代码。
-2. 打开 `index.html` 文件即可在浏览器中运行游戏。
+How to play: Use your keyboard's arrow keys or your phone/tablet's swipe gestures to slide all of the tiles up, down, left, or right.  If two tiles with the same number collide, they combine and double in value! Keep moving and matching tiles until you hit 2048!
 
-## 🎨 游戏特色
+<img src="https://i.gyazo.com/2dec25cb5ae3544d3a9a7e2676459cd5.gif" height="400" alt="gameplay-gif">
 
-- **经典2048玩法**：通过箭头键移动方块，合并相同的数字。
-- **优化的用户界面**：现代化的UI设计，符合整体风格。
-- **响应式设计**：适配各种屏幕尺寸，适合桌面和移动设备。
-- **游戏提示**：提供操作提示，帮助新手快速上手。
 
-## 🛠️ 技术栈
+This game was created by [Noah Wiener][profile] using Javascript, jQuery, HTML, and CSS, featuring [Matt Bryson's jQuery TouchSwipe plugin][plugin] for mobile support. [Check out some of Noah's other work here][profile].  This page is an adaptation of [Gabriele Cirulli][original]'s original 2048 game.
 
-- **HTML**：用于构建游戏的基本结构。
-- **CSS**：用于美化游戏界面，包括渐变、阴影和动画效果。
-- **JavaScript**：用于实现游戏逻辑和交互。
+[profile]: http://noahwiener.github.io/
+[plugin]: https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
+[original]: https://gabrielecirulli.github.io/2048/
 
-## 🖥️ 游戏截图
+## Features
 
-![Game Screenshot](https://raw.githubusercontent.com/sys-user/2048-game/main/screenshots/screenshot.png)
+### Mobile Friendly
 
-## 🚀 如何贡献
+I play 2048 all the time, but rarely on the computer. It is a great game to play on BART, while waiting in line, or whenever you have a few minutes to spare!  As a result, I decided to create a mobile-friendly version that you can play right on your phone or tablet's browser. Swipe gesture functionality added with jQuery, using [Matt Bryson's jQuery TouchSwipe plugin][plugin].
 
-如果你有任何改进建议或想添加新功能，欢迎提交Pull Request或Issues！
+[plugin]: https://github.com/mattbryson/TouchSwipe-Jquery-Plugin
 
-## 🔖 版本更新
+### Visual Effects
 
-- **v1.0.0** (2024-10-12)
-  - 初始版本，包含基本的2048游戏功能。
-  - 优化了UI设计，增加了提示信息。
-  - 添加了分数显示和游戏结束提示。
-
-## 📄 许可证
-
-本项目采用 [MIT License](LICENSE)。
-
-## 📢 联系我
-
-如果你有任何问题或建议，可以通过以下方式联系我：
-
-- GitHub: [sys-user](https://github.com/sys-user)
-- Email: xiexiaowei0513@163.com
+In order to render tiles sliding across the board, each tile is given its own CSS class and is rendered as an individual DOM element.
