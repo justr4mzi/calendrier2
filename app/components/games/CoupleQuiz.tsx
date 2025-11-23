@@ -20,7 +20,7 @@ const QUESTIONS = [
   },
   {
     question: "Quel est mon plat préféré que tu cuisines ?",
-    options: ["Le riz au curry", "Jsp", "Tu sais cuisiné c'est deja c pas mal", "Nan je rigole"],
+    options: ["Le riz au curry", "Jsp", "Tu sais faire ca deja c pas mal", "Nan je rigole"],
     correct: 0
   },
   {
