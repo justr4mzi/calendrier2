@@ -6,27 +6,27 @@ const QUESTIONS = [
   {
     question: "Où avons-nous échangé notre premier baiser ?",
     options: ["À confluence", "Au parc", "Vers chez toi", "Au Arts appliqués"],
-    correct: 2 
+    correct: 1
   },
   {
     question: "Quelle est ma couleur préférée ?",
     options: ["Bleu", "Rouge", "Violet", "Rose"],
-    correct: 3
+    correct: 2
   },
   {
     question: "Quelle est notre date d'anniversaire ?",
     options: ["15 mars", "9 mars", "8 mars", "12 mars"],
-    correct: 3
+    correct: 2
   },
   {
     question: "Quel est mon plat préféré que tu cuisines ?",
     options: ["Le riz au curry", "Jsp", "Tu sais cuisiné c'est deja c pas mal", "Nan je rigole"],
-    correct: 1
+    correct: 0
   },
   {
     question: "Quel est le surnom que je te donne le plus ?",
     options: ["Mon amour", "Ma Déborah", "Mon cœur", "Ma Chérie"],
-    correct: 4
+    correct: 3
   }
 ];
 
