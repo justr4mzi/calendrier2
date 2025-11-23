@@ -1318,7 +1318,7 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">2048, Quiz, etc.</div>
                      </div>
                  </button>
-                 
+                 <div className="h-px bg-gray-100 my-1"></div>
                  {/* === AJOUTE CECI JUSTE ICI === */}
                  <a 
                     href="https://www.youtube.com/playlist?list=PLSuo-sS57x_7116AqEP-7SjTY-BIPDSKM" 
@@ -1334,7 +1334,7 @@ const ExtrasMenu = ({
                  </a>
                  {/* === FIN DE L'AJOUT === */}
 
-                 <div className="h-px bg-gray-100 my-1"></div>
+                 
                  <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
                      <span className="text-2xl">🎫</span>
                      <div className="leading-tight">
