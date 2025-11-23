@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import GameLauncher from './components/games/GameLauncher';
 import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
+import SecretCode from './components/SecretCode';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
@@ -1322,6 +1323,7 @@ const ExtrasMenu = ({
     onOpenEmergency,
     onOpenGames,
     onOpenDice, // <--- NOUVELLE PROP
+    onOpenSecret,
     onClose 
 }: { 
     onOpenScratch: () => void, 
@@ -1329,6 +1331,7 @@ const ExtrasMenu = ({
     onOpenEmergency: () => void,
     onOpenGames: () => void, // <--- NOUVEAU TYPE
     onOpenDice: () => void,
+    onOpenSecret: () => void,
     onClose: () => void 
 }) => {
     return (
@@ -1343,6 +1346,13 @@ const ExtrasMenu = ({
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Mini-Jeux</div>
                          <div className="text-xs text-gray-500">2048, Quiz, etc.</div>
+                     </div>
+                 </button>
+                 <button onClick={onOpenSecret} className="flex items-center gap-3 p-3 hover:bg-amber-50 rounded-xl text-left transition-colors border border-transparent hover:border-amber-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🗝️</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Code Secret</div>
+                         <div className="text-xs text-gray-500">Cadeau caché IRL</div>
                      </div>
                  </button>
                  <div className="h-px bg-gray-100 my-1"></div>
@@ -1428,6 +1438,7 @@ export default function Home() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [showLoveDice, setShowLoveDice] = useState(false); // <--- AJOUTE ÇA
+  const [showSecretCode, setShowSecretCode] = useState(false); // <--- AJOUT
   // === GESTION INTELLIGENTE DU SON ===
   const [isInGame, setIsInGame] = useState(false);
   
@@ -1870,6 +1881,7 @@ export default function Home() {
               onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
               onOpenDice={() => { setShowExtrasMenu(false); setShowLoveDice(true); }}
               onOpenGames={() => { setShowExtrasMenu(false); setShowGames(true); }} // <--- AJOUTER CECI
+              onOpenSecret={() => { setShowExtrasMenu(false); setShowSecretCode(true); }} // <--- AJO
               onClose={() => setShowExtrasMenu(false)}
           />
       )}
@@ -1913,6 +1925,7 @@ export default function Home() {
       {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
       {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
       {showLoveDice && <LoveDice onClose={() => setShowLoveDice(false)} />}
+      {showSecretCode && <SecretCode onClose={() => setShowSecretCode(false)} />}
       {showGames && (
         <GameLauncher 
             onClose={() => setShowGames(false)} 
