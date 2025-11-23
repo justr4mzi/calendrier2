@@ -8,7 +8,6 @@ interface GameLauncherProps {
 }
 
 const GAMES_LIST = [
-  const GAMES_LIST = [
   // On garde ton Quiz personnalisé (c'est mieux pour le couple !)
   { 
     id: 'quiz', 
