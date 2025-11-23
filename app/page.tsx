@@ -1377,9 +1377,19 @@ export default function Home() {
   const [showTutorial, setShowTutorial] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [failedAttempts, setFailedAttempts] = useState(0);
-  // === GESTION DU VOLUME EN JEU ===
+  // === GESTION INTELLIGENTE DU SON ===
   const [isInGame, setIsInGame] = useState(false);
-  const effectiveVolume = isInGame ? (volume * 0.1) : volume; // Le son baisse à 10% quand on joue
+  
+  // Détection du mobile (car iOS refuse le changement de volume par code)
+  const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+  // Sur PC : On baisse le son à 10%.
+  // Sur Mobile : On garde le volume normal (car on ne peut pas le toucher), mais on mettra PAUSE.
+  const effectiveVolume = (isInGame && !isMobile) ? (volume * 0.1) : volume;
+  
+  // Si on est en jeu ET sur mobile => On coupe la musique (Pause).
+  // Sinon => On joue selon les règles habituelles.
+  const shouldPlayMusic = isAuthenticated && playMusic && !(isInGame && isMobile); 
   
   // === NOUVEAUX ETATS ===
   const [kissCount, setKissCount] = useState(0);

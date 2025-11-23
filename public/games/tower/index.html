@@ -3,31 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
     
-    <!-- === SCRIPT TURBO PERFORMANCE === -->
-    <script>
-      // Force le navigateur à utiliser une résolution standard (x1) au lieu de la HD (x3)
-      // Cela rend le jeu beaucoup plus fluide sur mobile sans perdre trop en qualité.
-      Object.defineProperty(window, 'devicePixelRatio', {
-        get: function() { return 1.5; } // 1.5 est un bon équilibre fluidité/beauté
-      });
-    </script>
-
     <title>Block Tower</title>
     
     <link rel="stylesheet" href="style.css" />
     
     <style>
-        /* Force le plein écran et bloque le scroll */
+        /* Je garde juste ça pour être sûr que ça prenne tout l'écran du téléphone */
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #d6dee1; /* Couleur du ciel */
-            touch-action: none; /* Bloque les gestes parasites */
+            background-color: #d6dee1;
         }
         #container {
             width: 100%;
@@ -36,18 +26,18 @@
             top: 0;
             left: 0;
         }
-        /* Cache le footer "Project By" pour gagner de la place */
+        /* Je cache le footer pour que ce soit plus propre sur mobile */
         footer {
             display: none !important;
         }
     </style>
 </head>
 <body>
-    
+
     <div id="container">
         <div id="game"></div>
         <div id="score">0</div>
-        <div id="instructions">Tap to place</div>
+        <div id="instructions">Tap to place the block</div>
         <div class="game-over">
             <h2>Game Over</h2>
             <p>You did great, you're the best.</p>
@@ -59,12 +49,12 @@
         </div>
     </div>
 
-    <!-- Librairies externes -->
+    <!-- Les scripts originaux -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     
-    <!-- Script du jeu -->
-    <script src="script.js"></script>
-    
+    <!-- Ton fichier principal (c'est bien app.js) -->
+    <script src="app.js"></script>
+
 </body>
 </html>
