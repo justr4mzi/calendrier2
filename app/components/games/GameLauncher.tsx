@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gamepad2, X, Brain, Grid3X3, Building, Target, Candy } from 'lucide-react';
+import { Gamepad2, X, Brain, Grid3X3, Building, Circle, Box } from 'lucide-react';
 import ArcadeGame from './ArcadeGame';
 import CoupleQuiz from './CoupleQuiz';
 
@@ -15,34 +15,34 @@ const GAMES_LIST = [
     color: 'bg-rose-500', 
     type: 'custom' 
   },
-  // 1. 2048 (Version officielle, propre et rapide)
+  // 1. 2048 (Version de Kubowania - Capture 3)
   { 
     id: '2048', 
     name: '2048', 
     icon: <Grid3X3 className="w-6 h-6" />, 
     color: 'bg-orange-400', 
     type: 'arcade', 
-    url: 'https://saming.github.io/2048/' 
+    url: 'https://kubowania.github.io/2048/' 
   },
-  // 2. Crossy Road (Un clone 3D impressionnant hébergé sur GitHub)
+  // 2. Crossy Road (Version de Dannz510 - Capture 5)
   { 
     id: 'crossy', 
     name: 'Crossy Road', 
     icon: <Gamepad2 className="w-6 h-6" />, 
     color: 'bg-blue-500', 
     type: 'arcade', 
-    url: 'https://mkarmona.github.io/crossy-road/' 
+    url: 'https://dannz510.github.io/Crossy_road/' 
   },
-  // 3. Candy Crush (Un clone simple et fonctionnel)
+  // 3. Block Blast (Remplace Candy Crush - Capture 4)
   { 
-    id: 'candy', 
-    name: 'Candy Crush', 
-    icon: <Candy className="w-6 h-6" />, 
-    color: 'bg-pink-500', 
+    id: 'blockblast', 
+    name: 'Block Blast', 
+    icon: <Box className="w-6 h-6" />, 
+    color: 'bg-indigo-500', 
     type: 'arcade', 
-    url: 'https://kalpeshsingh.github.io/Candy-Crush-Game/' 
+    url: 'https://block-blast-three.vercel.app/' 
   },
-  // 4. Tower Blocks (La version "Pro" sans barre, hébergée indépendamment)
+  // 4. Tower Blocks (Version de TomNgo03 - Capture 1)
   { 
     id: 'tower', 
     name: 'Tower Blocks', 
@@ -51,14 +51,14 @@ const GAMES_LIST = [
     type: 'arcade', 
     url: 'https://tomngo03.github.io/Tower-Block/' 
   },
-  // 5. Tir à l'arc (Jeu simple et efficace)
+  // 5. Perfect Circle (Remplace Tir à l'arc - Capture 2)
   { 
-    id: 'archery', 
-    name: 'Tir à l\'arc', 
-    icon: <Target className="w-6 h-6" />, 
-    color: 'bg-green-500', 
+    id: 'circle', 
+    name: 'Cercle Parfait', 
+    icon: <Circle className="w-6 h-6" />, 
+    color: 'bg-emerald-500', 
     type: 'arcade', 
-    url: 'https://dionjwa.github.io/Archery/' 
+    url: 'https://akhil3517.github.io/Perfect-Circle/' 
   },
 ];
 
