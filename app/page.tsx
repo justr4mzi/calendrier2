@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import GameLauncher from './components/GameLauncher';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
@@ -1289,25 +1290,35 @@ const MemoryGame = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-// === MENU EXTRAS (BONUS) ===
+// === MENU EXTRAS (BONUS) MODIFIÉ ===
 const ExtrasMenu = ({ 
     onOpenScratch, 
     onOpenCrystal, 
-    onOpenEmergency, 
+    onOpenEmergency,
+    onOpenGames, // <--- NOUVELLE PROP
     onClose 
 }: { 
     onOpenScratch: () => void, 
     onOpenCrystal: () => void, 
     onOpenEmergency: () => void,
+    onOpenGames: () => void, // <--- NOUVEAU TYPE
     onClose: () => void 
 }) => {
     return (
         <div className="absolute bottom-20 left-4 z-50 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-rose-200 p-4 w-64 animate-in fade-in slide-in-from-bottom-4">
              <div className="flex justify-between items-center mb-3 border-b border-gray-200 pb-2">
-                 <h3 className="font-bold text-gray-700 flex items-center gap-2"><Briefcase className="w-4 h-4"/> Souvenirs</h3>
+                 <h3 className="font-bold text-gray-700 flex items-center gap-2"><Briefcase className="w-4 h-4"/> Valise</h3>
                  <button onClick={onClose} className="text-gray-400 hover:text-rose-500"><X className="w-4 h-4"/></button>
              </div>
-             <div className="flex flex-col gap-2">
+             <div className="flex flex-col gap-1">
+                 <button onClick={onOpenGames} className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl text-left transition-colors border border-transparent hover:border-indigo-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🎮</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Mini-Jeux</div>
+                         <div className="text-xs text-gray-500">2048, Quiz, etc.</div>
+                     </div>
+                 </button>
+                 <div className="h-px bg-gray-100 my-1"></div>
                  <button onClick={onOpenScratch} className="flex items-center gap-3 p-3 hover:bg-rose-50 rounded-xl text-left transition-colors border border-transparent hover:border-rose-100">
                      <span className="text-2xl">🎫</span>
                      <div className="leading-tight">
@@ -1315,7 +1326,7 @@ const ExtrasMenu = ({
                          <div className="text-xs text-gray-500">Tente ta chance !</div>
                      </div>
                  </button>
-                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-indigo-50 rounded-xl text-left transition-colors border border-transparent hover:border-indigo-100">
+                 <button onClick={onOpenCrystal} className="flex items-center gap-3 p-3 hover:bg-purple-50 rounded-xl text-left transition-colors border border-transparent hover:border-purple-100">
                      <span className="text-2xl">🔮</span>
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Boule de Cristal</div>
@@ -1336,6 +1347,7 @@ const ExtrasMenu = ({
 
 // === COMPOSANT PRINCIPAL ===
 export default function Home() {
+  const [showGames, setShowGames] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [code, setCode] = useState('');
@@ -1776,27 +1788,28 @@ export default function Home() {
       {isClient && <LofiPlayer play={isPlayingMusic} volume={volume} isMuted={isMuted} />}
       {isClient && isAuthenticated && !isAdmin && <FlyingKiss onClick={handleKissClick} />}
 
-      {/* === BOUTON BONUS FLOTTANT (FIXE EN BAS A GAUCHE) === */}
-      {isClient && isAuthenticated && !selectedDay && (
-        <div className="fixed bottom-4 left-4 z-50">
-            <button
-                onClick={() => setShowExtrasMenu(!showExtrasMenu)}
-                className="bg-white/90 backdrop-blur text-rose-600 w-14 h-14 p-4 rounded-full shadow-lg border-2 border-rose-200 hover:scale-110 transition-transform flex items-center justify-center"
-                title="Ouvrir la valise à souvenirs"
-            >
-                <Briefcase className="w-6 h-6" />
-            </button>
-            
-            {showExtrasMenu && (
-                <ExtrasMenu 
-                    onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard('default'); }}
-                    onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
-                    onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
-                    onClose={() => setShowExtrasMenu(false)}
-                />
-            )}
-        </div>
+      {/* === BOUTON BONUS FLOTTANT === */}
+{isClient && isAuthenticated && !selectedDay && (
+  <div className="fixed bottom-4 left-4 z-50">
+      <button
+          onClick={() => setShowExtrasMenu(!showExtrasMenu)}
+          className="bg-white/90 backdrop-blur text-rose-600 w-14 h-14 p-4 rounded-full shadow-lg border-2 border-rose-200 hover:scale-110 transition-transform flex items-center justify-center"
+          title="Ouvrir la valise à souvenirs"
+      >
+          <Briefcase className="w-6 h-6" />
+      </button>
+      
+      {showExtrasMenu && (
+          <ExtrasMenu 
+              onOpenScratch={() => { setShowExtrasMenu(false); setShowScratchCard('default'); }}
+              onOpenCrystal={() => { setShowExtrasMenu(false); setShowCrystalBall(true); }}
+              onOpenEmergency={() => { setShowExtrasMenu(false); setShowEmergencyKit(true); }}
+              onOpenGames={() => { setShowExtrasMenu(false); setShowGames(true); }} // <--- AJOUTER CECI
+              onClose={() => setShowExtrasMenu(false)}
+          />
       )}
+  </div>
+)}
 
       {particles.map(p => (
         <div 
@@ -1834,6 +1847,7 @@ export default function Home() {
       {showScratchCard && <ScratchCard onClose={() => setShowScratchCard(null)} type={showScratchCard} />}
       {showCrystalBall && <CrystalBall onClose={() => setShowCrystalBall(false)} />}
       {showEmergencyKit && <EmergencyKit onClose={() => setShowEmergencyKit(false)} />}
+      {showGames && <GameLauncher onClose={() => setShowGames(false)} />}
 
       {/* LOGIN VIEW */}
       {!isAuthenticated && (
