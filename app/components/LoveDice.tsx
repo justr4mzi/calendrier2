@@ -37,9 +37,9 @@ const MODES = {
       "Mordiller intensément",
       "Chuchoter quelque chose de provocateur près de",
       "Donner une fessée sur",
-      "Retirer un vêtement"
+      "Retirer un vêtement",
       "Lécher",
-      "Ferler les yeux et lécher"
+      "Fermer les yeux et lécher",
       "Glisser les doigts lentement le long de",
       "Embrasser avec la langue",
       "Effleurer avec les ongles",
