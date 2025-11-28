@@ -32,13 +32,12 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   // --- 1. CHARGEMENT ET SYNCHRO (POLLING) ---
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/route');
+      const res = await fetch('/api/sync');
       const data = await res.json();
       
       if (data && data.clicker) {
-        // On ne met à jour le state local que si c'est le premier chargement 
-        // ou si on détecte un RESET (score serveur = 0 alors que local > 100)
-        if (isLoading || (bisous > 100 && data.clicker.bisous === 0)) {
+        // On met à jour UNIQUEMENT au premier chargement
+        if (isLoading) {
             setBisous(data.clicker.bisous || 0);
             setTotalAccumulated(data.clicker.totalAccumulated || 0);
             setClickPower(data.clicker.clickPower || 1);
@@ -46,21 +45,20 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
             setPurchasedUpgrades(data.clicker.purchasedUpgrades || []);
             setGameWon(data.clicker.gameWon || false);
             setChestOpened(data.clicker.chestOpened || false);
-            setIsLoading(false);
         }
-      } else {
-         setIsLoading(false);
       }
+      setIsLoading(false); // IMPORTANT : On arrête le loading dans tous les cas
     } catch (error) {
       console.error("Erreur chargement clicker:", error);
+      setIsLoading(false); // Même en cas d'erreur
     }
   };
 
   useEffect(() => {
     fetchData(); // Chargement initial
 
-    // Vérifier les mises à jour (ex: reset admin) toutes les 5 secondes
-    const pollInterval = setInterval(fetchData, 5000);
+    // Vérifier les mises à jour (ex: reset admin) toutes les 10 secondes
+    const pollInterval = setInterval(fetchData, 10000);
     return () => clearInterval(pollInterval);
   }, []); // eslint-disable-line
 

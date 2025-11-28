@@ -6,7 +6,7 @@ import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
 import SecretCode from './components/SecretCode';
 import LoveClicker from './components/LoveClicker';
 import SharedFridge from './components/SharedFridge';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill, Sticker } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -2258,15 +2258,17 @@ export default function Home() {
               onClick={() => setCurrentView('fridge')}
               className="group relative h-32 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-400 p-6 text-left shadow-lg transition-all hover:scale-[1.02] active:scale-95 overflow-hidden border-2 border-white/20"
             >
-              <Sticker className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 -rotate-12 group-hover:rotate-0 transition-transform duration-500" />
+              <div className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 -rotate-12 group-hover:rotate-0 transition-transform duration-500">
+                📝
+              </div>
               <div className="relative z-10 flex flex-col justify-center h-full">
                 <div className="flex items-center gap-2 mb-1">
                    <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
-                     <Sticker className="h-5 w-5 text-white" />
+                     <span className="text-xl">📝</span>
                    </div>
                    <h3 className="text-xl font-black text-white tracking-tight">Notre Frigo</h3>
                 </div>
-                <p className="text-yellow-100 text-sm font-medium pl-1">Colle-moi un petit mot doux 📝</p>
+                <p className="text-yellow-100 text-sm font-medium pl-1">Colle-moi un petit mot doux 💌</p>
               </div>
             </button>
           </div>

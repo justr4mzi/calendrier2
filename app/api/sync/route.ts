@@ -85,11 +85,13 @@ const getCurrentData = async (): Promise<CalendarData> => {
 // === GET : LIRE LES DONNÉES ===
 export async function GET() {
   try {
-    const data = await getCurrentData();
-    return NextResponse.json(data, { status: 200 });
+    const data = await kv.get<CalendarData>(DATA_KEY);
+    // Si aucune donnée, on retourne les valeurs par défaut
+    const finalData = data ? { ...defaultData, ...data } : defaultData;
+    return NextResponse.json(finalData, { status: 200 });
   } catch (error) {
     console.error('KV GET Error:', error);
-    return NextResponse.json({ error: 'Failed to retrieve data' }, { status: 500 });
+    return NextResponse.json(defaultData, { status: 200 }); // Retourner les données par défaut en cas d'erreur
   }
 }
 

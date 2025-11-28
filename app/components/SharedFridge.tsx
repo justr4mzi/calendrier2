@@ -61,12 +61,13 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
     });
   };
 
+
   // --- 2. CHARGEMENT ET SYNCHRO ---
   const fetchFridge = async () => {
     try {
       const res = await fetch('/api/route');
       const data = await res.json();
-      if (data && data.fridge) {
+      if (data && Array.isArray(data.fridge)) {
         setItems(data.fridge);
       }
     } catch (e) {
@@ -76,7 +77,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
 
   useEffect(() => {
     fetchFridge();
-    const interval = setInterval(fetchFridge, 3000); 
+    const interval = setInterval(fetchFridge, 5000); // Sync toutes les 5 sec
     
     // Gestion limite journalière
     const today = new Date().toDateString();
@@ -119,30 +120,41 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
 
   // --- 4. AJOUTER ITEM (AVEC COMPRESSION) ---
   const handleAddItem = async () => {
-    if (dailyCount >= 3) return;
+    if (dailyCount >= 3) {
+      alert("Tu as atteint la limite de 3 créations par jour !");
+      return;
+    }
+    
     setIsUploading(true);
 
     try {
         let content = noteText;
         
         // Si c'est une photo, on la compresse en texte Base64
-        if (newItemType === 'photo' && photoFile) {
-            content = await compressImage(photoFile);
+        if (newItemType === 'photo') {
+          if (!photoFile) {
+            alert("Sélectionne une photo d'abord !");
+            setIsUploading(false);
+            return;
+          }
+          content = await compressImage(photoFile);
         }
 
         const newItem: FridgeItem = {
             id: Date.now().toString(),
             type: newItemType,
             content: content,
-            caption: photoCaption,
-            color: noteColor,
+            caption: newItemType === 'photo' ? photoCaption : undefined,
+            color: newItemType === 'note' ? noteColor : undefined,
             x: 50,
             y: 50,
             rotation: Math.random() * 20 - 10,
             createdAt: Date.now()
         };
 
-        await fetch('/api/route', {
+
+        // SAUVEGARDER D'ABORD SUR LE SERVEUR
+        const response = await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -151,7 +163,11 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
             })
         });
 
-        // Update local
+        if (!response.ok) {
+          throw new Error('Erreur serveur');
+        }
+
+        // Update local APRÈS confirmation serveur
         setItems(prev => [...prev, newItem]);
         
         // Update compteur
@@ -159,13 +175,18 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
         setDailyCount(newCount);
         localStorage.setItem('fridge_count', newCount.toString());
 
+        // Reset form
         setIsAdding(false);
         setNoteText('');
         setPhotoFile(null);
         setPhotoCaption('');
+        
+        // Refresh immédiat
+        setTimeout(fetchFridge, 500);
+        
     } catch (e) {
-        console.error("Erreur ajout:", e);
-        alert("Oups, l'image est peut-être trop lourde, essaie une plus petite !");
+      console.error("Erreur ajout:", e);
+      alert("Oups, une erreur est survenue. L'image est peut-être trop lourde, essaie une plus petite !");
     } finally {
         setIsUploading(false);
     }
