@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Gamepad2, X, Brain, Grid3X3, Building, Circle, Box } from 'lucide-react';
+import { Gamepad2, X, Brain, Grid3X3, Building, Circle, Box, Package } from 'lucide-react';
 import ArcadeGame from './ArcadeGame';
 import CoupleQuiz from './CoupleQuiz';
 
