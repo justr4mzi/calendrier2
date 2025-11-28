@@ -6,7 +6,7 @@ import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
 import SecretCode from './components/SecretCode';
 import LoveClicker from './components/LoveClicker';
 import SharedFridge from './components/SharedFridge';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill, StickyNote } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill, Sticker } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
