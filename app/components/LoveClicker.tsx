@@ -142,7 +142,7 @@ const handleMainClick = (e: any) => {
     if (audioRef.current) {
         if (isMuted) {
             // Si c'était muet, on active et ON LANCE la lecture (interaction utilisateur)
-            audioRef.current.volume = 0.15; 
+            audioRef.current.volume = 0.10;
             audioRef.current.play().catch(e => console.log("Erreur lecture", e));
             setIsMuted(false);
         } else {
@@ -203,7 +203,7 @@ const handleMainClick = (e: any) => {
                  <Ticket className="w-16 h-16 text-pink-400 mx-auto mb-4" />
                  <h3 className="text-2xl font-bold mb-2">AUPINARD EN CONCERT</h3>
                  <p className="text-indigo-200 text-sm mb-8">Ta place est réservée. Prépare-toi ! 🎶</p>
-                 <a href="/ticket-aupinard.pdf" download className="flex items-center justify-center gap-3 w-full bg-white text-indigo-900 font-bold py-4 rounded-xl hover:bg-indigo-50">
+                 <a href="/pdfticket-aupinard." download className="flex items-center justify-center gap-3 w-full bg-white text-indigo-900 font-bold py-4 rounded-xl hover:bg-indigo-50">
                    <Download className="w-6 h-6" /> TÉLÉCHARGER MA PLACE
                  </a>
               </div>
