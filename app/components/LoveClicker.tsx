@@ -2,16 +2,17 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX } from 'lucide-react';
 
-// --- CONFIG ---
-const TARGET_SCORE = 50000;
+// --- CONFIGURATION ÉQUILIBRÉE (Plus facile & Rapide) ---
+const TARGET_SCORE = 15000; // Réduit de 50k à 15k pour que ce soit moins long
 
 const UPGRADES = [
-  { id: 1, name: "Penser à toi", cost: 50, cps: 1, icon: <Heart className="w-4 h-4" />, desc: "+1 Bisou / seconde" },
-  { id: 2, name: "Petit SMS Mignon", cost: 250, multiplier: 2, icon: <MessageCircleHeart className="w-4 h-4" />, desc: "Tes clics valent x2" },
-  { id: 3, name: "Playlist Love", cost: 1000, cps: 10, icon: <Music className="w-4 h-4" />, desc: "+10 Bisous / seconde" },
-  { id: 4, name: "Petit Dej au lit", cost: 5000, cps: 50, icon: <Coffee className="w-4 h-4" />, desc: "+50 Bisous / seconde" },
-  { id: 5, name: "Massage du dos", cost: 15000, multiplier: 5, icon: <Sparkles className="w-4 h-4" />, desc: "Clics x5 (Détente absolue)" },
-  { id: 6, name: "Week-end Surprise", cost: 30000, cps: 500, icon: <Plane className="w-4 h-4" />, desc: "+500 Bisous / seconde (WOW)" },
+  // J'ai baissé les prix et augmenté la puissance pour que ça aille vite !
+  { id: 1, name: "Penser à toi", cost: 30, cps: 2, icon: <Heart className="w-4 h-4" />, desc: "+2 Bisous / sec" },
+  { id: 2, name: "Petit SMS Mignon", cost: 200, multiplier: 2, icon: <MessageCircleHeart className="w-4 h-4" />, desc: "Clics x2 (Efficace)" },
+  { id: 3, name: "Playlist Love", cost: 800, cps: 20, icon: <Music className="w-4 h-4" />, desc: "+20 Bisous / sec" },
+  { id: 4, name: "Petit Dej au lit", cost: 3000, cps: 100, icon: <Coffee className="w-4 h-4" />, desc: "+100 Bisous / sec" },
+  { id: 5, name: "Massage du dos", cost: 8000, multiplier: 5, icon: <Sparkles className="w-4 h-4" />, desc: "Clics x5 (Ça grimpe !)" },
+  { id: 6, name: "Week-end Surprise", cost: 12000, cps: 1000, icon: <Plane className="w-4 h-4" />, desc: "+1000 Bisous / sec (La fusée 🚀)" },
 ];
 
 export default function LoveClicker({ onClose }: { onClose: () => void }) {
@@ -26,22 +27,22 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [chestOpened, setChestOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Musique
-  const [isMuted, setIsMuted] = useState(false);
+  // Musique : On démarre en MUET pour éviter le bug du navigateur
+  const [isMuted, setIsMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- 1. CHARGEMENT ET SYNCHRO (POLLING) ---
+  // --- 1. CHARGEMENT ET SYNCHRO ---
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/route'); // Assure-toi que c'est bien '/api/route' et pas '/api/sync' si ton fichier s'appelle route.ts
+      const res = await fetch('/api/route');
       if (!res.ok) throw new Error("Erreur serveur");
       const data = await res.json();
       
       if (data && data.clicker) {
-        // CORRECTION CRITIQUE : On ne met à jour que si le serveur a un meilleur score OU si c'est le tout premier chargement
+        // On charge si le serveur a un score plus élevé (synchro multi-appareils)
         if (isLoading || (data.clicker.totalAccumulated > totalAccumulated)) {
             setBisous(data.clicker.bisous || 0);
             setTotalAccumulated(data.clicker.totalAccumulated || 0);
@@ -53,23 +54,20 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         }
       }
     } catch (error) {
-      console.error("Erreur chargement clicker:", error);
+      console.error("Erreur chargement:", error);
     } finally {
-      // IMPORTANT : On débloque le chargement quoi qu'il arrive
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData(); 
-    // Sauvegarde périodique toutes les 5 secondes
     const saveInterval = setInterval(saveGame, 5000);
     return () => clearInterval(saveInterval);
   }, []); // eslint-disable-line
 
-  // --- 2. SAUVEGARDE VIA API ---
+  // --- 2. SAUVEGARDE ---
   const saveGame = async () => {
-    // Ne pas sauvegarder si score vide (évite d'écraser la DB avec 0)
     if (totalAccumulated === 0) return;
 
     const gameState = {
@@ -106,7 +104,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
             if (newVal >= TARGET_SCORE && !gameWon) setGameWon(true);
             return newVal;
         });
-        // Pas de save ici pour ne pas spammer, on compte sur le saveInterval
       }
     }, 1000);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
@@ -129,7 +126,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       if (upgrade.multiplier) setClickPower(prev => prev * upgrade.multiplier!);
       if (upgrade.cps) setAutoBisousPerSecond(prev => prev + upgrade.cps!);
       
-      // Force save immédiate
       setTimeout(saveGame, 50); 
     }
   };
@@ -139,14 +135,20 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       setTimeout(saveGame, 50);
   };
 
-  // Gestion Musique
-  useEffect(() => {
+  // GESTION MUSIQUE (CORRIGÉE)
+  const toggleMusic = () => {
     if (audioRef.current) {
-        audioRef.current.volume = 0.1; // Volume doux
-        if (isMuted) audioRef.current.pause();
-        else audioRef.current.play().catch(() => {}); // Ignorer erreur autoplay
+        if (isMuted) {
+            // Si c'était muet, on active et ON LANCE la lecture (interaction utilisateur)
+            audioRef.current.volume = 0.15; 
+            audioRef.current.play().catch(e => console.log("Erreur lecture", e));
+            setIsMuted(false);
+        } else {
+            audioRef.current.pause();
+            setIsMuted(true);
+        }
     }
-  }, [isMuted]);
+  };
 
   // --- RENDER ---
   const progressPercentage = Math.min(100, (totalAccumulated / TARGET_SCORE) * 100);
@@ -164,9 +166,14 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       {/* LECTEUR AUDIO */}
       <audio ref={audioRef} src="/lofi.mp3" loop />
 
-      {/* BOUTONS NAVIGATION */}
-      <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/50 rounded-full hover:bg-white text-gray-500 z-10">✕</button>
-      <button onClick={() => setIsMuted(!isMuted)} className="absolute top-4 left-4 p-2 bg-white/50 rounded-full hover:bg-white text-gray-500 z-10">
+      {/* BOUTON FERMER */}
+      <button onClick={onClose} className="absolute top-4 right-4 p-2 bg-white/50 rounded-full hover:bg-white text-gray-500 z-10 transition-all">✕</button>
+      
+      {/* BOUTON MUSIQUE (CORRIGÉ) */}
+      <button 
+        onClick={toggleMusic} 
+        className={`absolute top-4 left-4 p-2 rounded-full z-10 transition-all ${isMuted ? 'bg-white/50 text-gray-500' : 'bg-rose-500 text-white shadow-lg animate-pulse'}`}
+      >
         {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
       </button>
 
@@ -182,9 +189,9 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
                 <Sparkles className="w-20 h-20 text-yellow-500 mx-auto mb-6 animate-spin-slow" />
                 <h2 className="text-3xl font-black text-rose-600 mb-6">FÉLICITATIONS MA CHÉRIE !</h2>
                 <p className="text-gray-700 text-lg mb-8 font-medium">
-                  Tu as débloqué l'ultime récompense. Va vite ouvrir le cadeau <span className="font-bold text-rose-500">BONUS</span> dans la boîte mystère.
+                  Tu as explosé le score ! L'ultime récompense est débloquée. Ouvre vite le cadeau <span className="font-bold text-rose-500">BONUS</span>.
                 </p>
-                <button onClick={handleOpenChest} className="w-full bg-rose-500 text-white font-bold py-4 rounded-xl text-xl animate-pulse">
+                <button onClick={handleOpenChest} className="w-full bg-rose-500 text-white font-bold py-4 rounded-xl text-xl animate-pulse shadow-lg hover:scale-105 transition-transform">
                   C'est bon, je l'ai ouvert !
                 </button>
               </div>
@@ -207,18 +214,26 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       <div className="w-full max-w-md flex flex-col h-full max-h-[800px]">
         <div className="bg-white rounded-3xl p-6 shadow-xl mb-4 shrink-0">
             <div className="flex justify-between items-end mb-2">
-                <div className="text-3xl font-black text-gray-800">{Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-lg">Bisous</span></div>
+                <div className="text-3xl font-black text-gray-800 tabular-nums">{Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-lg">Bisous</span></div>
                 <div className="text-xs text-green-500 font-bold">+{autoBisousPerSecond} / sec</div>
             </div>
             <div className="h-6 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-200 relative">
                 <motion.div className="h-full bg-gradient-to-r from-rose-400 via-purple-400 to-indigo-500" initial={{ width: 0 }} animate={{ width: `${progressPercentage}%` }} />
-                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-600 mix-blend-multiply uppercase">{progressPercentage >= 100 ? "MAXIMAL !" : `${Math.floor(progressPercentage)}% - Surprise en cours...`}</div>
+                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-gray-600 mix-blend-multiply uppercase">{progressPercentage >= 100 ? "AMOUR MAXIMAL !" : `${Math.floor(progressPercentage)}%`}</div>
             </div>
         </div>
 
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
-             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.90 }} onClick={handleMainClick} className="relative z-10 text-rose-500 drop-shadow-2xl">
-                <Heart className="w-48 h-48 fill-rose-500 stroke-rose-600" />
+             <motion.button 
+                whileHover={{ scale: 1.05 }} 
+                whileTap={{ scale: 0.90 }} 
+                onClick={handleMainClick} 
+                className="relative z-10 text-rose-500 drop-shadow-2xl filter"
+             >
+                <Heart className="w-48 h-48 fill-rose-500 stroke-rose-600" strokeWidth={1.5} />
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-white font-bold text-xl drop-shadow-md">CLICK</span>
+                </div>
              </motion.button>
         </div>
 
@@ -230,11 +245,14 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
                     const canBuy = bisous >= upgrade.cost && !isBought;
                     return (
                         <button key={upgrade.id} onClick={() => buyUpgrade(upgrade)} disabled={!canBuy && !isBought}
-                            className={`w-full flex items-center p-3 rounded-xl border-2 transition-all text-left ${isBought ? "bg-green-50 border-green-200 opacity-80" : canBuy ? "bg-white border-rose-100" : "bg-gray-50 opacity-50 grayscale"}`}>
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 shrink-0 ${isBought ? "bg-green-200" : "bg-rose-100 text-rose-500"}`}>{isBought ? "OK" : upgrade.icon}</div>
+                            className={`w-full flex items-center p-3 rounded-xl border-2 transition-all text-left ${isBought ? "bg-green-50 border-green-200 opacity-80" : canBuy ? "bg-white border-rose-100 hover:border-rose-400 shadow-sm" : "bg-gray-50 opacity-50 grayscale"}`}>
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 shrink-0 ${isBought ? "bg-green-200 text-green-700" : "bg-rose-100 text-rose-500"}`}>{isBought ? "OK" : upgrade.icon}</div>
                             <div className="flex-1">
-                                <div className="flex justify-between"><span className="font-bold text-sm">{upgrade.name}</span><span className={isBought ? "hidden" : "text-xs font-bold bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full"}>{upgrade.cost}</span></div>
-                                <p className="text-xs text-gray-500 font-medium">{upgrade.desc}</p>
+                                <div className="flex justify-between items-center mb-1">
+                                    <span className="font-bold text-sm text-gray-800">{upgrade.name}</span>
+                                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isBought ? "hidden" : "bg-rose-100 text-rose-600"}`}>{upgrade.cost}</span>
+                                </div>
+                                <p className="text-xs text-gray-600 font-medium">{upgrade.desc}</p>
                             </div>
                         </button>
                     );
