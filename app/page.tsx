@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import GameLauncher from './components/games/GameLauncher';
 import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
 import SecretCode from './components/SecretCode';
+import LoveClicker from './components/LoveClicker';
+import SharedFridge from './components/SharedFridge';
 import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
@@ -1462,6 +1464,7 @@ export default function Home() {
   const [failedAttempts, setFailedAttempts] = useState(0);
   const [showLoveDice, setShowLoveDice] = useState(false); // <--- AJOUTE ÇA
   const [showSecretCode, setShowSecretCode] = useState(false); // <--- AJOUT
+  const [currentView, setCurrentView] = useState<'home' | 'clicker' | 'fridge'>('home');
   // === GESTION INTELLIGENTE DU SON ===
   const [isInGame, setIsInGame] = useState(false);
   
@@ -1524,7 +1527,6 @@ export default function Home() {
     };
     loadInitialData();
   }, [isClient]);
-
   // === CHRONOMÈTRE ESPION ===
   useEffect(() => {
     if (isAuthenticated && !isAdmin) {
@@ -1872,7 +1874,14 @@ export default function Home() {
         setZoomedPhoto(photoUrl);
     }
   };
-
+// --- AJOUT : SI UN JEU EST LANCÉ, ON L'AFFICHE EN PLEIN ÉCRAN ---
+  if (currentView === 'clicker') {
+    return <LoveClicker onClose={() => setCurrentView('home')} />;
+  }
+  if (currentView === 'fridge') {
+    return <SharedFridge onClose={() => setCurrentView('home')} />;
+  }
+  // ---------------------------------------------------------------
   const progress = (foundDays.length / CALENDAR_DATA.length) * 100;
   const isPlayingMusic = isAuthenticated && playMusic;
 
@@ -2224,8 +2233,44 @@ export default function Home() {
                 style={{ width: `${progress}%` }}
               />
             </div>
-          </div>
+{/* --- DÉBUT : NOUVEAUX BOUTONS ACTIVITÉS --- */}
+          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* CARTE 1 : LOVE CLICKER */}
+            <button 
+              onClick={() => setCurrentView('clicker')}
+              className="group relative h-32 rounded-3xl bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-left shadow-lg transition-all hover:scale-[1.02] active:scale-95 overflow-hidden border-2 border-white/20"
+            >
+              <Heart className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 rotate-12 group-hover:rotate-45 transition-transform duration-500" />
+              <div className="relative z-10 flex flex-col justify-center h-full">
+                <div className="flex items-center gap-2 mb-1">
+                   <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
+                     <Sparkles className="h-5 w-5 text-yellow-300 fill-yellow-300" />
+                   </div>
+                   <h3 className="text-xl font-black text-white tracking-tight">Usine à Bisous</h3>
+                </div>
+                <p className="text-rose-100 text-sm font-medium pl-1">Clique pour la surprise ultime... 🎁</p>
+              </div>
+            </button>
 
+            {/* CARTE 2 : FRIGO CONNECTÉ */}
+            <button
+              onClick={() => setCurrentView('fridge')}
+              className="group relative h-32 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-400 p-6 text-left shadow-lg transition-all hover:scale-[1.02] active:scale-95 overflow-hidden border-2 border-white/20"
+            >
+              <Sticker className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 -rotate-12 group-hover:rotate-0 transition-transform duration-500" />
+              <div className="relative z-10 flex flex-col justify-center h-full">
+                <div className="flex items-center gap-2 mb-1">
+                   <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
+                     <Sticker className="h-5 w-5 text-white" />
+                   </div>
+                   <h3 className="text-xl font-black text-white tracking-tight">Notre Frigo</h3>
+                </div>
+                <p className="text-yellow-100 text-sm font-medium pl-1">Colle-moi un petit mot doux 📝</p>
+              </div>
+            </button>
+          </div>
+          {/* --- FIN : NOUVEAUX BOUTONS --- */}
+          {/* Juste en dessous, il doit y avoir ta ligne : <div className="paper-texture ..."> */}
           <div className="paper-texture rounded-3xl p-6 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
               {CALENDAR_DATA.map((day) => {

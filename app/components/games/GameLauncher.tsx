@@ -1,24 +1,42 @@
 import React, { useState } from 'react';
-import { Gamepad2, X, Brain, Grid3X3, Building, Circle, Box, Package } from 'lucide-react';
+import { Gamepad2, X, Brain, Grid3X3, Heart, Sticker, Box, Circle, Package } from 'lucide-react'; 
+// J'ai ajouté les imports de tes nouveaux jeux ci-dessous :
 import ArcadeGame from './ArcadeGame';
 import CoupleQuiz from './CoupleQuiz';
+import LoveClicker from './LoveClicker'; 
+import SharedFridge from './SharedFridge';
 
 interface GameLauncherProps {
   onClose: () => void;
-  // NOUVEAU : Ces fonctions permettent de contrôler le son
   onGameStart?: () => void;
   onGameEnd?: () => void;
 }
 
-// Ta liste de jeux locaux
+// Ta liste de jeux mise à jour
 const GAMES_LIST = [
+  // --- NOS JEUX PERSO (Les nouveaux sont ici) ---
+  { 
+    id: 'clicker', 
+    name: 'Love Clicker', 
+    icon: <Heart className="w-6 h-6" />, 
+    color: 'bg-rose-600', 
+    type: 'custom' 
+  },
+  { 
+    id: 'fridge', 
+    name: 'Frigo Love', 
+    icon: <Sticker className="w-6 h-6" />, 
+    color: 'bg-yellow-400', 
+    type: 'custom' 
+  },
   { 
     id: 'quiz', 
     name: 'Quiz du Couple', 
     icon: <Brain className="w-6 h-6" />, 
-    color: 'bg-rose-500', 
+    color: 'bg-purple-500', 
     type: 'custom' 
   },
+  // --- JEUX ARCADE CLASSIQUES ---
   { 
     id: '2048', 
     name: '2048', 
@@ -46,7 +64,7 @@ const GAMES_LIST = [
   { 
     id: 'perfecttidy',
     name: 'Perfect Tidy',
-    icon: <Package className="w-6 h-6" />, // Nouvelle icône
+    icon: <Package className="w-6 h-6" />,
     color: 'bg-green-600',
     type: 'arcade', 
     url: 'https://relaxgame.win/games/perfect-tidy/' 
@@ -67,28 +85,39 @@ const GameLauncher = ({ onClose, onGameStart, onGameEnd }: GameLauncherProps) =>
   // Quand on lance un jeu
   const handleLaunchGame = (game: any) => {
     setActiveGame(game);
-    if (onGameStart) onGameStart(); // On baisse le son
+    if (onGameStart) onGameStart(); 
   };
 
-  // Quand on ferme un jeu (retour au menu jeux)
+  // Quand on ferme un jeu
   const handleCloseGame = () => {
     setActiveGame(null);
-    if (onGameEnd) onGameEnd(); // On remet le son
+    if (onGameEnd) onGameEnd(); 
   };
 
-  // Quand on ferme tout le menu jeux
   const handleCloseLauncher = () => {
-    if (activeGame && onGameEnd) onGameEnd(); // Sécurité si un jeu était ouvert
+    if (activeGame && onGameEnd) onGameEnd();
     onClose();
   };
 
+  // --- C'EST ICI QUE LA MAGIE OPÈRE ---
   if (activeGame) {
-    if (activeGame.type === 'custom') {
+    // Si c'est le Clicker
+    if (activeGame.id === 'clicker') {
+        return <LoveClicker onClose={handleCloseGame} />;
+    }
+    // Si c'est le Frigo
+    if (activeGame.id === 'fridge') {
+        return <SharedFridge onClose={handleCloseGame} />;
+    }
+    // Si c'est le Quiz
+    if (activeGame.id === 'quiz') {
       return <CoupleQuiz onClose={handleCloseGame} />;
     }
+    // Si c'est un jeu externe
     return <ArcadeGame url={activeGame.url} title={activeGame.name} onClose={handleCloseGame} />;
   }
 
+  // --- LE MENU PRINCIPAL ---
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/80 backdrop-blur-md p-4" onClick={handleCloseLauncher}>
       <div className="bg-white rounded-3xl p-6 shadow-2xl max-w-md w-full relative" onClick={(e) => e.stopPropagation()}>
@@ -101,10 +130,10 @@ const GameLauncher = ({ onClose, onGameStart, onGameEnd }: GameLauncherProps) =>
                 <Gamepad2 className="w-8 h-8 text-indigo-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-800">Salle d'Arcade 🕹️</h2>
-            <p className="text-gray-500 text-sm">Détends-toi un peu mon cœur</p>
+            <p className="text-gray-500 text-sm">Choisis ton activité mon cœur</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 max-h-[60vh] overflow-y-auto p-2">
             {GAMES_LIST.map((game) => (
                 <button
                     key={game.id}
