@@ -109,7 +109,10 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [autoBisousPerSecond, gameWon]); 
 
-  const handleMainClick = () => {
+const handleMainClick = (e: any) => {
+    // Empêche le zoom sur mobile quand on tape vite
+    if (e && e.cancelable) e.preventDefault();
+
     setBisous(prev => prev + clickPower);
     setTotalAccumulated(prev => {
         const newVal = Math.min(prev + clickPower, TARGET_SCORE);
@@ -118,7 +121,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     });
     debouncedSave();
   };
-
   const buyUpgrade = (upgrade: typeof UPGRADES[0]) => {
     if (bisous >= upgrade.cost && !purchasedUpgrades.includes(upgrade.id)) {
       setBisous(prev => prev - upgrade.cost);
@@ -224,11 +226,13 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         </div>
 
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
-             <motion.button 
-                whileHover={{ scale: 1.05 }} 
+<motion.button 
                 whileTap={{ scale: 0.90 }} 
-                onClick={handleMainClick} 
-                className="relative z-10 text-rose-500 drop-shadow-2xl filter"
+                // C'est ICI la magie pour le SPAM :
+                onMouseDown={handleMainClick}
+                onTouchStart={handleMainClick}
+                className="relative z-10 text-rose-500 drop-shadow-2xl filter touch-manipulation cursor-pointer select-none outline-none"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
              >
                 <Heart className="w-48 h-48 fill-rose-500 stroke-rose-600" strokeWidth={1.5} />
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
