@@ -65,7 +65,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
   // --- 2. CHARGEMENT ET SYNCHRO ---
   const fetchFridge = async () => {
     try {
-      const res = await fetch('/api/route');
+      const res = await fetch('/api/sync');
       const data = await res.json();
       if (data && Array.isArray(data.fridge)) {
         setItems(data.fridge);
@@ -107,7 +107,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
         item.id === id ? { ...item, x: xPercent, y: yPercent } : item
     ));
 
-    await fetch('/api/route', {
+    await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -37,7 +37,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   // --- 1. CHARGEMENT ET SYNCHRO ---
   const fetchData = async () => {
     try {
-      const res = await fetch('/api/route');
+      const res = await fetch('/api/sync');
       if (!res.ok) throw new Error("Erreur serveur");
       const data = await res.json();
       
@@ -75,7 +75,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     };
     
     try {
-      await fetch('/api/route', {
+      await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
