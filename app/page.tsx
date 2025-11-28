@@ -6,7 +6,7 @@ import LoveDice from './components/LoveDice'; // <--- AJOUTE ÇA
 import SecretCode from './components/SecretCode';
 import LoveClicker from './components/LoveClicker';
 import SharedFridge from './components/SharedFridge';
-import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill } from 'lucide-react';
+import { Heart, Lock, Unlock, Gift, Sparkles, LogOut, RefreshCcw, Volume2, VolumeX, X, Play, Pause, Eye, Clock, Smartphone, Monitor, Send, MessageCircleHeart, Youtube, Ticket, Briefcase, Pill, StickyNote } from 'lucide-react';
 
 // === UTILITAIRE : DÉTECTER L'APPAREIL ===
 const getDeviceType = () => {
@@ -2233,6 +2233,7 @@ export default function Home() {
                 style={{ width: `${progress}%` }}
               />
             </div>
+          </div>
 {/* --- DÉBUT : NOUVEAUX BOUTONS ACTIVITÉS --- */}
           <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
             {/* CARTE 1 : LOVE CLICKER */}
