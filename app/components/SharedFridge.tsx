@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Image as ImageIcon, Loader2, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
-import heic2any from 'heic2any'; // N'oublie pas : npm install heic2any
 
 // --- TYPES ---
 interface FridgeItem {
@@ -40,13 +39,14 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
     let imageToProcess = file;
     if (file.type === "image/heic" || file.name.toLowerCase().endsWith('.heic')) {
         try {
+            // CORRECTION ICI : On importe la librairie seulement maintenant (Dynamique)
+            const heic2any = (await import('heic2any')).default;
+            
             const convertedBlob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.8 });
-            // heic2any peut retourner un tableau, on prend le premier
             const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
             imageToProcess = new File([blob], "converted.jpg", { type: "image/jpeg" });
         } catch (e) {
             console.error("Erreur conversion HEIC", e);
-            // On continue avec le fichier original au cas où
         }
     }
 
@@ -79,7 +79,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
   // --- 2. CHARGEMENT ET SYNCHRO ---
   const fetchFridge = async () => {
     try {
-      const res = await fetch('/api/route');
+      const res = await fetch('/api/sync');
       const data = await res.json();
       if (data && data.fridge) {
         setItems(data.fridge);
@@ -100,8 +100,8 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
     fetchFridge();
     const interval = setInterval(fetchFridge, 3000);
     
-    // Si on est sur mobile, on dézoome un peu par défaut pour voir plus de choses
-    if (window.innerWidth < 768) {
+// CORRECTION ICI : On vérifie que window existe pour ne pas faire planter le serveur
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
         setZoom(0.6);
     }
 
@@ -122,7 +122,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
   const handleDragEnd = async (id: string, info: any) => {
     // On sauvegarde juste la position relative, pas besoin de calcul savant ici
     // Framer Motion gère le visuel, l'API stocke juste pour dire "ça a bougé"
-    await fetch('/api/route', {
+    await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -152,7 +152,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
             x: 50, y: 50, rotation: Math.random() * 20 - 10, createdAt: Date.now()
         };
 
-        const response = await fetch('/api/route', {
+        const response = await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'add_fridge_item', fridgeItem: newItem })
@@ -176,7 +176,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
 
   const handleClearFridge = async () => {
       if(confirm("Vider tout le frigo ?")) {
-        await fetch('/api/route', {
+        await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'reset' })
