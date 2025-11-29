@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX } from 'lucide-react';
 
 // --- CONFIGURATION ÉQUILIBRÉE (Plus facile & Rapide) ---
-const TARGET_SCORE = 15000; // Réduit de 50k à 15k pour que ce soit moins long
+const TARGET_SCORE = 50000; // Réduit de 50k à 15k pour que ce soit moins long
 
 const UPGRADES = [
   // J'ai baissé les prix et augmenté la puissance pour que ça aille vite !
