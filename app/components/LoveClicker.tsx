@@ -142,7 +142,7 @@ const handleMainClick = (e: any) => {
     if (audioRef.current) {
         if (isMuted) {
             // Si c'était muet, on active et ON LANCE la lecture (interaction utilisateur)
-            audioRef.current.volume = 0.10;
+            audioRef.current.volume = 0.02;
             audioRef.current.play().catch(e => console.log("Erreur lecture", e));
             setIsMuted(false);
         } else {
@@ -199,6 +199,13 @@ const handleMainClick = (e: any) => {
               </div>
             ) : (
               <div className="max-w-md w-full bg-indigo-900 rounded-3xl p-8 shadow-2xl border border-indigo-500 relative overflow-hidden text-white">
+                <button 
+                   onClick={onClose}
+                   className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white p-2 rounded-full transition-all z-20"
+                >
+                   ✕
+                </button>
+                {/* --------------------------- */}
                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400"></div>
                  <Ticket className="w-16 h-16 text-pink-400 mx-auto mb-4" />
                  <h3 className="text-2xl font-bold mb-2">AUPINARD EN CONCERT</h3>

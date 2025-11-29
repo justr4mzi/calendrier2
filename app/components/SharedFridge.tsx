@@ -63,12 +63,19 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
 
 
   // --- 2. CHARGEMENT ET SYNCHRO ---
-  const fetchFridge = async () => {
+const fetchFridge = async () => {
     try {
-      const res = await fetch('/api/sync');
+      const res = await fetch('/api/route');
       const data = await res.json();
-      if (data && Array.isArray(data.fridge)) {
+      if (data && data.fridge) {
         setItems(data.fridge);
+        
+        // --- AJOUT : Si le frigo est vide (Reset Admin), on reset tes crédits locaux ---
+        if (data.fridge.length === 0) {
+            setDailyCount(0);
+            localStorage.setItem('fridge_count', '0');
+        }
+        // -----------------------------------------------------------------------------
       }
     } catch (e) {
       console.error("Erreur sync frigo:", e);
@@ -198,16 +205,21 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
         <X className="w-8 h-8" />
       </button>
 
-      <div className="bg-[#f0e6d2] w-full h-full max-w-6xl rounded-xl shadow-2xl relative overflow-hidden flex flex-col" 
-           style={{ backgroundImage: 'radial-gradient(#d3cbb8 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
-        
+      <div className="bg-[#f0e6d2] w-full h-full max-w-6xl rounded-xl shadow-2xl relative overflow-hidden flex flex-col"></div>
         <div className="p-4 bg-white/50 border-b border-[#d3cbb8] flex justify-between items-center">
-            <h2 className="font-bold text-gray-700 font-serif text-xl">Notre Frigo ❤️</h2>
+            <h2 className="font-bold text-gray-700 font-serif text-xl">Notre endroit en commun ❤️</h2>
             <div className="text-sm text-gray-500 italic">Crédits créatifs : {dailyCount}/3 aujourd'hui</div>
         </div>
 
-        <div ref={containerRef} className="flex-1 relative overflow-hidden touch-none cursor-crosshair">
-            {items.map((item) => (
+<div className="flex-1 relative overflow-auto touch-action-pan-x touch-action-pan-y bg-[#d3cbb8]/20">
+            {/* On crée un conteneur INTERNE géant et fixe (le "Vrai Tableau") */}
+            <div 
+                ref={containerRef} 
+                className="relative w-[1000px] h-[1000px] cursor-crosshair shadow-inner"
+                // L'image de fond se met sur ce grand carré
+                style={{ backgroundImage: 'radial-gradient(#d3cbb8 1px, transparent 1px)', backgroundSize: '20px 20px' }}
+            >
+                {items.map((item) => (
                 <motion.div
                     key={item.id}
                     drag
