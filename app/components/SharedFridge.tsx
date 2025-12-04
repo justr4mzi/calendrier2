@@ -17,6 +17,11 @@ interface FridgeItem {
 const COLORS = ['bg-yellow-200', 'bg-rose-200', 'bg-blue-200', 'bg-green-200'];
 const BOARD_SIZE = 2000; 
 
+// Utilitaire distance pour le pinch-to-zoom
+const getDistance = (p1: {x:number, y:number}, p2: {x:number, y:number}) => {
+    return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+};
+
 export default function SharedFridge({ onClose, currentUser }: { onClose: () => void, currentUser: string }) {
   const [items, setItems] = useState<FridgeItem[]>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -42,21 +47,21 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       initialItemY: number;
   } | null>(null);
 
-  // --- REFS POUR LE DRAG MANUEL (BOARD/FOND) ---
-  const dragBoardRef = useRef<{
-      startX: number;
-      startY: number;
-      initialViewX: number;
-      initialViewY: number;
-  } | null>(null);
+  // --- REFS POUR LE DRAG MANUEL & ZOOM (BOARD/FOND) ---
+  // On utilise une Map pour suivre tous les doigts posés sur l'écran
+  const activePointers = useRef<Map<number, { x: number, y: number }>>(new Map());
+  const initialPinchDist = useRef<number | null>(null);
+  const initialScale = useRef<number>(1);
+  
+  // Pour le PAN (déplacement 1 doigt)
+  const lastPanPoint = useRef<{ x: number, y: number } | null>(null);
 
-  const isDraggingItemRef = useRef(false); // Pour bloquer la synchro
+  const isDraggingItemRef = useRef(false);
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
   // --- SYNCHRO ---
   const fetchFridge = async () => {
-    // Si on bouge un item, ON NE TOUCHE À RIEN pour éviter les conflits
     if (isDraggingItemRef.current) return;
 
     try {
@@ -86,12 +91,12 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   }, [currentUser]);
 
   // =========================================
-  // --- LOGIQUE DE DÉPLACEMENT DES ITEMS ---
+  // --- LOGIQUE ITEMS ---
   // =========================================
   
   const onItemDragStart = (e: React.PointerEvent, item: FridgeItem) => {
       e.preventDefault();
-      e.stopPropagation(); // CRUCIAL : Empêche le tableau derrière de bouger
+      e.stopPropagation();
 
       dragItemRef.current = {
           id: item.id,
@@ -102,7 +107,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       };
       isDraggingItemRef.current = true;
 
-      // On attache les écouteurs globaux pour le suivi fluide
       window.addEventListener('pointermove', onItemDragMove);
       window.addEventListener('pointerup', onItemDragEnd);
   };
@@ -111,18 +115,15 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       if (!dragItemRef.current) return;
       const { startX, startY, initialItemX, initialItemY, id } = dragItemRef.current;
       
-      // Calcul du déplacement, ajusté par le zoom actuel
       const deltaX = (e.clientX - startX) / viewState.scale;
       const deltaY = (e.clientY - startY) / viewState.scale;
 
       let newX = initialItemX + deltaX;
       let newY = initialItemY + deltaY;
 
-      // Limites du tableau
       newX = Math.max(0, Math.min(newX, BOARD_SIZE - 200));
       newY = Math.max(0, Math.min(newY, BOARD_SIZE - 200));
 
-      // Manipulation directe du DOM pour la fluidité (sans re-render React)
       const el = document.getElementById(`item-${id}`);
       if (el) {
           el.style.transform = `translate(${newX}px, ${newY}px) rotate(${items.find(i => i.id === id)?.rotation || 0}deg)`;
@@ -139,7 +140,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       window.removeEventListener('pointerup', onItemDragEnd);
 
       const el = document.getElementById(`item-${id}`);
-      // Sauvegarde finale si le déplacement a eu lieu
       if (el && el.dataset.tempX && el.dataset.tempY) {
           const finalX = parseFloat(el.dataset.tempX);
           const finalY = parseFloat(el.dataset.tempY);
@@ -162,57 +162,90 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   };
 
   // =========================================
-  // --- LOGIQUE DE DÉPLACEMENT DU TABLEAU (PAN) ---
+  // --- LOGIQUE BOARD (PAN & PINCH ZOOM) ---
   // =========================================
 
-  const onBoardDragStart = (e: React.PointerEvent) => {
-      // Si on clique sur le fond, on commence à bouger le tableau
-      e.preventDefault();
-      dragBoardRef.current = {
-          startX: e.clientX,
-          startY: e.clientY,
-          initialViewX: viewState.x,
-          initialViewY: viewState.y
-      };
-      window.addEventListener('pointermove', onBoardDragMove);
-      window.addEventListener('pointerup', onBoardDragEnd);
-  };
-
-  const onBoardDragMove = (e: PointerEvent) => {
-      if (!dragBoardRef.current) return;
-      const { startX, startY, initialViewX, initialViewY } = dragBoardRef.current;
+  const onBoardPointerDown = (e: React.PointerEvent) => {
+      // On capture le pointeur pour ne pas le perdre
+      (e.target as Element).setPointerCapture(e.pointerId);
       
-      // Ici, on met à jour le state React car bouger tout le tableau demande un re-render
-      setViewState(prev => ({
-          ...prev,
-          x: initialViewX + (e.clientX - startX),
-          y: initialViewY + (e.clientY - startY)
-      }));
+      // On ajoute le doigt à la liste
+      activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      // Si on a 2 doigts -> Début du PINCH ZOOM
+      if (activePointers.current.size === 2) {
+          const points = Array.from(activePointers.current.values());
+          initialPinchDist.current = getDistance(points[0], points[1]);
+          initialScale.current = viewState.scale;
+          lastPanPoint.current = null; // On arrête le pan quand on zoom
+      } 
+      // Si on a 1 doigt -> Début du PAN
+      else if (activePointers.current.size === 1) {
+          lastPanPoint.current = { x: e.clientX, y: e.clientY };
+      }
   };
 
-  const onBoardDragEnd = () => {
-      dragBoardRef.current = null;
-      window.removeEventListener('pointermove', onBoardDragMove);
-      window.removeEventListener('pointerup', onBoardDragEnd);
+  const onBoardPointerMove = (e: React.PointerEvent) => {
+      // Mise à jour de la position du doigt actuel
+      if (activePointers.current.has(e.pointerId)) {
+          activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      }
+
+      // --- CAS 1 : PINCH ZOOM (2 doigts) ---
+      if (activePointers.current.size === 2 && initialPinchDist.current) {
+          const points = Array.from(activePointers.current.values());
+          const currentDist = getDistance(points[0], points[1]);
+          
+          // Ratio de zoom
+          const scaleFactor = currentDist / initialPinchDist.current;
+          let newScale = initialScale.current * scaleFactor;
+          
+          // Limites Zoom
+          newScale = Math.min(Math.max(0.1, newScale), 3);
+          
+          setViewState(prev => ({ ...prev, scale: newScale }));
+          return;
+      }
+
+      // --- CAS 2 : PAN (1 doigt) ---
+      if (activePointers.current.size === 1 && lastPanPoint.current) {
+          const deltaX = e.clientX - lastPanPoint.current.x;
+          const deltaY = e.clientY - lastPanPoint.current.y;
+          
+          setViewState(prev => ({
+              ...prev,
+              x: prev.x + deltaX,
+              y: prev.y + deltaY
+          }));
+
+          lastPanPoint.current = { x: e.clientX, y: e.clientY };
+      }
   };
 
+  const onBoardPointerUp = (e: React.PointerEvent) => {
+      (e.target as Element).releasePointerCapture(e.pointerId);
+      activePointers.current.delete(e.pointerId);
 
-  // --- ZOOM MOLETTE (NOUVEAU) ---
+      // Si on passe de 2 à 1 doigt, on réinitialise le pan pour éviter un saut
+      if (activePointers.current.size < 2) {
+          initialPinchDist.current = null;
+      }
+      if (activePointers.current.size === 1) {
+          const point = activePointers.current.values().next().value;
+          lastPanPoint.current = point; // On reprend le pan là où est le doigt restant
+      } else {
+          lastPanPoint.current = null;
+      }
+  };
+
   const handleWheel = (e: React.WheelEvent) => {
-    // Empêche le scroll de la page si nécessaire
     e.preventDefault(); 
-    
-    // Détermine la direction du zoom (in ou out)
-    // On divise par une grande valeur pour que le zoom soit doux
     const zoomFactor = -e.deltaY * 0.001; 
-    
     setViewState(prev => {
-      // On calcule la nouvelle échelle en la bornant entre 0.1 et 3
       let newScale = Math.min(Math.max(0.1, prev.scale + zoomFactor), 3);
       return { ...prev, scale: newScale };
     });
   };
-
 
   // --- UI & Helpers ---
   const fitScreen = () => {
@@ -227,7 +260,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const handleClearFridge = async () => {
       if (!confirm("Tout vider ?")) return;
       setItems([]); 
-      isDraggingItemRef.current = true; // Bloque la sync
+      isDraggingItemRef.current = true; 
       await fetch('/api/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -271,15 +304,23 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
             setItems(prev => [...prev, newItem]);
             setDailyCount(prev => prev + 1);
             setIsAdding(false);
-            setNoteText(''); setPhotoFile(null);
+            setNoteText(''); setPhotoFile(null); setPhotoCaption('');
         } else if(res.status === 403) { alert("Limite atteinte !"); }
     } catch (e) { alert("Erreur ajout"); } 
     finally { setIsUploading(false); }
   };
 
   return (
-    // AJOUT DU LISTENER onWheel SUR LE CONTENEUR PRINCIPAL
-    <div className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" ref={boardContainerRef} onWheel={handleWheel}>
+    <div 
+        className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" 
+        ref={boardContainerRef} 
+        onWheel={handleWheel}
+        // Événements globaux du conteneur pour le Pan/Zoom tactile
+        onPointerDown={onBoardPointerDown}
+        onPointerMove={onBoardPointerMove}
+        onPointerUp={onBoardPointerUp}
+        onPointerLeave={onBoardPointerUp}
+    >
       
       {/* HEADER */}
       <div className="absolute top-0 left-0 right-0 z-[100] p-4 flex justify-between items-start pointer-events-none">
@@ -297,7 +338,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
       </div>
 
-      {/* POUBELLE */}
       <div className="absolute bottom-4 left-4 z-[100] pointer-events-auto">
           <button onClick={handleClearFridge} className="bg-red-500 text-white p-4 rounded-full shadow-2xl border-4 border-white active:scale-90 transition-transform">
             <Trash2 className="w-6 h-6" />
@@ -305,19 +345,11 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       </div>
 
       {/* BOARD (LE FOND) */}
-      {/* On applique le listener onPointerDown ici pour bouger le fond */}
-      <div className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing" onPointerDown={onBoardDragStart}>
+      <div className="w-full h-full touch-none select-none">
           <motion.div
             ref={boardRef}
-            // SUPPRESSION DES PROPS DE DRAG AUTOMATIQUE DE FRAMER MOTION ICI
-            // drag 
-            // dragMomentum={false}
-            // onDrag={handleBoardDrag}
-            // dragListener={!isDraggingItemRef.current}
-            
-            // On garde l'animation pour le zoom et le pan manuel
             animate={{ x: viewState.x, y: viewState.y, scale: viewState.scale }}
-            transition={{ type: "tween", duration: 0 }} // Duration 0 pour que ça suive la souris instantanément
+            transition={{ type: "tween", duration: 0 }} 
             className="shadow-2xl relative origin-top-left bg-[#f0e6d2]"
             style={{ 
                 width: BOARD_SIZE, height: BOARD_SIZE,
@@ -330,7 +362,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
                 <div
                     id={`item-${item.id}`}
                     key={item.id}
-                    // Le stopPropagation ici est la clé pour ne pas bouger le fond
                     onPointerDown={(e) => onItemDragStart(e, item)}
                     className="absolute hover:z-[999] cursor-move touch-none"
                     style={{ 
@@ -364,9 +395,9 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         </button>
       </div>
 
-      {/* MODAL AJOUT */}
+      {/* MODAL AJOUT (Fix Zoom Input avec text-base et touch-auto) */}
       {isAdding && (
-         <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setIsAdding(false)}>
+         <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setIsAdding(false)} style={{ touchAction: 'auto' }}>
              <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
                  <h3 className="text-xl font-bold mb-4">Ajouter sur le frigo</h3>
                  <div className="flex gap-2 mb-4">
@@ -375,15 +406,15 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
                  </div>
                  {newItemType === 'note' ? (
                      <>
-                        <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder="Message..." className="w-full h-32 p-4 bg-gray-50 rounded-xl mb-4 resize-none" />
+                        <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder="Message..." className="w-full h-32 p-4 bg-gray-50 rounded-xl mb-4 resize-none text-base" />
                         <div className="flex justify-center gap-3 mb-4">
                             {COLORS.map(c => ( <button key={c} onClick={() => setNoteColor(c)} className={`w-8 h-8 rounded-full ${c} border-2 ${noteColor === c ? 'border-gray-500' : 'border-transparent'}`} /> ))}
                         </div>
                      </>
                  ) : (
                      <div className="mb-4 space-y-2">
-                         <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} />
-                         <input type="text" placeholder="Légende..." value={photoCaption} onChange={(e) => setPhotoCaption(e.target.value)} className="w-full p-2 border rounded" />
+                         <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} className="text-base" />
+                         <input type="text" placeholder="Légende..." value={photoCaption} onChange={(e) => setPhotoCaption(e.target.value)} className="w-full p-2 border rounded text-base" />
                      </div>
                  )}
                  <button onClick={handleAddItem} disabled={isUploading} className="w-full py-3 bg-rose-500 text-white rounded-xl font-bold">
