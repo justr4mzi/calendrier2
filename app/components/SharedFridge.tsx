@@ -395,7 +395,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         </button>
       </div>
 
-      {/* MODAL AJOUT (Fix Zoom Input avec text-base et touch-auto) */}
+{/* MODAL AJOUT */}
       {isAdding && (
          <div className="absolute inset-0 z-[110] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setIsAdding(false)} style={{ touchAction: 'auto' }}>
              <div className="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl" onClick={(e) => e.stopPropagation()}>
@@ -414,11 +414,11 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
                  ) : (
                      <div className="mb-4 space-y-2">
                          <input 
-    type="file" 
-    accept="image/*" 
-    onChange={handleFileChange} 
-    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer" 
-/>
+                            type="file" 
+                            accept="image/*" 
+                            onChange={handleFileChange} 
+                            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer" 
+                         />
                          <input type="text" placeholder="Légende..." value={photoCaption} onChange={(e) => setPhotoCaption(e.target.value)} className="w-full p-2 border rounded text-base" />
                      </div>
                  )}
