@@ -34,7 +34,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [isUploading, setIsUploading] = useState(false);
 
   // --- NOUVEAU SYSTÈME DE DRAG (REFS UNIQUEMENT) ---
-  // On n'utilise PAS de State pour le drag pour éviter le re-render loop
   const dragRef = useRef<{
       id: string;
       startX: number;
@@ -79,14 +78,13 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     return () => clearInterval(interval);
   }, [currentUser]);
 
-  // --- LOGIQUE DE DÉPLACEMENT MANUELLE (LE FIX) ---
+  // --- LOGIQUE DE DÉPLACEMENT MANUELLE ---
   
-  // 1. Démarrage du Drag (Pointer Down sur un item)
+  // 1. Démarrage du Drag
   const onDragStart = (e: React.PointerEvent, item: FridgeItem) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // On stocke les infos initiales dans une REF (pas de re-render)
       dragRef.current = {
           id: item.id,
           startX: e.clientX,
@@ -96,7 +94,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       };
       isDraggingRef.current = true;
 
-      // On attache les écouteurs sur WINDOW pour ne pas perdre le drag si la souris sort vite
       window.addEventListener('pointermove', onDragMove);
       window.addEventListener('pointerup', onDragEnd);
   };
@@ -107,7 +104,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
 
       const { startX, startY, initialItemX, initialItemY, id } = dragRef.current;
       
-      // Calcul du delta divisé par le scale (pour que ça suive la souris même zoomé)
       const deltaX = (e.clientX - startX) / viewState.scale;
       const deltaY = (e.clientY - startY) / viewState.scale;
 
@@ -118,11 +114,9 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       newX = Math.max(0, Math.min(newX, BOARD_SIZE - 200));
       newY = Math.max(0, Math.min(newY, BOARD_SIZE - 200));
 
-      // ⚡ MAGIE : On bouge l'élément HTML direct sans prévenir React
       const el = document.getElementById(`item-${id}`);
       if (el) {
           el.style.transform = `translate(${newX}px, ${newY}px) rotate(${items.find(i => i.id === id)?.rotation || 0}deg)`;
-          // On stocke la pos temporaire dans l'attribut dataset pour la récupérer à la fin
           el.dataset.tempX = newX.toString();
           el.dataset.tempY = newY.toString();
       }
@@ -133,12 +127,13 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       if (!dragRef.current) return;
       const { id } = dragRef.current;
 
-      // Nettoyage des écouteurs
       window.removeEventListener('pointermove', onDragMove);
       window.removeEventListener('pointerup', onDragEnd);
 
       const el = document.getElementById(`item-${id}`);
-      if (el && el.dataset.tempX) {
+      
+      // FIX TYPESCRIPT ICI : On vérifie que tempX ET tempY existent
+      if (el && el.dataset.tempX && el.dataset.tempY) {
           const finalX = parseFloat(el.dataset.tempX);
           const finalY = parseFloat(el.dataset.tempY);
 
@@ -158,13 +153,11 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       }
 
       dragRef.current = null;
-      // Petite pause avant de relancer la synchro pour éviter le glitch visuel
       setTimeout(() => { isDraggingRef.current = false; }, 500);
   };
 
-  // --- BOARD PAN (Déplacement du tableau entier) ---
+  // --- BOARD PAN ---
   const handleBoardDrag = (e: any, info: any) => {
-      // Si on drag un item, on ne bouge pas le tableau
       if (isDraggingRef.current) return;
       setViewState(prev => ({ ...prev, x: prev.x + info.delta.x, y: prev.y + info.delta.y }));
   };
@@ -197,7 +190,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     try {
         let content = noteText;
         if (newItemType === 'photo' && photoFile) {
-            // Simple compression logic
             content = await new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target?.result as string);
