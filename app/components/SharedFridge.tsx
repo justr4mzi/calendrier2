@@ -413,7 +413,12 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
                      </>
                  ) : (
                      <div className="mb-4 space-y-2">
-                         <input type="file" accept="image/*" onChange={(e) => setPhotoFile(e.target.files?.[0] || null)} className="text-base" />
+                         <input 
+    type="file" 
+    accept="image/*" 
+    onChange={handleFileChange} 
+    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 cursor-pointer" 
+/>
                          <input type="text" placeholder="Légende..." value={photoCaption} onChange={(e) => setPhotoCaption(e.target.value)} className="w-full p-2 border rounded text-base" />
                      </div>
                  )}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Zap, Coffee, MessageCircleHeart, Plane, Download, Ticket, RotateCcw, Timer } from 'lucide-react';
+import { Heart, Sparkles, Zap, Coffee, MessageCircleHeart, Plane, Download, Ticket, RotateCcw, Timer, Save } from 'lucide-react';
 
 const TARGET_SCORE = 50000; 
 
@@ -22,10 +22,19 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [gameWon, setGameWon] = useState(false);
   const [chestOpened, setChestOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false); // Indicateur visuel de sauvegarde
   
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Ref pour stocker l'état courant et le sauvegarder dans le setInterval sans problème de closure
+  const stateRef = useRef({ bisous, totalAccumulated, clickPower, autoBisousPerSecond, purchasedUpgrades, gameWon, chestOpened, startTime, endTime });
+
+  // Mettre à jour la ref à chaque changement d'état
+  useEffect(() => {
+    stateRef.current = { bisous, totalAccumulated, clickPower, autoBisousPerSecond, purchasedUpgrades, gameWon, chestOpened, startTime, endTime };
+  }, [bisous, totalAccumulated, clickPower, autoBisousPerSecond, purchasedUpgrades, gameWon, chestOpened, startTime, endTime]);
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -60,23 +69,34 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
 
   useEffect(() => { fetchData(); }, []);
 
+  // Fonction de sauvegarde qui utilise la REF pour avoir toujours les dernières données
   const saveGame = async (reset = false) => {
-    const gameState = reset ? {
+    setIsSaving(true);
+    const currentState = reset ? {
         bisous: 0, totalAccumulated: 0, clickPower: 1, autoBisousPerSecond: 0, 
         purchasedUpgrades: [], gameWon: false, chestOpened: false, startTime: null, endTime: null
-    } : {
-        bisous, totalAccumulated, clickPower, autoBisousPerSecond, purchasedUpgrades, gameWon, chestOpened, startTime, endTime
-    };
+    } : stateRef.current;
     
     try {
       await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update_clicker', clickerState: gameState })
+        body: JSON.stringify({ action: 'update_clicker', clickerState: currentState })
       });
     } catch (error) { console.error(error); }
+    finally { setTimeout(() => setIsSaving(false), 500); }
   };
 
+  // --- SAUVEGARDE AUTOMATIQUE (Le Fix) ---
+  useEffect(() => {
+      // Sauvegarde toutes les 5 secondes
+      const saveInterval = setInterval(() => {
+          saveGame();
+      }, 5000);
+      return () => clearInterval(saveInterval);
+  }, []);
+
+  // --- LOGIQUE JEU ---
   useEffect(() => {
     if (gameWon) {
         if(intervalRef.current) clearInterval(intervalRef.current);
@@ -116,12 +136,22 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       setBisous(0); setTotalAccumulated(0); setClickPower(1); setAutoBisousPerSecond(0);
       setPurchasedUpgrades([]); setGameWon(false); setChestOpened(false);
       setStartTime(null); setEndTime(null); setElapsedTime(0);
+      
+      // On force la mise à jour de la ref immédiatement pour que le saveGame(true) marche
+      stateRef.current = {
+        bisous: 0, totalAccumulated: 0, clickPower: 1, autoBisousPerSecond: 0, 
+        purchasedUpgrades: [], gameWon: false, chestOpened: false, startTime: null, endTime: null
+      };
       await saveGame(true);
+  };
+
+  const handleClose = () => {
+      saveGame(); // Sauvegarde finale avant de fermer
+      onClose();
   };
 
   const handleMainClick = (e: React.PointerEvent) => {
     e.preventDefault(); 
-    
     if (!startTime) setStartTime(Date.now());
 
     setBisous(prev => prev + clickPower);
@@ -141,7 +171,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       setPurchasedUpgrades(prev => [...prev, upgrade.id]);
       if (upgrade.multiplier) setClickPower(prev => prev * upgrade.multiplier!);
       if (upgrade.cps) setAutoBisousPerSecond(prev => prev + upgrade.cps!);
-      saveGame(); 
+      // La sauvegarde auto s'en chargera, mais on peut forcer une petite save ici
     }
   };
 
@@ -155,18 +185,22 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-100 to-indigo-100 flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden touch-none select-none">
       
-      {/* HEADER SIMPLIFIÉ (PLUS DE SON) */}
+      {/* HEADER */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20 pointer-events-none">
           <div className="pointer-events-auto flex gap-2">
              <div className="bg-white/80 backdrop-blur px-3 py-2 rounded-full shadow-sm border border-rose-100 flex items-center gap-2 text-rose-700 font-mono font-bold">
                  <Timer className="w-4 h-4" /> {formatTime(displayTime)}
+             </div>
+             {/* INDICATEUR DE SAUVEGARDE */}
+             <div className={`transition-opacity duration-300 ${isSaving ? 'opacity-100' : 'opacity-0'} bg-green-100 text-green-700 px-3 py-2 rounded-full flex items-center gap-1 text-xs font-bold`}>
+                 <Save className="w-3 h-3" /> Saved
              </div>
           </div>
           <div className="pointer-events-auto flex gap-2">
              <button onClick={handleRestart} className="p-2 bg-white/50 hover:bg-white rounded-full text-gray-600 transition-colors" title="Recommencer">
                 <RotateCcw className="w-5 h-5"/>
              </button>
-             <button onClick={onClose} className="p-2 bg-white/50 hover:bg-white rounded-full text-gray-600 transition-colors">✕</button>
+             <button onClick={handleClose} className="p-2 bg-white/50 hover:bg-white rounded-full text-gray-600 transition-colors">✕</button>
           </div>
       </div>
 
@@ -182,7 +216,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
               </div>
             ) : (
               <div className="max-w-sm w-full bg-indigo-900 rounded-3xl p-6 shadow-2xl border border-indigo-500 relative text-white">
-                 <button onClick={onClose} className="absolute top-2 right-2 text-white/50 hover:text-white p-2">✕</button>
+                 <button onClick={handleClose} className="absolute top-2 right-2 text-white/50 hover:text-white p-2">✕</button>
                  <Ticket className="w-12 h-12 text-pink-400 mx-auto mb-4" />
                  <h3 className="text-xl font-bold mb-2">CONCERT AUPINARD</h3>
                  <p className="text-indigo-200 text-sm mb-6">Ta place est là. T'es la meilleure clickeuse !</p>
