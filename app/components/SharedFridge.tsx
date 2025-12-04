@@ -33,8 +33,8 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [photoCaption, setPhotoCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  // --- NOUVEAU SYSTÈME DE DRAG (REFS UNIQUEMENT) ---
-  const dragRef = useRef<{
+  // --- REFS POUR LE DRAG MANUEL (ITEMS) ---
+  const dragItemRef = useRef<{
       id: string;
       startX: number;
       startY: number;
@@ -42,21 +42,28 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       initialItemY: number;
   } | null>(null);
 
-  const isDraggingRef = useRef(false); // Pour bloquer la synchro
+  // --- REFS POUR LE DRAG MANUEL (BOARD/FOND) ---
+  const dragBoardRef = useRef<{
+      startX: number;
+      startY: number;
+      initialViewX: number;
+      initialViewY: number;
+  } | null>(null);
+
+  const isDraggingItemRef = useRef(false); // Pour bloquer la synchro
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
   // --- SYNCHRO ---
   const fetchFridge = async () => {
-    // Si on est en train de bouger un truc, ON NE TOUCHE À RIEN
-    if (isDraggingRef.current) return;
+    // Si on bouge un item, ON NE TOUCHE À RIEN pour éviter les conflits
+    if (isDraggingItemRef.current) return;
 
     try {
       const res = await fetch('/api/sync');
       const data = await res.json();
       if (data) {
         if(data.fridge && Array.isArray(data.fridge)) {
-            // Nettoyage données entrantes
             const uniqueItems = Array.from(new Map(data.fridge.map((item: any) => [item.id, item])).values());
             const safeItems = uniqueItems.map((item: any) => ({
                 ...item,
@@ -78,42 +85,44 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     return () => clearInterval(interval);
   }, [currentUser]);
 
-  // --- LOGIQUE DE DÉPLACEMENT MANUELLE ---
+  // =========================================
+  // --- LOGIQUE DE DÉPLACEMENT DES ITEMS ---
+  // =========================================
   
-  // 1. Démarrage du Drag
-  const onDragStart = (e: React.PointerEvent, item: FridgeItem) => {
+  const onItemDragStart = (e: React.PointerEvent, item: FridgeItem) => {
       e.preventDefault();
-      e.stopPropagation();
+      e.stopPropagation(); // CRUCIAL : Empêche le tableau derrière de bouger
 
-      dragRef.current = {
+      dragItemRef.current = {
           id: item.id,
           startX: e.clientX,
           startY: e.clientY,
           initialItemX: item.x,
           initialItemY: item.y
       };
-      isDraggingRef.current = true;
+      isDraggingItemRef.current = true;
 
-      window.addEventListener('pointermove', onDragMove);
-      window.addEventListener('pointerup', onDragEnd);
+      // On attache les écouteurs globaux pour le suivi fluide
+      window.addEventListener('pointermove', onItemDragMove);
+      window.addEventListener('pointerup', onItemDragEnd);
   };
 
-  // 2. Mouvement (Direct DOM Manipulation)
-  const onDragMove = (e: PointerEvent) => {
-      if (!dragRef.current) return;
-
-      const { startX, startY, initialItemX, initialItemY, id } = dragRef.current;
+  const onItemDragMove = (e: PointerEvent) => {
+      if (!dragItemRef.current) return;
+      const { startX, startY, initialItemX, initialItemY, id } = dragItemRef.current;
       
+      // Calcul du déplacement, ajusté par le zoom actuel
       const deltaX = (e.clientX - startX) / viewState.scale;
       const deltaY = (e.clientY - startY) / viewState.scale;
 
       let newX = initialItemX + deltaX;
       let newY = initialItemY + deltaY;
 
-      // Limites (0 à 2000)
+      // Limites du tableau
       newX = Math.max(0, Math.min(newX, BOARD_SIZE - 200));
       newY = Math.max(0, Math.min(newY, BOARD_SIZE - 200));
 
+      // Manipulation directe du DOM pour la fluidité (sans re-render React)
       const el = document.getElementById(`item-${id}`);
       if (el) {
           el.style.transform = `translate(${newX}px, ${newY}px) rotate(${items.find(i => i.id === id)?.rotation || 0}deg)`;
@@ -122,25 +131,21 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       }
   };
 
-  // 3. Fin du Drag (Save)
-  const onDragEnd = async () => {
-      if (!dragRef.current) return;
-      const { id } = dragRef.current;
+  const onItemDragEnd = async () => {
+      if (!dragItemRef.current) return;
+      const { id } = dragItemRef.current;
 
-      window.removeEventListener('pointermove', onDragMove);
-      window.removeEventListener('pointerup', onDragEnd);
+      window.removeEventListener('pointermove', onItemDragMove);
+      window.removeEventListener('pointerup', onItemDragEnd);
 
       const el = document.getElementById(`item-${id}`);
-      
-      // FIX TYPESCRIPT ICI : On vérifie que tempX ET tempY existent
+      // Sauvegarde finale si le déplacement a eu lieu
       if (el && el.dataset.tempX && el.dataset.tempY) {
           const finalX = parseFloat(el.dataset.tempX);
           const finalY = parseFloat(el.dataset.tempY);
 
-          // MAINTENANT on met à jour React
           setItems(prev => prev.map(i => i.id === id ? { ...i, x: finalX, y: finalY } : i));
 
-          // Et on envoie au serveur
           await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -152,15 +157,62 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         });
       }
 
-      dragRef.current = null;
-      setTimeout(() => { isDraggingRef.current = false; }, 500);
+      dragItemRef.current = null;
+      setTimeout(() => { isDraggingItemRef.current = false; }, 500);
   };
 
-  // --- BOARD PAN ---
-  const handleBoardDrag = (e: any, info: any) => {
-      if (isDraggingRef.current) return;
-      setViewState(prev => ({ ...prev, x: prev.x + info.delta.x, y: prev.y + info.delta.y }));
+  // =========================================
+  // --- LOGIQUE DE DÉPLACEMENT DU TABLEAU (PAN) ---
+  // =========================================
+
+  const onBoardDragStart = (e: React.PointerEvent) => {
+      // Si on clique sur le fond, on commence à bouger le tableau
+      e.preventDefault();
+      dragBoardRef.current = {
+          startX: e.clientX,
+          startY: e.clientY,
+          initialViewX: viewState.x,
+          initialViewY: viewState.y
+      };
+      window.addEventListener('pointermove', onBoardDragMove);
+      window.addEventListener('pointerup', onBoardDragEnd);
   };
+
+  const onBoardDragMove = (e: PointerEvent) => {
+      if (!dragBoardRef.current) return;
+      const { startX, startY, initialViewX, initialViewY } = dragBoardRef.current;
+      
+      // Ici, on met à jour le state React car bouger tout le tableau demande un re-render
+      setViewState(prev => ({
+          ...prev,
+          x: initialViewX + (e.clientX - startX),
+          y: initialViewY + (e.clientY - startY)
+      }));
+  };
+
+  const onBoardDragEnd = () => {
+      dragBoardRef.current = null;
+      window.removeEventListener('pointermove', onBoardDragMove);
+      window.removeEventListener('pointerup', onBoardDragEnd);
+  };
+
+
+  // --- ZOOM MOLETTE (NOUVEAU) ---
+  const handleWheel = (e: React.WheelEvent) => {
+    // Empêche le scroll de la page si nécessaire
+    e.preventDefault(); 
+    
+    // Détermine la direction du zoom (in ou out)
+    // On divise par une grande valeur pour que le zoom soit doux
+    const zoomFactor = -e.deltaY * 0.001; 
+    
+    setViewState(prev => {
+      // On calcule la nouvelle échelle en la bornant entre 0.1 et 3
+      let newScale = Math.min(Math.max(0.1, prev.scale + zoomFactor), 3);
+      return { ...prev, scale: newScale };
+    });
+  };
+
 
   // --- UI & Helpers ---
   const fitScreen = () => {
@@ -175,13 +227,13 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const handleClearFridge = async () => {
       if (!confirm("Tout vider ?")) return;
       setItems([]); 
-      isDraggingRef.current = true; // Bloque la sync
+      isDraggingItemRef.current = true; // Bloque la sync
       await fetch('/api/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'clear_fridge' }) 
       });
-      setTimeout(() => { isDraggingRef.current = false; }, 2000); 
+      setTimeout(() => { isDraggingItemRef.current = false; }, 2000); 
   };
 
   const handleAddItem = async () => {
@@ -226,7 +278,8 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   };
 
   return (
-    <div className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" ref={boardContainerRef}>
+    // AJOUT DU LISTENER onWheel SUR LE CONTENEUR PRINCIPAL
+    <div className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" ref={boardContainerRef} onWheel={handleWheel}>
       
       {/* HEADER */}
       <div className="absolute top-0 left-0 right-0 z-[100] p-4 flex justify-between items-start pointer-events-none">
@@ -236,7 +289,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
           <div className="flex gap-2 pointer-events-auto">
               <div className="flex flex-col gap-2 bg-white/90 backdrop-blur p-2 rounded-xl shadow-lg">
-                  <button onClick={() => setViewState(v => ({...v, scale: Math.min(v.scale + 0.1, 2)}))} className="p-2 hover:bg-gray-100 rounded"><ZoomIn className="w-5 h-5"/></button>
+                  <button onClick={() => setViewState(v => ({...v, scale: Math.min(v.scale + 0.1, 3)}))} className="p-2 hover:bg-gray-100 rounded"><ZoomIn className="w-5 h-5"/></button>
                   <button onClick={() => setViewState(v => ({...v, scale: Math.max(v.scale - 0.1, 0.1)}))} className="p-2 hover:bg-gray-100 rounded"><ZoomOut className="w-5 h-5"/></button>
                   <button onClick={fitScreen} className="p-2 hover:bg-gray-100 rounded"><Maximize className="w-5 h-5"/></button>
               </div>
@@ -251,17 +304,20 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </button>
       </div>
 
-      {/* BOARD */}
-      <div className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing">
+      {/* BOARD (LE FOND) */}
+      {/* On applique le listener onPointerDown ici pour bouger le fond */}
+      <div className="w-full h-full touch-none select-none cursor-grab active:cursor-grabbing" onPointerDown={onBoardDragStart}>
           <motion.div
             ref={boardRef}
-            drag
-            dragMomentum={false}
-            onDrag={handleBoardDrag}
-            // IMPORTANT : On bloque le drag du tableau si on bouge un item
-            dragListener={!isDraggingRef.current}
+            // SUPPRESSION DES PROPS DE DRAG AUTOMATIQUE DE FRAMER MOTION ICI
+            // drag 
+            // dragMomentum={false}
+            // onDrag={handleBoardDrag}
+            // dragListener={!isDraggingItemRef.current}
+            
+            // On garde l'animation pour le zoom et le pan manuel
             animate={{ x: viewState.x, y: viewState.y, scale: viewState.scale }}
-            transition={{ type: "tween", duration: 0 }}
+            transition={{ type: "tween", duration: 0 }} // Duration 0 pour que ça suive la souris instantanément
             className="shadow-2xl relative origin-top-left bg-[#f0e6d2]"
             style={{ 
                 width: BOARD_SIZE, height: BOARD_SIZE,
@@ -272,16 +328,16 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           >
              {items.map((item) => (
                 <div
-                    id={`item-${item.id}`} // ID pour le ciblage DOM
+                    id={`item-${item.id}`}
                     key={item.id}
-                    onPointerDown={(e) => onDragStart(e, item)}
+                    // Le stopPropagation ici est la clé pour ne pas bouger le fond
+                    onPointerDown={(e) => onItemDragStart(e, item)}
                     className="absolute hover:z-[999] cursor-move touch-none"
                     style={{ 
                         left: 0, top: 0,
-                        // On applique la pos via style direct
                         transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rotation}deg)`,
                         width: '200px',
-                        touchAction: 'none' // CRUCIAL
+                        touchAction: 'none'
                     }} 
                 >
                     {item.type === 'note' ? (
