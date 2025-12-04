@@ -71,7 +71,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
   // --- SYNC ---
   const fetchFridge = async () => {
     try {
-      const res = await fetch('/api/route');
+      const res = await fetch('/api/sync');
       const data = await res.json();
       if (data && data.fridge) {
         // On ne met à jour la position que si on n'est pas en train de draguer (pour éviter les sauts)
@@ -127,7 +127,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
     setItems(prev => prev.map(item => item.id === id ? { ...item, x: xPercent, y: yPercent } : item));
 
     // Save Serveur
-    await fetch('/api/route', {
+    await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -166,7 +166,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
             createdAt: Date.now()
         };
 
-        const res = await fetch('/api/route', {
+        const res = await fetch('/api/sync', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ action: 'add_fridge_item', fridgeItem: newItem })
@@ -186,7 +186,7 @@ export default function SharedFridge({ onClose }: { onClose: () => void }) {
 
   const handleClear = async () => {
       if(confirm("Tout effacer ?")) {
-        await fetch('/api/route', { method: 'POST', body: JSON.stringify({ action: 'reset' }) });
+        await fetch('/api/sync', { method: 'POST', body: JSON.stringify({ action: 'reset' }) });
         setItems([]); setDailyCount(0); localStorage.setItem('fridge_count', '0');
       }
   };
