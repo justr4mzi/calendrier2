@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX, RotateCcw, Timer, Trophy } from 'lucide-react';
+import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX, RotateCcw, Timer } from 'lucide-react';
 
-// --- CONFIG ---
 const TARGET_SCORE = 50000; 
 
 const UPGRADES = [
@@ -28,17 +27,17 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  const [isMuted, setIsMuted] = useState(true); // Muted par défaut pour éviter le blast sonore
+  const [isMuted, setIsMuted] = useState(false); // Son activé par défaut
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- VOLUME FIX (Force le volume très bas) ---
+  // --- VOLUME AJUSTÉ ---
   useEffect(() => {
       if (audioRef.current) {
-          audioRef.current.volume = 0.05; // 5% de volume seulement !
+          audioRef.current.volume = 0.2; // 20% - Assez fort pour être entendu, assez bas pour pas gêner
       }
-  }, [audioRef.current]); // Réessaie si la ref change
+  }, []);
 
   // --- UTILS ---
   const formatTime = (seconds: number) => {
@@ -87,7 +86,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     } catch (error) { console.error(error); }
   };
 
-  // --- LOGIQUE JEU ---
   useEffect(() => {
     if (gameWon) {
         if(intervalRef.current) clearInterval(intervalRef.current);
@@ -98,7 +96,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     intervalRef.current = setInterval(() => {
       if (autoBisousPerSecond > 0) {
         if (!startTime) setStartTime(Date.now());
-        
         setBisous(prev => prev + autoBisousPerSecond);
         setTotalAccumulated(prev => {
             const newVal = Math.min(prev + autoBisousPerSecond, TARGET_SCORE);
@@ -131,11 +128,10 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       await saveGame(true);
   };
 
-  const handleMainClick = (e: any) => {
-    // IMPORTANT : preventDefault sur touch pour éviter le double tap zoom, mais attention au passive
-    if (e.type !== 'click' && e.cancelable) {
-       // On ne met pas preventDefault ici pour éviter l'erreur passive, on gère via CSS touch-action
-    }
+  // --- LE FIX DU SPAM ---
+  const handleMainClick = (e: React.PointerEvent) => {
+    // onPointerDown est plus rapide que onClick et permet le multitouch
+    e.preventDefault(); 
     
     if (!startTime) setStartTime(Date.now());
 
@@ -149,7 +145,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         return newVal;
     });
 
-    // Jouer son si activé (volume faible)
     if (!isMuted && audioRef.current) {
         audioRef.current.currentTime = 0;
         audioRef.current.play().catch(() => {});
@@ -176,7 +171,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-100 to-indigo-100 flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden touch-none select-none">
       
-      <audio ref={audioRef} src="/click-sound.mp3" /> {/* Assure-toi d'avoir un son court style 'pop' */}
+      <audio ref={audioRef} src="/click-sound.mp3" />
 
       {/* HEADER */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20 pointer-events-none">
@@ -184,12 +179,10 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
              <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-white/50 text-gray-500' : 'bg-rose-500 text-white shadow-lg animate-pulse'}`}>
                 {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
              </button>
-             
              <div className="bg-white/80 backdrop-blur px-3 py-2 rounded-full shadow-sm border border-rose-100 flex items-center gap-2 text-rose-700 font-mono font-bold">
                  <Timer className="w-4 h-4" /> {formatTime(displayTime)}
              </div>
           </div>
-
           <div className="pointer-events-auto flex gap-2">
              <button onClick={handleRestart} className="p-2 bg-white/50 hover:bg-white rounded-full text-gray-600 transition-colors" title="Recommencer">
                 <RotateCcw className="w-5 h-5"/>
@@ -198,7 +191,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
           </div>
       </div>
 
-      {/* MODAL VICTOIRE */}
+      {/* MODAL VICTOIRE (inchangé) */}
       <AnimatePresence>
         {gameWon && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 text-center">
@@ -226,44 +219,44 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
 
       {/* ZONE DE JEU */}
       <div className="w-full max-w-md flex flex-col h-full max-h-[800px] pt-16 pb-4 px-4">
-        {/* BARRE DE PROGRESSION & SCORE (Refait au propre) */}
-        <div className="bg-white rounded-3xl p-5 shadow-xl mb-4 shrink-0 border border-rose-100">
-            <div className="flex justify-between items-end mb-2">
-                <div>
-                    {/* Juste le chiffre et "Bisous" */}
-                    <div className="text-3xl font-black text-gray-800 leading-none">
-                        {Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-xl">Bisous</span>
-                    </div>
-                </div>
-                {/* Pourcentage d'avancement */}
-                <div className="text-right">
-                    <span className="text-sm font-bold text-gray-400">{progressPercentage.toFixed(1)}%</span>
-                </div>
-            </div>
-            
-            {/* Barre visuelle */}
-            <div className="h-6 w-full bg-gray-100 rounded-full overflow-hidden relative border border-gray-200">
+        
+        {/* INFO SCORE */}
+        <div className="bg-white rounded-3xl p-5 shadow-xl mb-4 shrink-0 border border-rose-100 relative overflow-hidden">
+             {/* SCORE */}
+             <div className="text-center z-10 relative mb-3">
+                 <div className="text-4xl font-black text-gray-800 leading-none">
+                     {Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-2xl">Bisous</span>
+                 </div>
+                 <div className="text-xs text-green-500 font-bold mt-1">+{autoBisousPerSecond} / seconde</div>
+             </div>
+
+             {/* BARRE DE PROGRESSION (AVEC TEXTE DEDANS) */}
+             <div className="h-6 w-full bg-gray-200 rounded-full overflow-hidden relative border border-gray-300">
                 <motion.div 
-                    className="h-full bg-gradient-to-r from-rose-400 to-purple-500 flex items-center justify-end pr-2" 
+                    className="h-full bg-gradient-to-r from-rose-400 to-purple-500" 
                     initial={{ width: 0 }} 
                     animate={{ width: `${progressPercentage}%` }}
-                >
-                    {progressPercentage > 10 && <span className="text-[10px] text-white font-bold animate-pulse">❤️</span>}
-                </motion.div>
-            </div>
-            
-            <div className="mt-2 text-xs text-green-500 font-bold bg-green-50 inline-block px-2 py-1 rounded-lg">
-                Production : {autoBisousPerSecond} Bisous / seconde
+                />
+                {/* Texte centré par dessus la barre */}
+                <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 drop-shadow-sm z-10">
+                    <span className="bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        {progressPercentage.toFixed(1)}%
+                    </span>
+                </div>
             </div>
         </div>
 
-        {/* BOUTON CŒUR (Touch-action manipulation pour éviter zoom) */}
+        {/* BOUTON CŒUR (ANTI-ZOOM ET SPAM FIX) */}
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
             <motion.button 
                 whileTap={{ scale: 0.90 }} 
-                onClick={handleMainClick}
+                // UTILISATION DE POINTERDOWN POUR LE SPAM
+                onPointerDown={handleMainClick}
                 className="relative z-10 text-rose-500 drop-shadow-2xl filter cursor-pointer select-none outline-none"
-                style={{ touchAction: 'manipulation' }} 
+                style={{ 
+                    touchAction: 'none', // INDISPENSABLE POUR EVITER LE ZOOM MOBILE
+                    WebkitTapHighlightColor: 'transparent'
+                }} 
              >
                 <Heart className="w-48 h-48 sm:w-56 sm:h-56 fill-rose-500 stroke-rose-600" strokeWidth={1.5} />
              </motion.button>
