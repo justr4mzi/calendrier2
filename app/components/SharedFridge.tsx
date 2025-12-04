@@ -52,7 +52,11 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const activePointers = useRef<Map<number, { x: number, y: number }>>(new Map());
   const initialPinchDist = useRef<number | null>(null);
   const initialScale = useRef<number>(1);
-  
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files[0]) {
+    setPhotoFile(e.target.files[0]);
+  }
+};
   // Pour le PAN (déplacement 1 doigt)
   const lastPanPoint = useRef<{ x: number, y: number } | null>(null);
 
