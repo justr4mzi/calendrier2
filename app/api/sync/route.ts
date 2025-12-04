@@ -1,176 +1,161 @@
-import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 
-const DATA_KEY = 'CALENDAR_DEBORAH_DATA_V5'; // Passage en V5 pour reset propre
-
-interface ClickerData {
-  bisous: number;
-  totalAccumulated: number;
-  clickPower: number;
-  autoBisousPerSecond: number;
-  purchasedUpgrades: number[];
-  gameWon: boolean;
-  chestOpened: boolean;
-  startTime: number | null;
-  endTime: number | null;
-}
-
-interface FridgeItem {
-  id: string;
-  type: 'note' | 'photo';
-  content: string;
-  caption?: string;
-  x: number;
-  y: number;
-  rotation: number;
-  color?: string;
-  createdAt: number;
-}
-
-// NOUVEAU : Gestion des crédits serveur
-interface UserCredit {
-    count: number;
-    lastDate: string;
-}
-
-interface CalendarData {
-  foundDays: number[];
-  loginCount: number;
-  totalTime: number;       
-  lastConnection: string;  
-  lastDevice: string;
-  kissCount: number;       
-  finalMessage: string;    
-  clicker: ClickerData;
-  fridge: FridgeItem[];
-  credits: Record<string, UserCredit>; // Stockage des crédits par user (minou, ramzi2010)
-}
-
-const defaultClicker: ClickerData = {
-  bisous: 0, totalAccumulated: 0, clickPower: 1, autoBisousPerSecond: 0,
-  purchasedUpgrades: [], gameWon: false, chestOpened: false, 
-  startTime: null, endTime: null
-};
-
-const defaultData: CalendarData = { 
-    foundDays: [], loginCount: 0, totalTime: 0, lastConnection: '', lastDevice: '',
-    kissCount: 0, finalMessage: '', clicker: defaultClicker, fridge: [],
-    credits: {
-        'ramzi2010': { count: 0, lastDate: '' },
-        'minou': { count: 0, lastDate: '' }
+// --- FONCTION DE NETTOYAGE (ANTI-CRASH & ANTI-DOUBLON) ---
+function cleanData(items: any[]) {
+  if (!Array.isArray(items)) return [];
+  
+  // 1. Map pour éliminer les doublons d'ID strictement
+  const uniqueMap = new Map();
+  items.forEach(item => {
+    if (item && item.id) {
+      uniqueMap.set(item.id, item);
     }
-};
+  });
 
-const getCurrentData = async (): Promise<CalendarData> => {
-    const data = await kv.get<CalendarData>(DATA_KEY);
-    // Fusion pour éviter les crashs si champs manquants
-    return { 
-        ...defaultData, 
-        ...data, 
-        clicker: { ...defaultClicker, ...(data?.clicker || {}) },
-        credits: { ...defaultData.credits, ...(data?.credits || {}) }
-    };
-};
+  // 2. Conversion en tableau + Correction des coordonnées (NaN -> 0)
+  return Array.from(uniqueMap.values()).map((item: any) => ({
+    ...item,
+    x: (typeof item.x === 'number' && !isNaN(item.x)) ? item.x : 0,
+    y: (typeof item.y === 'number' && !isNaN(item.y)) ? item.y : 0,
+    // On garde les propriétés essentielles
+    type: item.type || 'note',
+    content: item.content || '',
+    rotation: item.rotation || 0,
+  }));
+}
 
 export async function GET() {
   try {
-    const data = await getCurrentData();
-    
-    // Vérification date crédits au chargement (optionnel mais propre)
-    const today = new Date().toDateString();
-    let updated = false;
-    
-    Object.keys(data.credits).forEach(user => {
-        if (data.credits[user].lastDate !== today) {
-            data.credits[user] = { count: 0, lastDate: today };
-            updated = true;
-        }
+    // Récupération PARALLÈLE (Beaucoup plus rapide et stable)
+    const [fridgeRaw, credits, clicker, days, loginCount, time, lastConn, lastDev, kiss, msg] = await Promise.all([
+      kv.get('fridge_items'),
+      kv.get('fridge_credits'),
+      kv.get('clicker_state'),
+      kv.get('calendar_days'),
+      kv.get('login_count'),
+      kv.get('total_time'),
+      kv.get('last_connection'),
+      kv.get('last_device'),
+      kv.get('kiss_count'),
+      kv.get('final_message')
+    ]);
+
+    // Nettoyage avant envoi au client pour éviter le crash au chargement
+    const fridge = cleanData(fridgeRaw as any[]);
+
+    return NextResponse.json({
+      fridge,
+      credits: credits || {},
+      clicker: clicker || { bisous: 0, totalAccumulated: 0, clickPower: 1, autoBisousPerSecond: 0, purchasedUpgrades: [] },
+      foundDays: days || [],
+      loginCount: loginCount || 0,
+      totalTime: time || 0,
+      lastConnection: lastConn || '',
+      lastDevice: lastDev || '',
+      kissCount: kiss || 0,
+      finalMessage: msg || ''
     });
-
-    if(updated) await kv.set(DATA_KEY, data);
-
-    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    return NextResponse.json(defaultData, { status: 200 });
+    console.error('Sync GET Error:', error);
+    // En cas d'erreur grave, on renvoie des tableaux vides pour ne pas bloquer l'app
+    return NextResponse.json({ fridge: [], foundDays: [] }, { status: 200 });
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json();
-    const { action, days, time, device, message, clickerState, fridgeItem, fridgeItemId, currentUser } = body; 
+    const body = await req.json();
+    const { action, fridgeItem, fridgeItemId, currentUser, clickerState, days, time, device, message } = body;
+
+    // --- 1. GESTION DU FRIGO ---
     
-    let currentData = await getCurrentData();
-    const today = new Date().toDateString();
+    if (action === 'add_fridge_item') {
+      const currentItems = (await kv.get<any[]>('fridge_items')) || [];
+      const cleanItems = cleanData(currentItems);
+      
+      // Gestion des CRÉDITS (3 items par jour)
+      if (currentUser) {
+         const credits: any = (await kv.get('fridge_credits')) || {};
+         const today = new Date().toDateString();
+         
+         // Reset du jour si nécessaire
+         if (!credits[currentUser] || credits[currentUser].date !== today) {
+             credits[currentUser] = { count: 0, date: today };
+         }
+         
+         if (credits[currentUser].count >= 3) {
+             return NextResponse.json({ error: 'Limite quotidienne atteinte' }, { status: 403 });
+         }
+         
+         // Incrément
+         credits[currentUser].count += 1;
+         await kv.set('fridge_credits', credits);
+      }
 
-    // Reset journalier des crédits si besoin avant action
-    if (currentUser && currentData.credits[currentUser]) {
-        if (currentData.credits[currentUser].lastDate !== today) {
-            currentData.credits[currentUser] = { count: 0, lastDate: today };
-        }
-    } else if (currentUser && !currentData.credits[currentUser]) {
-        currentData.credits[currentUser] = { count: 0, lastDate: today };
+      // Ajout de l'item
+      cleanItems.push(fridgeItem);
+      
+      // Limite de sécurité (max 50 items pour pas faire laguer)
+      if (cleanItems.length > 50) cleanItems.shift(); 
+      
+      await kv.set('fridge_items', cleanItems);
     }
 
-    switch (action) {
-        case 'update_days':
-            if (Array.isArray(days)) currentData.foundDays = days;
-            break;
-        case 'increment_login':
-            currentData.loginCount += 1;
-            currentData.lastConnection = new Date().toISOString();
-            if (device) currentData.lastDevice = device;
-            break;
-        case 'update_time':
-            if (typeof time === 'number') currentData.totalTime = time;
-            break;
-        case 'send_kiss':
-            currentData.kissCount += 1;
-            break;
-        case 'save_message':
-            if (typeof message === 'string') currentData.finalMessage = message;
-            break;
-        case 'update_clicker':
-            if (clickerState) currentData.clicker = { ...currentData.clicker, ...clickerState };
-            break;
-        
-        case 'add_fridge_item':
-            // Vérification Serveur des crédits
-            if (currentUser && fridgeItem) {
-                const userCredit = currentData.credits[currentUser];
-                if (userCredit.count < 3) {
-                    if (currentData.fridge.length >= 50) currentData.fridge.shift();
-                    currentData.fridge.push(fridgeItem);
-                    // Incrémenter crédit
-                    currentData.credits[currentUser].count += 1;
-                } else {
-                    return NextResponse.json({ error: 'Limite atteinte' }, { status: 403 });
-                }
-            }
-            break;
+    if (action === 'update_fridge_item_pos') {
+        const currentItems = (await kv.get<any[]>('fridge_items')) || [];
+        let cleanItems = cleanData(currentItems);
 
-        case 'update_fridge_item_pos':
-            if (fridgeItemId && fridgeItem) {
-                const index = currentData.fridge.findIndex(i => i.id === fridgeItemId);
-                if (index !== -1) {
-                    // Force les limites serveur (0-90%)
-                    let cleanX = Math.max(0, Math.min(90, fridgeItem.x));
-                    let cleanY = Math.max(0, Math.min(90, fridgeItem.y));
-                    
-                    currentData.fridge[index].x = cleanX;
-                    currentData.fridge[index].y = cleanY;
-                }
+        // Mise à jour ciblée
+        let updated = false;
+        cleanItems = cleanItems.map((item: any) => {
+            if (item.id === fridgeItemId) {
+                updated = true;
+                // Clamp serveur (sécurité supplémentaire 0-95%)
+                const safeX = Math.max(0, Math.min(fridgeItem.x, 2000)); 
+                const safeY = Math.max(0, Math.min(fridgeItem.y, 2000));
+                return { ...item, x: safeX, y: safeY };
             }
-            break;
-        case 'reset':
-            currentData = defaultData;
-            break;
+            return item;
+        });
+
+        if (updated) await kv.set('fridge_items', cleanItems);
     }
 
-    await kv.set(DATA_KEY, currentData);
-    return NextResponse.json({ success: true, data: currentData }, { status: 200 });
+    if (action === 'clear_fridge') {
+        // RADICAL : On vide tout
+        await kv.set('fridge_items', []);
+    }
+
+    // --- 2. GESTION DU CLICKER ---
+    if (action === 'update_clicker') {
+        // On écrase l'état du clicker sans toucher au reste
+        await kv.set('clicker_state', clickerState);
+    }
+
+    // --- 3. GESTION CALENDRIER & ADMIN ---
+    if (action === 'update_days') await kv.set('calendar_days', days);
+    
+    if (action === 'update_time') await kv.set('total_time', time);
+    
+    if (action === 'increment_login') {
+        await kv.incr('login_count');
+        await kv.set('last_connection', new Date().toISOString());
+        if (device) await kv.set('last_device', device);
+    }
+    
+    if (action === 'send_kiss') await kv.incr('kiss_count');
+    
+    if (action === 'save_message') await kv.set('final_message', message);
+    
+    // RESET TOTAL (ADMIN)
+    if (action === 'reset') {
+        await kv.flushall();
+    }
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Failed to save data' }, { status: 500 });
+    console.error('Sync POST Error:', error);
+    return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }
