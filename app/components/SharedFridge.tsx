@@ -22,10 +22,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [isAdding, setIsAdding] = useState(false);
   const [dailyCount, setDailyCount] = useState(0);
   
-  // États Zoom & Pan
   const [viewState, setViewState] = useState({ scale: 0.2, x: 0, y: 0 });
-  
-  // États Ajout
   const [newItemType, setNewItemType] = useState<'note' | 'photo'>('note');
   const [noteText, setNoteText] = useState('');
   const [noteColor, setNoteColor] = useState(COLORS[0]);
@@ -33,19 +30,37 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [photoCaption, setPhotoCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
-  // Dragging manuel
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
+  
+  // Ref pour bloquer la synchro temporairement après une suppression (évite le retour des fantômes)
+  const skipSyncRef = useRef(false);
 
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
   const fetchFridge = async () => {
+    // Si on vient de vider, on attend un peu que le serveur nettoie
+    if (skipSyncRef.current) return;
+
     try {
       const res = await fetch('/api/sync');
       const data = await res.json();
       if (data) {
-        if(data.fridge) setItems(data.fridge);
+        if(data.fridge && Array.isArray(data.fridge)) {
+            // FIX CRASH : FILTRE ANTI-DOUBLONS STRICT
+            // On ne garde qu'un seul item par ID pour éviter le crash React "Duplicate Key"
+            const uniqueItems = Array.from(new Map(data.fridge.map((item: any) => [item.id, item])).values());
+            
+            // FIX CRASH : Vérification coordonnées valides
+            const safeItems = uniqueItems.map((item: any) => ({
+                ...item,
+                x: isNaN(item.x) ? 0 : item.x,
+                y: isNaN(item.y) ? 0 : item.y
+            }));
+
+            setItems(safeItems as FridgeItem[]);
+        }
         if (data.credits && data.credits[currentUser]) {
             setDailyCount(data.credits[currentUser].count);
         } else {
@@ -57,49 +72,35 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
 
   useEffect(() => {
     fetchFridge();
-    const interval = setInterval(fetchFridge, 5000); // 5s au lieu de 3s pour soulager le navigateur
+    const interval = setInterval(fetchFridge, 5000); 
     return () => clearInterval(interval);
   }, [currentUser]);
 
-  // --- FIT TO SCREEN (Anti Crash) ---
   const fitScreen = () => {
       if (!boardContainerRef.current) return;
-      
       const { clientWidth: w, clientHeight: h } = boardContainerRef.current;
-      const padding = 20; // Moins de padding
-      
+      const padding = 20; 
       const ratioW = (w - padding) / BOARD_SIZE;
       const ratioH = (h - padding) / BOARD_SIZE;
       const newScale = Math.min(ratioW, ratioH, 1);
-
       const startX = (w - BOARD_SIZE * newScale) / 2;
       const startY = (h - BOARD_SIZE * newScale) / 2;
-
       setViewState({ scale: newScale, x: startX, y: startY });
   };
 
-  // On lance fitScreen UNE SEULE FOIS au chargement.
-  // J'ai enlevé le window.addEventListener('resize') car c'est lui qui faisait crasher ton mobile.
   useEffect(() => {
       const timer = setTimeout(fitScreen, 100);
       return () => clearTimeout(timer);
   }, []);
 
-  // --- LOGIQUE DRAG ITEM ---
   const handleItemPointerDown = (e: React.PointerEvent, item: FridgeItem) => {
     e.stopPropagation(); 
     e.preventDefault();
     if (!boardRef.current) return;
-
     const rect = boardRef.current.getBoundingClientRect();
     const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
     const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
-
-    dragOffset.current = {
-        x: mouseXOnBoard - item.x,
-        y: mouseYOnBoard - item.y
-    };
-
+    dragOffset.current = { x: mouseXOnBoard - item.x, y: mouseYOnBoard - item.y };
     setDraggingId(item.id);
     (e.target as Element).setPointerCapture(e.pointerId);
   };
@@ -107,18 +108,14 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const handleItemPointerMove = (e: React.PointerEvent) => {
       if (!draggingId || !boardRef.current) return;
       e.preventDefault();
-
       const rect = boardRef.current.getBoundingClientRect();
       const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
       const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
-
       let newX = mouseXOnBoard - dragOffset.current.x;
       let newY = mouseYOnBoard - dragOffset.current.y;
-
       const ITEM_SIZE = 200; 
       newX = Math.max(0, Math.min(newX, BOARD_SIZE - ITEM_SIZE));
       newY = Math.max(0, Math.min(newY, BOARD_SIZE - ITEM_SIZE));
-
       setItems(prev => prev.map(i => i.id === draggingId ? { ...i, x: newX, y: newY } : i));
   };
 
@@ -127,7 +124,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       const item = items.find(i => i.id === draggingId);
       setDraggingId(null);
       (e.target as Element).releasePointerCapture(e.pointerId);
-
       if (item) {
           await fetch('/api/sync', {
             method: 'POST',
@@ -147,20 +143,27 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
 
   const handleClearFridge = async () => {
       if (!confirm("Es-tu sûr de vouloir TOUT retirer du frigo ?")) return;
-      setItems([]); // Vide l'écran direct
+      
+      // 1. Optimistic clear
+      setItems([]); 
+      
+      // 2. Stop sync temporaire pour éviter que ça revienne
+      skipSyncRef.current = true;
+      setTimeout(() => { skipSyncRef.current = false; }, 2000); // Reprend dans 2s
+
+      // 3. Appel serveur
       await fetch('/api/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'clear_fridge' }) // Assure-toi que ton API gère ça ou envoie une liste vide
+          body: JSON.stringify({ action: 'clear_fridge' }) 
       });
   };
 
-  // --- AJOUT ITEM (Identique) ---
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
       if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-          alert("Les photos iPhone (HEIC) beuguent. Prends une capture d'écran !");
+          alert("Capture d'écran requise pour les photos iPhone !");
           setPhotoFile(null); return;
       }
       setPhotoFile(file);
@@ -199,7 +202,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         const startY = BOARD_SIZE / 2 - 100 + (Math.random() * 40 - 20);
 
         const newItem: FridgeItem = {
-            id: Date.now().toString(),
+            id: Date.now().toString() + Math.random().toString(), // ID ULTRA UNIQUE pour éviter collision
             type: newItemType,
             content: content,
             caption: photoCaption,
@@ -230,7 +233,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   return (
     <div className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" ref={boardContainerRef}>
       
-      {/* HEADER UI */}
       <div className="absolute top-0 left-0 right-0 z-[100] p-4 flex justify-between items-start pointer-events-none">
           <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-lg border border-gray-200 pointer-events-auto">
               <h2 className="font-bold text-gray-800 flex items-center gap-2">❄️ Frigo de {currentUser === 'ramzi2010' ? 'Ramzi' : 'Minou'}</h2>
@@ -238,11 +240,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
           
           <div className="flex gap-2 pointer-events-auto">
-              {/* BOUTON VIDER (NOUVEAU) */}
-              <button onClick={handleClearFridge} className="bg-red-500 text-white p-3 rounded-xl shadow-lg hover:bg-red-600 h-fit" title="Tout vider">
-                <Trash2 className="w-5 h-5" />
-              </button>
-
               <div className="flex flex-col gap-2 bg-white/90 backdrop-blur p-2 rounded-xl shadow-lg border border-gray-200">
                   <button onClick={() => setViewState(v => ({...v, scale: Math.min(v.scale + 0.1, 2)}))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomIn className="w-5 h-5 text-gray-600"/></button>
                   <button onClick={() => setViewState(v => ({...v, scale: Math.max(v.scale - 0.1, 0.1)}))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomOut className="w-5 h-5 text-gray-600"/></button>
@@ -254,7 +251,13 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
       </div>
 
-      {/* --- LE BOARD --- */}
+      {/* BOUTON POUBELLE DÉPLACÉ EN BAS À GAUCHE */}
+      <div className="absolute bottom-4 left-4 z-[100] pointer-events-auto">
+          <button onClick={handleClearFridge} className="bg-red-500 text-white p-4 rounded-full shadow-2xl hover:bg-red-600 border-4 border-white transition-transform active:scale-90" title="Tout vider">
+            <Trash2 className="w-6 h-6" />
+          </button>
+      </div>
+
       <div className="w-full h-full touch-none select-none">
           <motion.div
             ref={boardRef}
@@ -311,7 +314,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </motion.div>
       </div>
 
-      {/* BOUTON AJOUTER (inchangé) */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[100]">
         <button 
             onClick={() => setIsAdding(true)}
@@ -322,7 +324,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         </button>
       </div>
 
-      {/* MODAL D'AJOUT (inchangé) */}
       {isAdding && (
          <div className="absolute inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm sm:p-4">
              <div className="bg-white rounded-t-3xl sm:rounded-3xl p-6 w-full max-w-sm shadow-2xl animate-in slide-in-from-bottom-10" onClick={(e) => e.stopPropagation()}>

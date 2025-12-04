@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX, RotateCcw, Timer } from 'lucide-react';
+import { Heart, Sparkles, Zap, Coffee, MessageCircleHeart, Plane, Download, Ticket, RotateCcw, Timer } from 'lucide-react';
 
 const TARGET_SCORE = 50000; 
 
 const UPGRADES = [
   { id: 1, name: "Penser à toi", cost: 30, cps: 2, icon: <Heart className="w-4 h-4" />, desc: "+2 B/s" },
   { id: 2, name: "Petit SMS", cost: 200, multiplier: 2, icon: <MessageCircleHeart className="w-4 h-4" />, desc: "Clics x2" },
-  { id: 3, name: "Playlist Love", cost: 800, cps: 20, icon: <Music className="w-4 h-4" />, desc: "+20 B/s" },
+  { id: 3, name: "Playlist Love", cost: 800, cps: 20, icon: <Ticket className="w-4 h-4" />, desc: "+20 B/s" },
   { id: 4, name: "Petit Dej", cost: 3000, cps: 100, icon: <Coffee className="w-4 h-4" />, desc: "+100 B/s" },
   { id: 5, name: "Massage", cost: 8000, multiplier: 5, icon: <Sparkles className="w-4 h-4" />, desc: "Clics x5" },
   { id: 6, name: "Week-end", cost: 12000, cps: 1000, icon: <Plane className="w-4 h-4" />, desc: "+1000 B/s" },
@@ -27,17 +27,8 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  const [isMuted, setIsMuted] = useState(false); // Son activé par défaut
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-
-  // --- VOLUME AJUSTÉ ---
-  useEffect(() => {
-      if (audioRef.current) {
-          audioRef.current.volume = 0.2; // 20% - Assez fort pour être entendu, assez bas pour pas gêner
-      }
-  }, []);
 
   // --- UTILS ---
   const formatTime = (seconds: number) => {
@@ -128,9 +119,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       await saveGame(true);
   };
 
-  // --- LE FIX DU SPAM ---
   const handleMainClick = (e: React.PointerEvent) => {
-    // onPointerDown est plus rapide que onClick et permet le multitouch
     e.preventDefault(); 
     
     if (!startTime) setStartTime(Date.now());
@@ -144,11 +133,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         }
         return newVal;
     });
-
-    if (!isMuted && audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {});
-    }
   };
 
   const buyUpgrade = (upgrade: typeof UPGRADES[0]) => {
@@ -171,14 +155,9 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-100 to-indigo-100 flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden touch-none select-none">
       
-      <audio ref={audioRef} src="/click-sound.mp3" />
-
-      {/* HEADER */}
+      {/* HEADER SIMPLIFIÉ (PLUS DE SON) */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20 pointer-events-none">
           <div className="pointer-events-auto flex gap-2">
-             <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-white/50 text-gray-500' : 'bg-rose-500 text-white shadow-lg animate-pulse'}`}>
-                {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
-             </button>
              <div className="bg-white/80 backdrop-blur px-3 py-2 rounded-full shadow-sm border border-rose-100 flex items-center gap-2 text-rose-700 font-mono font-bold">
                  <Timer className="w-4 h-4" /> {formatTime(displayTime)}
              </div>
@@ -191,7 +170,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
           </div>
       </div>
 
-      {/* MODAL VICTOIRE (inchangé) */}
       <AnimatePresence>
         {gameWon && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 text-center">
@@ -217,12 +195,9 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         )}
       </AnimatePresence>
 
-      {/* ZONE DE JEU */}
       <div className="w-full max-w-md flex flex-col h-full max-h-[800px] pt-16 pb-4 px-4">
         
-        {/* INFO SCORE */}
         <div className="bg-white rounded-3xl p-5 shadow-xl mb-4 shrink-0 border border-rose-100 relative overflow-hidden">
-             {/* SCORE */}
              <div className="text-center z-10 relative mb-3">
                  <div className="text-4xl font-black text-gray-800 leading-none">
                      {Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-2xl">Bisous</span>
@@ -230,14 +205,12 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
                  <div className="text-xs text-green-500 font-bold mt-1">+{autoBisousPerSecond} / seconde</div>
              </div>
 
-             {/* BARRE DE PROGRESSION (AVEC TEXTE DEDANS) */}
              <div className="h-6 w-full bg-gray-200 rounded-full overflow-hidden relative border border-gray-300">
                 <motion.div 
                     className="h-full bg-gradient-to-r from-rose-400 to-purple-500" 
                     initial={{ width: 0 }} 
                     animate={{ width: `${progressPercentage}%` }}
                 />
-                {/* Texte centré par dessus la barre */}
                 <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-gray-700 drop-shadow-sm z-10">
                     <span className="bg-white/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
                         {progressPercentage.toFixed(1)}%
@@ -246,15 +219,13 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
             </div>
         </div>
 
-        {/* BOUTON CŒUR (ANTI-ZOOM ET SPAM FIX) */}
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
             <motion.button 
                 whileTap={{ scale: 0.90 }} 
-                // UTILISATION DE POINTERDOWN POUR LE SPAM
                 onPointerDown={handleMainClick}
                 className="relative z-10 text-rose-500 drop-shadow-2xl filter cursor-pointer select-none outline-none"
                 style={{ 
-                    touchAction: 'none', // INDISPENSABLE POUR EVITER LE ZOOM MOBILE
+                    touchAction: 'none', 
                     WebkitTapHighlightColor: 'transparent'
                 }} 
              >
@@ -262,7 +233,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
              </motion.button>
         </div>
 
-        {/* SHOP */}
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex-1 overflow-hidden flex flex-col border border-white/50 max-h-[40vh]">
              <div className="p-3 border-b border-gray-100 bg-white/50"><h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm"><Zap className="w-4 h-4 text-yellow-500" /> Boutique à Bisous</h3></div>
              <div className="overflow-y-auto p-3 space-y-2" style={{ touchAction: 'pan-y' }}>
