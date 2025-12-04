@@ -1336,6 +1336,8 @@ const ExtrasMenu = ({
     onOpenGames: () => void, 
     onOpenDice: () => void,
     onOpenSecret: () => void,
+    onOpenClicker: () => void, // <--- C'était ça qui manquait !
+    onOpenFridge: () => void,
     onClose: () => void 
 }) => {
     return (
