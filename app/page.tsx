@@ -825,7 +825,7 @@ const CALENDAR_DATA = [
   {
     date: "2025-12-17", day: 1,
     letter: "Coucou Déborah, j'espère que tu vas bien, voici surement mon plus gros cadeau que j'ai jamais fait : Un calendrier 100% personnalisé. Bon on a le temps tu verras chaque jour :) Respecte bien tout, ouvre les bons trucs et triches pas hein je te vois venir, et oublie pas que je t'aime. IMPORTANT : Tu appuies sur le bouton 'Cadeau récupéré' UNIQUEMENT quand tu as vraiment récupéré le cadeau dans le bac, pas avant !",
-    hint: "Récupérer la lettre B", gift: "Switch",
+    hint: "Récupérer la lettre B (Sous le lit !)", gift: "Switch",
     giftMessage: "Voilà amuse toi bien, je t'ai installé pleins de jeux incroyables et faits pour toi. Hésite pas à l'utiliser le plus possible des vacances, elle est à toi. Hésite pas si t'as des questions et tout, ton copain est là. Mets toi peut être comme objectif de finir un jeu pendant les vacances, tu verras ça va vraiment t'aider dans ton addiction aux réseaux comme insta ou tiktok et tu seras tellement fière de toi.",
     keywords: [], hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null,
   },
@@ -1326,6 +1326,8 @@ const ExtrasMenu = ({
     onOpenGames, 
     onOpenDice,
     onOpenSecret,
+    onOpenClicker, 
+    onOpenFridge,
     onClose 
 }: { 
     onOpenScratch: () => void, 
@@ -1367,6 +1369,22 @@ const ExtrasMenu = ({
                      <div className="leading-tight">
                          <div className="font-bold text-gray-800 text-sm">Dés Coquins</div>
                          <div className="text-xs text-gray-500">Soft ou Hot ? 🔥</div>
+                     </div>
+                 </button>
+
+                 <button onClick={onOpenClicker} className="flex items-center gap-3 p-3 hover:bg-pink-50 rounded-xl text-left transition-colors border border-transparent hover:border-pink-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">🏭</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Usine à Bisous</div>
+                         <div className="text-xs text-gray-500">Clicker Game ❤️</div>
+                     </div>
+                 </button>
+
+                 <button onClick={onOpenFridge} className="flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl text-left transition-colors border border-transparent hover:border-blue-100 group">
+                     <span className="text-2xl group-hover:scale-110 transition-transform">❄️</span>
+                     <div className="leading-tight">
+                         <div className="font-bold text-gray-800 text-sm">Notre Frigo</div>
+                         <div className="text-xs text-gray-500">Post-it & Photos</div>
                      </div>
                  </button>
 
@@ -1879,7 +1897,7 @@ export default function Home() {
     return <LoveClicker onClose={() => setCurrentView('home')} />;
   }
   if (currentView === 'fridge') {
-    return <SharedFridge onClose={() => setCurrentView('home')} />;
+    return <SharedFridge onClose={() => setCurrentView('home')} currentUser={code.toLowerCase()} />;
   }
   // ---------------------------------------------------------------
   const progress = (foundDays.length / CALENDAR_DATA.length) * 100;
@@ -1914,6 +1932,8 @@ export default function Home() {
               onOpenDice={() => { setShowExtrasMenu(false); setShowLoveDice(true); }}
               onOpenGames={() => { setShowExtrasMenu(false); setShowGames(true); }} // <--- AJOUTER CECI
               onOpenSecret={() => { setShowExtrasMenu(false); setShowSecretCode(true); }} // <--- AJO
+              onOpenClicker={() => { setShowExtrasMenu(false); setCurrentView('clicker'); }}
+              onOpenFridge={() => { setShowExtrasMenu(false); setCurrentView('fridge'); }}
               onClose={() => setShowExtrasMenu(false)}
           />
       )}
@@ -2234,45 +2254,6 @@ export default function Home() {
               />
             </div>
           </div>
-{/* --- DÉBUT : NOUVEAUX BOUTONS ACTIVITÉS --- */}
-          <div className="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* CARTE 1 : LOVE CLICKER */}
-            <button 
-              onClick={() => setCurrentView('clicker')}
-              className="group relative h-32 rounded-3xl bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-left shadow-lg transition-all hover:scale-[1.02] active:scale-95 overflow-hidden border-2 border-white/20"
-            >
-              <Heart className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 rotate-12 group-hover:rotate-45 transition-transform duration-500" />
-              <div className="relative z-10 flex flex-col justify-center h-full">
-                <div className="flex items-center gap-2 mb-1">
-                   <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
-                     <Sparkles className="h-5 w-5 text-yellow-300 fill-yellow-300" />
-                   </div>
-                   <h3 className="text-xl font-black text-white tracking-tight">Usine à Bisous</h3>
-                </div>
-                <p className="text-rose-100 text-sm font-medium pl-1">Clique pour la surprise ultime... 🎁</p>
-              </div>
-            </button>
-
-            {/* CARTE 2 : FRIGO CONNECTÉ */}
-            <button
-              onClick={() => setCurrentView('fridge')}
-              className="group relative h-32 rounded-3xl bg-gradient-to-br from-yellow-400 to-orange-400 p-6 text-left shadow-lg transition-all hover:scale-[1.02] active:scale-95 overflow-hidden border-2 border-white/20"
-            >
-              <div className="absolute -right-6 -bottom-6 h-32 w-32 text-white/20 -rotate-12 group-hover:rotate-0 transition-transform duration-500">
-                📝
-              </div>
-              <div className="relative z-10 flex flex-col justify-center h-full">
-                <div className="flex items-center gap-2 mb-1">
-                   <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-sm">
-                     <span className="text-xl">📝</span>
-                   </div>
-                   <h3 className="text-xl font-black text-white tracking-tight">Notre Frigo</h3>
-                </div>
-                <p className="text-yellow-100 text-sm font-medium pl-1">Colle-moi un petit mot doux 💌</p>
-              </div>
-            </button>
-          </div>
-          {/* --- FIN : NOUVEAUX BOUTONS --- */}
           {/* Juste en dessous, il doit y avoir ta ligne : <div className="paper-texture ..."> */}
           <div className="paper-texture rounded-3xl p-6 shadow-2xl">
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">

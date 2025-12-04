@@ -1,39 +1,33 @@
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
 
-// Clés pour stocker les données
-const DATA_KEY = 'CALENDAR_DEBORAH_DATA_V3'; 
+const DATA_KEY = 'CALENDAR_DEBORAH_DATA_V4'; // Changement de version pour éviter conflits
 
-// --- 1. DÉFINITION DES TYPES ---
-
-// Type pour le jeu "Love Clicker"
 interface ClickerData {
   bisous: number;
   totalAccumulated: number;
   clickPower: number;
   autoBisousPerSecond: number;
-  purchasedUpgrades: number[]; // IDs des upgrades achetés
+  purchasedUpgrades: number[];
   gameWon: boolean;
   chestOpened: boolean;
-  bonusClaimed: boolean;
+  startTime: number | null; // AJOUT
+  endTime: number | null;   // AJOUT
 }
 
-// Type pour le "Frigo Connecté"
 interface FridgeItem {
   id: string;
   type: 'note' | 'photo';
-  content: string; // Texte ou URL image
+  content: string;
   caption?: string;
-  x: number;       // Position X en %
-  y: number;       // Position Y en %
+  x: number;
+  y: number;
   rotation: number;
-  color?: string;  // Couleur du post-it
+  color?: string;
   createdAt: number;
 }
 
-// Interface GLOBALE des données stockées
 interface CalendarData {
-  // Données Calendrier
   foundDays: number[];
   loginCount: number;
   totalTime: number;       
@@ -41,79 +35,43 @@ interface CalendarData {
   lastDevice: string;
   kissCount: number;       
   finalMessage: string;    
-  
-  // Données Love Clicker (Nouveau)
   clicker: ClickerData;
-
-  // Données Frigo (Nouveau)
   fridge: FridgeItem[];
 }
 
-// --- 2. DONNÉES PAR DÉFAUT ---
 const defaultClicker: ClickerData = {
-  bisous: 0,
-  totalAccumulated: 0,
-  clickPower: 1,
-  autoBisousPerSecond: 0,
-  purchasedUpgrades: [],
-  gameWon: false,
-  chestOpened: false,
-  bonusClaimed: false
+  bisous: 0, totalAccumulated: 0, clickPower: 1, autoBisousPerSecond: 0,
+  purchasedUpgrades: [], gameWon: false, chestOpened: false, 
+  startTime: null, endTime: null
 };
 
 const defaultData: CalendarData = { 
-    foundDays: [], 
-    loginCount: 0, 
-    totalTime: 0,
-    lastConnection: '', 
-    lastDevice: '',
-    kissCount: 0,
-    finalMessage: '',
-    clicker: defaultClicker, // Init du jeu
-    fridge: []               // Init du frigo vide
+    foundDays: [], loginCount: 0, totalTime: 0, lastConnection: '', lastDevice: '',
+    kissCount: 0, finalMessage: '', clicker: defaultClicker, fridge: []
 };
 
-// Fonction utilitaire pour récupérer les données actuelles ou par défaut
 const getCurrentData = async (): Promise<CalendarData> => {
     const data = await kv.get<CalendarData>(DATA_KEY);
-    // On fusionne avec defaultData pour s'assurer que les nouveaux champs (clicker, fridge) existent
-    // même si la base de données contient une vieille version des données.
-    return { ...defaultData, ...data };
+    return { ...defaultData, ...data }; // Fusion pour la sécurité
 };
 
-
-// === GET : LIRE LES DONNÉES ===
 export async function GET() {
   try {
-    const data = await kv.get<CalendarData>(DATA_KEY);
-    // Si aucune donnée, on retourne les valeurs par défaut
-    const finalData = data ? { ...defaultData, ...data } : defaultData;
-    return NextResponse.json(finalData, { status: 200 });
+    const data = await getCurrentData();
+    return NextResponse.json(data, { status: 200 });
   } catch (error) {
-    console.error('KV GET Error:', error);
-    return NextResponse.json(defaultData, { status: 200 }); // Retourner les données par défaut en cas d'erreur
+    return NextResponse.json(defaultData, { status: 200 });
   }
 }
 
-// === POST : MODIFIER LES DONNÉES ===
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const { action, days, time, device, message, clickerState, fridgeItem, fridgeItemId } = body; 
     
-    // On définit les types possibles pour le body
-    const { 
-        action, 
-        days, time, device, message, // Params existants
-        clickerState, // Param pour le Clicker
-        fridgeItem, fridgeItemId // Params pour le Frigo
-    } = body; 
-    
-    // 1. Récupérer l'état actuel
     let currentData = await getCurrentData();
 
-    // 2. Appliquer les changements selon l'action
     switch (action) {
-        // --- CALENDRIER (EXISTANT) ---
         case 'update_days':
             if (Array.isArray(days)) currentData.foundDays = days;
             break;
@@ -131,27 +89,16 @@ export async function POST(request: Request) {
         case 'save_message':
             if (typeof message === 'string') currentData.finalMessage = message;
             break;
-
-        // --- LOVE CLICKER (NOUVEAU) ---
         case 'update_clicker':
-            // On met à jour l'état du jeu
-            if (clickerState) {
-                currentData.clicker = { ...currentData.clicker, ...clickerState };
-            }
+            if (clickerState) currentData.clicker = { ...currentData.clicker, ...clickerState };
             break;
-
-        // --- FRIGO CONNECTÉ (NOUVEAU) ---
         case 'add_fridge_item':
             if (fridgeItem) {
-                // On limite à 50 items max pour pas surcharger KV
-                if (currentData.fridge.length >= 50) {
-                    currentData.fridge.shift(); // Enlève le plus vieux
-                }
+                if (currentData.fridge.length >= 50) currentData.fridge.shift();
                 currentData.fridge.push(fridgeItem);
             }
             break;
         case 'update_fridge_item_pos':
-            // Met à jour la position d'un item spécifique
             if (fridgeItemId && fridgeItem) {
                 const index = currentData.fridge.findIndex(i => i.id === fridgeItemId);
                 if (index !== -1) {
@@ -160,29 +107,14 @@ export async function POST(request: Request) {
                 }
             }
             break;
-        case 'remove_fridge_item':
-             if (fridgeItemId) {
-                 currentData.fridge = currentData.fridge.filter(i => i.id !== fridgeItemId);
-             }
-             break;
-
-        // --- RESET GLOBAL (ADMIN) ---
         case 'reset':
-            // Remet TOUT à zéro (Calendrier + Clicker + Frigo)
             currentData = defaultData;
             break;
-            
-        default:
-            console.warn('POST API received unknown action:', action);
-            return NextResponse.json({ success: false, error: 'Unknown action' }, { status: 400 });
     }
 
-    // 3. Sauvegarder
     await kv.set(DATA_KEY, currentData);
-
     return NextResponse.json({ success: true, data: currentData }, { status: 200 });
   } catch (error) {
-    console.error('KV POST Error:', error);
     return NextResponse.json({ error: 'Failed to save data' }, { status: 500 });
   }
 }
