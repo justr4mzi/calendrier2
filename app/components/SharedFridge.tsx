@@ -33,30 +33,32 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   
-  // Ref pour bloquer la synchro temporairement après une suppression (évite le retour des fantômes)
+  // Ref pour empêcher la synchro pendant qu'on vide ou qu'on bouge un truc
   const skipSyncRef = useRef(false);
 
   const boardContainerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
+  // --- FONCTION DE SYNCHRO (CORRIGÉE ANTI-CRASH) ---
   const fetchFridge = async () => {
-    // Si on vient de vider, on attend un peu que le serveur nettoie
+    // 1. Si on vide le frigo, on ne sync pas
     if (skipSyncRef.current) return;
+    
+    // 2. CRUCIAL : Si l'utilisateur est en train de bouger un objet, ON STOPPE LA SYNC
+    // Sinon le serveur remet l'objet à son ancienne place pendant que tu le bouges -> CRASH
+    if (draggingId) return;
 
     try {
       const res = await fetch('/api/sync');
       const data = await res.json();
       if (data) {
         if(data.fridge && Array.isArray(data.fridge)) {
-            // FIX CRASH : FILTRE ANTI-DOUBLONS STRICT
-            // On ne garde qu'un seul item par ID pour éviter le crash React "Duplicate Key"
+            // Nettoyage Client : Anti-Doublon et Anti-NaN
             const uniqueItems = Array.from(new Map(data.fridge.map((item: any) => [item.id, item])).values());
-            
-            // FIX CRASH : Vérification coordonnées valides
             const safeItems = uniqueItems.map((item: any) => ({
                 ...item,
-                x: isNaN(item.x) ? 0 : item.x,
-                y: isNaN(item.y) ? 0 : item.y
+                x: (typeof item.x === 'number' && !isNaN(item.x)) ? item.x : 0,
+                y: (typeof item.y === 'number' && !isNaN(item.y)) ? item.y : 0
             }));
 
             setItems(safeItems as FridgeItem[]);
@@ -70,11 +72,12 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     } catch (e) { console.error("Erreur sync:", e); }
   };
 
+  // Intervalle de synchro
   useEffect(() => {
     fetchFridge();
-    const interval = setInterval(fetchFridge, 5000); 
+    const interval = setInterval(fetchFridge, 4000); 
     return () => clearInterval(interval);
-  }, [currentUser]);
+  }, [currentUser, draggingId]); // On ajoute draggingId pour que l'effet réagisse
 
   const fitScreen = () => {
       if (!boardContainerRef.current) return;
@@ -93,37 +96,53 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       return () => clearTimeout(timer);
   }, []);
 
+  // --- DRAG LOGIQUE ---
   const handleItemPointerDown = (e: React.PointerEvent, item: FridgeItem) => {
     e.stopPropagation(); 
     e.preventDefault();
+    
+    // On met draggingId TOUT DE SUITE pour bloquer le fetchFridge
+    setDraggingId(item.id);
+
     if (!boardRef.current) return;
     const rect = boardRef.current.getBoundingClientRect();
     const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
     const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
+    
     dragOffset.current = { x: mouseXOnBoard - item.x, y: mouseYOnBoard - item.y };
-    setDraggingId(item.id);
+    
     (e.target as Element).setPointerCapture(e.pointerId);
   };
 
   const handleItemPointerMove = (e: React.PointerEvent) => {
       if (!draggingId || !boardRef.current) return;
       e.preventDefault();
+      
       const rect = boardRef.current.getBoundingClientRect();
       const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
       const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
+
       let newX = mouseXOnBoard - dragOffset.current.x;
       let newY = mouseYOnBoard - dragOffset.current.y;
+
       const ITEM_SIZE = 200; 
       newX = Math.max(0, Math.min(newX, BOARD_SIZE - ITEM_SIZE));
       newY = Math.max(0, Math.min(newY, BOARD_SIZE - ITEM_SIZE));
+
+      // Mise à jour locale optimiste
       setItems(prev => prev.map(i => i.id === draggingId ? { ...i, x: newX, y: newY } : i));
   };
 
   const handleItemPointerUp = async (e: React.PointerEvent) => {
       if (!draggingId) return;
-      const item = items.find(i => i.id === draggingId);
+      const currentId = draggingId; // On capture l'ID
+      const item = items.find(i => i.id === currentId);
+      
+      // On relâche le drag
       setDraggingId(null);
       (e.target as Element).releasePointerCapture(e.pointerId);
+
+      // On envoie la position finale au serveur
       if (item) {
           await fetch('/api/sync', {
             method: 'POST',
@@ -143,15 +162,10 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
 
   const handleClearFridge = async () => {
       if (!confirm("Es-tu sûr de vouloir TOUT retirer du frigo ?")) return;
-      
-      // 1. Optimistic clear
       setItems([]); 
-      
-      // 2. Stop sync temporaire pour éviter que ça revienne
       skipSyncRef.current = true;
-      setTimeout(() => { skipSyncRef.current = false; }, 2000); // Reprend dans 2s
+      setTimeout(() => { skipSyncRef.current = false; }, 2000); 
 
-      // 3. Appel serveur
       await fetch('/api/sync', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -202,7 +216,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
         const startY = BOARD_SIZE / 2 - 100 + (Math.random() * 40 - 20);
 
         const newItem: FridgeItem = {
-            id: Date.now().toString() + Math.random().toString(), // ID ULTRA UNIQUE pour éviter collision
+            id: Date.now().toString() + Math.random().toString().slice(2, 8),
             type: newItemType,
             content: content,
             caption: photoCaption,
@@ -251,7 +265,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
       </div>
 
-      {/* BOUTON POUBELLE DÉPLACÉ EN BAS À GAUCHE */}
       <div className="absolute bottom-4 left-4 z-[100] pointer-events-auto">
           <button onClick={handleClearFridge} className="bg-red-500 text-white p-4 rounded-full shadow-2xl hover:bg-red-600 border-4 border-white transition-transform active:scale-90" title="Tout vider">
             <Trash2 className="w-6 h-6" />
