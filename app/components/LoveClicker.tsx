@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX, RotateCcw, Timer } from 'lucide-react';
+import { Heart, Sparkles, Zap, Music, Coffee, MessageCircleHeart, Plane, Download, Ticket, Volume2, VolumeX, RotateCcw, Timer, Trophy } from 'lucide-react';
 
 // --- CONFIG ---
 const TARGET_SCORE = 50000; 
@@ -14,6 +14,15 @@ const UPGRADES = [
   { id: 6, name: "Week-end", cost: 12000, cps: 1000, icon: <Plane className="w-4 h-4" />, desc: "+1000 B/s" },
 ];
 
+const RANKS = [
+    { threshold: 0, title: "Débutant(e)" },
+    { threshold: 1000, title: "Amoureux(se)" },
+    { threshold: 5000, title: "Passionné(e)" },
+    { threshold: 15000, title: "Fou d'Amour" },
+    { threshold: 30000, title: "Âme Sœur" },
+    { threshold: 45000, title: "Légende ❤️" }
+];
+
 export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [bisous, setBisous] = useState(0);
   const [totalAccumulated, setTotalAccumulated] = useState(0);
@@ -24,7 +33,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [chestOpened, setChestOpened] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Nouveaux états pour le timer
   const [startTime, setStartTime] = useState<number | null>(null);
   const [endTime, setEndTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -33,6 +41,17 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // --- VOLUME FIX ---
+  useEffect(() => {
+      if (audioRef.current) {
+          audioRef.current.volume = 0.1; // 10% volume, beaucoup plus doux
+      }
+  }, []);
+
+  const getRank = (score: number) => {
+      return RANKS.slice().reverse().find(r => score >= r.threshold)?.title || "Débutant(e)";
+  };
 
   // --- UTILS ---
   const formatTime = (seconds: number) => {
@@ -54,7 +73,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
             setPurchasedUpgrades(data.clicker.purchasedUpgrades || []);
             setGameWon(data.clicker.gameWon || false);
             setChestOpened(data.clicker.chestOpened || false);
-            // On récupère le temps s'il existe
             if(data.clicker.startTime) setStartTime(data.clicker.startTime);
             if(data.clicker.endTime) setEndTime(data.clicker.endTime);
         }
@@ -92,7 +110,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
 
     intervalRef.current = setInterval(() => {
       if (autoBisousPerSecond > 0) {
-        // Démarrer le timer si auto-click et pas encore démarré
         if (!startTime) setStartTime(Date.now());
         
         setBisous(prev => prev + autoBisousPerSecond);
@@ -107,7 +124,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       }
     }, 1000);
 
-    // Timer visuel
     timerRef.current = setInterval(() => {
         if (startTime && !gameWon) {
             setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
@@ -120,7 +136,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
     };
   }, [autoBisousPerSecond, gameWon, startTime]); 
 
-  // --- RESET DU JEU ---
   const handleRestart = async () => {
       if(!confirm("Veux-tu vraiment recommencer à zéro ? Ton temps sera effacé.")) return;
       setBisous(0); setTotalAccumulated(0); setClickPower(1); setAutoBisousPerSecond(0);
@@ -155,8 +170,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   };
 
   const progressPercentage = Math.min(100, (totalAccumulated / TARGET_SCORE) * 100);
-
-  // Temps final ou temps en cours
   const displayTime = gameWon && startTime && endTime 
     ? Math.floor((endTime - startTime) / 1000) 
     : elapsedTime;
@@ -168,7 +181,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
       
       <audio ref={audioRef} src="/lofi.mp3" loop />
 
-      {/* HEADER AMÉLIORÉ (Mobile Friendly) */}
+      {/* HEADER AMÉLIORÉ */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20 pointer-events-none">
           <div className="pointer-events-auto flex gap-2">
              <button onClick={() => { 
@@ -178,7 +191,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
                 {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
              </button>
              
-             {/* Timer Badge */}
              <div className="bg-white/80 backdrop-blur px-3 py-2 rounded-full shadow-sm border border-rose-100 flex items-center gap-2 text-rose-700 font-mono font-bold">
                  <Timer className="w-4 h-4" /> {formatTime(displayTime)}
              </div>
@@ -220,18 +232,24 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
 
       {/* JEU */}
       <div className="w-full max-w-md flex flex-col h-full max-h-[800px] pt-16 pb-4 px-4">
-        {/* SCORE */}
+        {/* SCORE AVEC RANG AJOUTÉ */}
         <div className="bg-white rounded-3xl p-5 shadow-xl mb-4 shrink-0 border border-rose-100">
-            <div className="flex justify-between items-end mb-2">
-                <div className="text-3xl font-black text-gray-800">{Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-lg">❤️</span></div>
-                <div className="text-xs text-green-500 font-bold">+{autoBisousPerSecond}/s</div>
+            <div className="flex justify-between items-start mb-2">
+                <div>
+                    <div className="text-3xl font-black text-gray-800">{Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-lg">❤️</span></div>
+                    {/* AJOUT DU RANG ICI */}
+                    <div className="flex items-center gap-1 text-sm font-bold text-indigo-500 mt-1">
+                        <Trophy className="w-4 h-4" />
+                        {getRank(totalAccumulated)}
+                    </div>
+                </div>
+                <div className="text-xs text-green-500 font-bold bg-green-50 px-2 py-1 rounded-lg">+{autoBisousPerSecond}/s</div>
             </div>
-            <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden relative">
+            <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden relative mt-2">
                 <motion.div className="h-full bg-gradient-to-r from-rose-400 to-indigo-500" initial={{ width: 0 }} animate={{ width: `${progressPercentage}%` }} />
             </div>
         </div>
 
-        {/* COEUR */}
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
             <motion.button 
                 whileTap={{ scale: 0.90 }} 
@@ -244,7 +262,6 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
              </motion.button>
         </div>
 
-        {/* SHOP (Scrollable) */}
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex-1 overflow-hidden flex flex-col border border-white/50 max-h-[40vh]">
              <div className="p-3 border-b border-gray-100 bg-white/50"><h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm"><Zap className="w-4 h-4 text-yellow-500" /> Améliorations</h3></div>
              <div className="overflow-y-auto p-3 space-y-2">
