@@ -14,15 +14,6 @@ const UPGRADES = [
   { id: 6, name: "Week-end", cost: 12000, cps: 1000, icon: <Plane className="w-4 h-4" />, desc: "+1000 B/s" },
 ];
 
-const RANKS = [
-    { threshold: 0, title: "Débutant(e)" },
-    { threshold: 1000, title: "Amoureux(se)" },
-    { threshold: 5000, title: "Passionné(e)" },
-    { threshold: 15000, title: "Fou d'Amour" },
-    { threshold: 30000, title: "Âme Sœur" },
-    { threshold: 45000, title: "Légende ❤️" }
-];
-
 export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [bisous, setBisous] = useState(0);
   const [totalAccumulated, setTotalAccumulated] = useState(0);
@@ -37,21 +28,17 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   const [endTime, setEndTime] = useState<number | null>(null);
   const [elapsedTime, setElapsedTime] = useState(0);
 
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(true); // Muted par défaut pour éviter le blast sonore
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // --- VOLUME FIX ---
+  // --- VOLUME FIX (Force le volume très bas) ---
   useEffect(() => {
       if (audioRef.current) {
-          audioRef.current.volume = 0.1; // 10% volume, beaucoup plus doux
+          audioRef.current.volume = 0.05; // 5% de volume seulement !
       }
-  }, []);
-
-  const getRank = (score: number) => {
-      return RANKS.slice().reverse().find(r => score >= r.threshold)?.title || "Débutant(e)";
-  };
+  }, [audioRef.current]); // Réessaie si la ref change
 
   // --- UTILS ---
   const formatTime = (seconds: number) => {
@@ -145,7 +132,11 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   };
 
   const handleMainClick = (e: any) => {
-    if (e && e.cancelable) e.preventDefault();
+    // IMPORTANT : preventDefault sur touch pour éviter le double tap zoom, mais attention au passive
+    if (e.type !== 'click' && e.cancelable) {
+       // On ne met pas preventDefault ici pour éviter l'erreur passive, on gère via CSS touch-action
+    }
+    
     if (!startTime) setStartTime(Date.now());
 
     setBisous(prev => prev + clickPower);
@@ -157,6 +148,12 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         }
         return newVal;
     });
+
+    // Jouer son si activé (volume faible)
+    if (!isMuted && audioRef.current) {
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
+    }
   };
 
   const buyUpgrade = (upgrade: typeof UPGRADES[0]) => {
@@ -177,17 +174,14 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
   if (isLoading) return <div className="fixed inset-0 z-[100] bg-rose-50 flex items-center justify-center"><Sparkles className="animate-spin text-rose-500 w-10 h-10"/></div>;
 
   return (
-    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-100 to-indigo-100 flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden">
+    <div className="fixed inset-0 z-[100] bg-gradient-to-br from-rose-100 to-indigo-100 flex flex-col items-center justify-center p-0 sm:p-4 overflow-hidden touch-none select-none">
       
-      <audio ref={audioRef} src="/lofi.mp3" loop />
+      <audio ref={audioRef} src="/click-sound.mp3" /> {/* Assure-toi d'avoir un son court style 'pop' */}
 
-      {/* HEADER AMÉLIORÉ */}
+      {/* HEADER */}
       <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start z-20 pointer-events-none">
           <div className="pointer-events-auto flex gap-2">
-             <button onClick={() => { 
-                 if(isMuted) { audioRef.current?.play(); setIsMuted(false); } 
-                 else { audioRef.current?.pause(); setIsMuted(true); } 
-             }} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-white/50 text-gray-500' : 'bg-rose-500 text-white shadow-lg animate-pulse'}`}>
+             <button onClick={() => setIsMuted(!isMuted)} className={`p-2 rounded-full transition-all ${isMuted ? 'bg-white/50 text-gray-500' : 'bg-rose-500 text-white shadow-lg animate-pulse'}`}>
                 {isMuted ? <VolumeX className="w-5 h-5"/> : <Volume2 className="w-5 h-5"/>}
              </button>
              
@@ -212,7 +206,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
               <div className="max-w-sm w-full bg-white rounded-3xl p-6 shadow-2xl border-4 border-yellow-400">
                 <Sparkles className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-spin-slow" />
                 <h2 className="text-2xl font-black text-rose-600 mb-4">BRAVO MA CHÉRIE !</h2>
-                <p className="text-gray-600 mb-2">Temps total : <span className="font-bold">{formatTime(displayTime)}</span></p>
+                <p className="text-gray-600 mb-2">Objectif atteint en : <span className="font-bold">{formatTime(displayTime)}</span></p>
                 <button onClick={() => { setChestOpened(true); saveGame(); }} className="w-full bg-rose-500 text-white font-bold py-3 rounded-xl animate-pulse shadow-lg mt-4">OUVRIR CADEAU</button>
               </div>
             ) : (
@@ -230,41 +224,55 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
         )}
       </AnimatePresence>
 
-      {/* JEU */}
+      {/* ZONE DE JEU */}
       <div className="w-full max-w-md flex flex-col h-full max-h-[800px] pt-16 pb-4 px-4">
-        {/* SCORE AVEC RANG AJOUTÉ */}
+        {/* BARRE DE PROGRESSION & SCORE (Refait au propre) */}
         <div className="bg-white rounded-3xl p-5 shadow-xl mb-4 shrink-0 border border-rose-100">
-            <div className="flex justify-between items-start mb-2">
+            <div className="flex justify-between items-end mb-2">
                 <div>
-                    <div className="text-3xl font-black text-gray-800">{Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-lg">❤️</span></div>
-                    {/* AJOUT DU RANG ICI */}
-                    <div className="flex items-center gap-1 text-sm font-bold text-indigo-500 mt-1">
-                        <Trophy className="w-4 h-4" />
-                        {getRank(totalAccumulated)}
+                    {/* Juste le chiffre et "Bisous" */}
+                    <div className="text-3xl font-black text-gray-800 leading-none">
+                        {Math.floor(bisous).toLocaleString()} <span className="text-rose-500 text-xl">Bisous</span>
                     </div>
                 </div>
-                <div className="text-xs text-green-500 font-bold bg-green-50 px-2 py-1 rounded-lg">+{autoBisousPerSecond}/s</div>
+                {/* Pourcentage d'avancement */}
+                <div className="text-right">
+                    <span className="text-sm font-bold text-gray-400">{progressPercentage.toFixed(1)}%</span>
+                </div>
             </div>
-            <div className="h-4 w-full bg-gray-100 rounded-full overflow-hidden relative mt-2">
-                <motion.div className="h-full bg-gradient-to-r from-rose-400 to-indigo-500" initial={{ width: 0 }} animate={{ width: `${progressPercentage}%` }} />
+            
+            {/* Barre visuelle */}
+            <div className="h-6 w-full bg-gray-100 rounded-full overflow-hidden relative border border-gray-200">
+                <motion.div 
+                    className="h-full bg-gradient-to-r from-rose-400 to-purple-500 flex items-center justify-end pr-2" 
+                    initial={{ width: 0 }} 
+                    animate={{ width: `${progressPercentage}%` }}
+                >
+                    {progressPercentage > 10 && <span className="text-[10px] text-white font-bold animate-pulse">❤️</span>}
+                </motion.div>
+            </div>
+            
+            <div className="mt-2 text-xs text-green-500 font-bold bg-green-50 inline-block px-2 py-1 rounded-lg">
+                Production : {autoBisousPerSecond} Bisous / seconde
             </div>
         </div>
 
+        {/* BOUTON CŒUR (Touch-action manipulation pour éviter zoom) */}
         <div className="flex-1 flex items-center justify-center relative min-h-[200px]">
             <motion.button 
                 whileTap={{ scale: 0.90 }} 
-                onMouseDown={handleMainClick}
-                onTouchStart={handleMainClick}
-                className="relative z-10 text-rose-500 drop-shadow-2xl filter touch-manipulation cursor-pointer select-none outline-none"
-                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                onClick={handleMainClick}
+                className="relative z-10 text-rose-500 drop-shadow-2xl filter cursor-pointer select-none outline-none"
+                style={{ touchAction: 'manipulation' }} 
              >
                 <Heart className="w-48 h-48 sm:w-56 sm:h-56 fill-rose-500 stroke-rose-600" strokeWidth={1.5} />
              </motion.button>
         </div>
 
+        {/* SHOP */}
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-xl flex-1 overflow-hidden flex flex-col border border-white/50 max-h-[40vh]">
-             <div className="p-3 border-b border-gray-100 bg-white/50"><h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm"><Zap className="w-4 h-4 text-yellow-500" /> Améliorations</h3></div>
-             <div className="overflow-y-auto p-3 space-y-2">
+             <div className="p-3 border-b border-gray-100 bg-white/50"><h3 className="font-bold text-gray-800 flex items-center gap-2 text-sm"><Zap className="w-4 h-4 text-yellow-500" /> Boutique à Bisous</h3></div>
+             <div className="overflow-y-auto p-3 space-y-2" style={{ touchAction: 'pan-y' }}>
                 {UPGRADES.map((upgrade) => {
                     const isBought = purchasedUpgrades.includes(upgrade.id);
                     const canBuy = bisous >= upgrade.cost && !isBought;

@@ -15,15 +15,15 @@ interface FridgeItem {
 }
 
 const COLORS = ['bg-yellow-200', 'bg-rose-200', 'bg-blue-200', 'bg-green-200'];
+const BOARD_SIZE = 2000; // Taille fixe du frigo
 
 export default function SharedFridge({ onClose, currentUser }: { onClose: () => void, currentUser: string }) {
   const [items, setItems] = useState<FridgeItem[]>([]);
   const [isAdding, setIsAdding] = useState(false);
   const [dailyCount, setDailyCount] = useState(0);
   
-  // États Zoom & Pan
-  const [scale, setScale] = useState(0.5); // On commence un peu dézoomé pour voir mieux
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  // États Zoom & Pan (Tableau entier)
+  const [viewState, setViewState] = useState({ scale: 0.2, x: 0, y: 0 });
   
   // États Ajout
   const [newItemType, setNewItemType] = useState<'note' | 'photo'>('note');
@@ -33,16 +33,20 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
   const [photoCaption, setPhotoCaption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
 
+  // Dragging manuel des items (pour précision et clamping)
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
+
+  const boardContainerRef = useRef<HTMLDivElement>(null);
   const boardRef = useRef<HTMLDivElement>(null);
 
-  // --- SYNC API (Crédits + Items) ---
+  // --- SYNC API ---
   const fetchFridge = async () => {
     try {
       const res = await fetch('/api/sync');
       const data = await res.json();
       if (data) {
         if(data.fridge) setItems(data.fridge);
-        // Sync Crédits Serveur
         if (data.credits && data.credits[currentUser]) {
             setDailyCount(data.credits[currentUser].count);
         } else {
@@ -58,21 +62,122 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     return () => clearInterval(interval);
   }, [currentUser]);
 
-  // --- GESTION HEIC : ALERTE SIMPLIFIÉE ---
+  // --- FIT TO SCREEN (Le Fix Initial) ---
+  const fitScreen = () => {
+      if (!boardContainerRef.current) return;
+      
+      const { clientWidth: w, clientHeight: h } = boardContainerRef.current;
+      const padding = 40;
+      
+      // On calcule quel ratio est le "facteur limitant" (largeur ou hauteur)
+      const ratioW = (w - padding) / BOARD_SIZE;
+      const ratioH = (h - padding) / BOARD_SIZE;
+      const newScale = Math.min(ratioW, ratioH, 1); // Max 100%
+
+      // On centre
+      const startX = (w - BOARD_SIZE * newScale) / 2;
+      const startY = (h - BOARD_SIZE * newScale) / 2;
+
+      setViewState({ scale: newScale, x: startX, y: startY });
+  };
+
+  // Lancer fitScreen au montage
+  useEffect(() => {
+      // Petit délai pour être sûr que le DOM est prêt
+      const timer = setTimeout(fitScreen, 100);
+      window.addEventListener('resize', fitScreen);
+      return () => {
+          clearTimeout(timer);
+          window.removeEventListener('resize', fitScreen);
+      };
+  }, []);
+
+  // --- LOGIQUE DRAG ITEM MANUELLE ---
+  
+  const handleItemPointerDown = (e: React.PointerEvent, item: FridgeItem) => {
+    e.stopPropagation(); // Ne pas bouger le tableau derrière
+    e.preventDefault();
+
+    if (!boardRef.current) return;
+
+    // Calcul de l'offset : où on a cliqué DANS l'item
+    // On convertit la position écran en position relative au tableau
+    const rect = boardRef.current.getBoundingClientRect();
+    const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
+    const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
+
+    dragOffset.current = {
+        x: mouseXOnBoard - item.x,
+        y: mouseYOnBoard - item.y
+    };
+
+    setDraggingId(item.id);
+    (e.target as Element).setPointerCapture(e.pointerId);
+  };
+
+  const handleItemPointerMove = (e: React.PointerEvent) => {
+      if (!draggingId || !boardRef.current) return;
+      e.preventDefault();
+
+      const rect = boardRef.current.getBoundingClientRect();
+      const mouseXOnBoard = (e.clientX - rect.left) / viewState.scale;
+      const mouseYOnBoard = (e.clientY - rect.top) / viewState.scale;
+
+      let newX = mouseXOnBoard - dragOffset.current.x;
+      let newY = mouseYOnBoard - dragOffset.current.y;
+
+      // --- CLAMPING (Limites strictes) ---
+      // On empêche l'item de sortir (supposons item ~200px)
+      const ITEM_SIZE = 200; 
+      newX = Math.max(0, Math.min(newX, BOARD_SIZE - ITEM_SIZE));
+      newY = Math.max(0, Math.min(newY, BOARD_SIZE - ITEM_SIZE));
+
+      // Mise à jour locale immédiate (optimiste)
+      setItems(prev => prev.map(i => i.id === draggingId ? { ...i, x: newX, y: newY } : i));
+  };
+
+  const handleItemPointerUp = async (e: React.PointerEvent) => {
+      if (!draggingId) return;
+      const item = items.find(i => i.id === draggingId);
+      setDraggingId(null);
+      (e.target as Element).releasePointerCapture(e.pointerId);
+
+      // Sauvegarde DB
+      if (item) {
+          await fetch('/api/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'update_fridge_item_pos',
+                fridgeItemId: item.id,
+                fridgeItem: { x: item.x, y: item.y }
+            })
+        });
+      }
+  };
+
+
+  // --- GESTION DU BOARD DRAG ---
+  const handleBoardDrag = (e: any, info: any) => {
+      setViewState(prev => ({ 
+          ...prev, 
+          x: prev.x + info.delta.x, 
+          y: prev.y + info.delta.y 
+      }));
+  };
+
+  // --- AJOUT ITEM (Reste inchangé en logique mais utilise les nouvelles coords) ---
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file) return;
-      
-      // Sécurité : On rejette HEIC ici aussi
       if (file.name.toLowerCase().endsWith('.heic') || file.type === 'image/heic') {
-          alert("Les photos HEIC (iPhone) ne marchent pas bien. Prends une capture d'écran de ta photo pour la transformer en JPG/PNG, ça marchera à tous les coups !");
+          alert("Les photos HEIC (iPhone) buggent parfois. Prends une capture d'écran, ça marchera mieux !");
           setPhotoFile(null);
           return;
       }
       setPhotoFile(file);
   };
 
-  // Compression basique JPG
   const compressImage = async (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -95,51 +200,16 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     });
   };
 
-  // --- GESTION DU DRAG (LIMITES STRICTES) ---
-  const handleDragEnd = async (id: string, info: any) => {
-    if (!boardRef.current) return;
-    const item = items.find(i => i.id === id);
-    if (!item) return;
-
-    // Calcul du déplacement relatif au zoom
-    const deltaX = info.offset.x / scale;
-    const deltaY = info.offset.y / scale;
-    const boardWidth = 2000;
-    const boardHeight = 2000;
-
-    let newX = item.x + (deltaX / boardWidth) * 100;
-    let newY = item.y + (deltaY / boardHeight) * 100;
-
-    // LIMITES STRICTES : On empêche de sortir du cadre (0% à 85% environ)
-    newX = Math.max(0, Math.min(85, newX));
-    newY = Math.max(0, Math.min(85, newY));
-
-    setItems(prev => prev.map(i => i.id === id ? { ...i, x: newX, y: newY } : i));
-
-    await fetch('/api/sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            action: 'update_fridge_item_pos',
-            fridgeItemId: id,
-            fridgeItem: { x: newX, y: newY }
-        })
-    });
-  };
-
-  // --- AJOUT ---
   const handleAddItem = async () => {
     if (dailyCount >= 3) return;
     setIsUploading(true);
-
     try {
         let content = noteText;
         if (newItemType === 'photo' && photoFile) content = await compressImage(photoFile);
 
-        // Positionnement par défaut au centre de la vue (approximatif)
-        // On évite les bords extrêmes
-        let startX = 40 + (Math.random() * 20); 
-        let startY = 40 + (Math.random() * 20);
+        // On place au milieu du board
+        const startX = BOARD_SIZE / 2 - 100 + (Math.random() * 40 - 20);
+        const startY = BOARD_SIZE / 2 - 100 + (Math.random() * 40 - 20);
 
         const newItem: FridgeItem = {
             id: Date.now().toString(),
@@ -158,7 +228,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
             body: JSON.stringify({ 
                 action: 'add_fridge_item', 
                 fridgeItem: newItem,
-                currentUser: currentUser // IMPORTANT pour valider les crédits côté serveur
+                currentUser: currentUser 
             })
         });
         
@@ -167,7 +237,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
             else throw new Error('Erreur');
         } else {
             setItems(prev => [...prev, newItem]);
-            setDailyCount(prev => prev + 1); // Optimiste
+            setDailyCount(prev => prev + 1);
             setIsAdding(false);
             setNoteText(''); setPhotoFile(null); setPhotoCaption('');
         }
@@ -175,20 +245,11 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
     finally { setIsUploading(false); }
   };
 
-  const handleBoardDrag = (e: any, info: any) => {
-      setPosition({ x: position.x + info.delta.x, y: position.y + info.delta.y });
-  };
-
-  // Reset View pour voir tout le board
-  const fitScreen = () => {
-      setScale(0.15); // Dézoom max pour tout voir
-      setPosition({ x: 0, y: 0 });
-  };
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/90 backdrop-blur-md overflow-hidden">
+    <div className="fixed inset-0 z-[90] bg-gray-900 touch-none overflow-hidden" ref={boardContainerRef}>
       
-      {/* UI HEADER FLOTTANT */}
+      {/* HEADER UI */}
       <div className="absolute top-0 left-0 right-0 z-[100] p-4 flex justify-between items-start pointer-events-none">
           <div className="bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-lg border border-gray-200 pointer-events-auto">
               <h2 className="font-bold text-gray-800 flex items-center gap-2">❄️ Frigo de {currentUser === 'ramzi2010' ? 'Ramzi' : 'Minou'}</h2>
@@ -197,9 +258,9 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           
           <div className="flex gap-2 pointer-events-auto">
               <div className="flex flex-col gap-2 bg-white/90 backdrop-blur p-2 rounded-xl shadow-lg border border-gray-200">
-                  <button onClick={() => setScale(s => Math.min(s + 0.1, 2))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomIn className="w-5 h-5 text-gray-600"/></button>
-                  <button onClick={() => setScale(s => Math.max(s - 0.1, 0.1))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomOut className="w-5 h-5 text-gray-600"/></button>
-                  <button onClick={fitScreen} className="p-2 hover:bg-gray-100 rounded-lg" title="Vue d'ensemble"><Maximize className="w-5 h-5 text-gray-600"/></button>
+                  <button onClick={() => setViewState(v => ({...v, scale: Math.min(v.scale + 0.1, 2)}))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomIn className="w-5 h-5 text-gray-600"/></button>
+                  <button onClick={() => setViewState(v => ({...v, scale: Math.max(v.scale - 0.1, 0.1)}))} className="p-2 hover:bg-gray-100 rounded-lg"><ZoomOut className="w-5 h-5 text-gray-600"/></button>
+                  <button onClick={fitScreen} className="p-2 hover:bg-gray-100 rounded-lg" title="Recentrer"><Maximize className="w-5 h-5 text-gray-600"/></button>
               </div>
               <button onClick={onClose} className="bg-rose-500 text-white p-3 rounded-xl shadow-lg hover:bg-rose-600 h-fit">
                 <X className="w-6 h-6" />
@@ -207,65 +268,64 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
           </div>
       </div>
 
-      {/* --- LE BOARD INTERACTIF --- */}
-      <div 
-        className="w-full h-full cursor-move overflow-hidden bg-[#e5e5f7] relative"
-        style={{ touchAction: 'none' }} // Crucial pour mobile
-      >
-          {/* Grille de fond */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none" 
-               style={{ backgroundImage: 'radial-gradient(#444cf7 1px, transparent 1px)', backgroundSize: '20px 20px' }} 
-          />
-
+      {/* --- LE BOARD --- */}
+      {/* On utilise un div wrapper pour gérer le touch-action globalement */}
+      <div className="w-full h-full touch-none select-none">
           <motion.div
             ref={boardRef}
             drag
             dragMomentum={false}
             onDrag={handleBoardDrag}
-            animate={{ x: position.x, y: position.y, scale: scale }}
-            className="w-[2000px] h-[2000px] bg-[#f0e6d2] shadow-2xl relative origin-center"
+            // On désactive le drag Framer si on est en train de drag un item pour éviter le conflit
+            dragListener={!draggingId} 
+            animate={{ x: viewState.x, y: viewState.y, scale: viewState.scale }}
+            transition={{ type: "tween", duration: draggingId ? 0 : 0.2 }} // Pas de transition pendant le drag d'item
+            className="shadow-2xl relative origin-top-left bg-[#f0e6d2]"
             style={{ 
+                width: BOARD_SIZE,
+                height: BOARD_SIZE,
                 border: '20px solid #e6dac0',
                 backgroundImage: 'repeating-linear-gradient(45deg, #e6dac0 25%, transparent 25%, transparent 75%, #e6dac0 75%, #e6dac0), repeating-linear-gradient(45deg, #e6dac0 25%, #f0e6d2 25%, #f0e6d2 75%, #e6dac0 75%, #e6dac0)',
                 backgroundPosition: '0 0, 10px 10px',
-                backgroundSize: '20px 20px'
+                backgroundSize: '20px 20px',
+                touchAction: 'none'
             }}
+            // Événements globaux pour le drag des items (pour ne pas perdre le focus si on bouge vite)
+            onPointerMove={handleItemPointerMove}
+            onPointerUp={handleItemPointerUp}
+            onPointerLeave={handleItemPointerUp}
           >
              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-10 pointer-events-none text-center">
                  <span className="text-9xl">❄️</span>
-                 <p className="text-4xl font-serif text-[#8c8270] mt-4">Notre Espace</p>
+                 <p className="text-4xl font-serif text-[#8c8270] mt-4">Notre Espace (Zoomable)</p>
              </div>
 
              {items.map((item) => (
-                <motion.div
+                <div
                     key={item.id}
-                    drag
-                    dragMomentum={false}
-                    onPointerDown={(e) => e.stopPropagation()} 
-                    onDragEnd={(e, info) => handleDragEnd(item.id, info)}
-                    initial={{ scale: 0 }}
-                    animate={{ 
-                        left: `${item.x}%`, 
-                        top: `${item.y}%`, 
-                        rotate: item.rotation,
-                        scale: 1 
-                    }}
-                    className="absolute hover:z-50 cursor-grab active:cursor-grabbing"
-                    style={{ position: 'absolute' }} 
+                    onPointerDown={(e) => handleItemPointerDown(e, item)}
+                    className="absolute hover:z-50 cursor-move active:cursor-grabbing touch-none"
+                    style={{ 
+                        left: 0, 
+                        top: 0,
+                        transform: `translate(${item.x}px, ${item.y}px) rotate(${item.rotation}deg)`,
+                        width: '200px', // Taille fixe de référence pour le clamping
+                        touchAction: 'none'
+                    }} 
                 >
                     {item.type === 'note' ? (
-                        <div className={`${item.color || 'bg-yellow-200'} w-48 h-48 p-4 shadow-lg text-gray-800 font-handwriting text-lg leading-relaxed flex items-center justify-center text-center select-none hover:shadow-2xl transition-shadow`}>
+                        <div className={`${item.color || 'bg-yellow-200'} w-48 h-48 p-4 shadow-lg text-gray-800 font-handwriting text-lg leading-relaxed flex items-center justify-center text-center select-none hover:shadow-2xl transition-shadow pointer-events-none`}>
                             {item.content}
                         </div>
                     ) : (
-                        <div className="bg-white p-2 pb-8 shadow-xl w-48 select-none hover:shadow-2xl transition-shadow">
+                        <div className="bg-white p-2 pb-8 shadow-xl w-48 select-none hover:shadow-2xl transition-shadow pointer-events-none">
                             <div className="w-full h-40 bg-gray-100 overflow-hidden mb-2 relative">
-                                <img src={item.content} alt="Souvenir" className="w-full h-full object-cover pointer-events-none" />
+                                <img src={item.content} alt="Souvenir" className="w-full h-full object-cover" />
                             </div>
                             <p className="font-handwriting text-center text-gray-600 text-xs truncate px-1">{item.caption}</p>
                         </div>
                     )}
-                </motion.div>
+                </div>
              ))}
           </motion.div>
       </div>
@@ -306,7 +366,6 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
                      <div className="space-y-4 mb-6">
                          <label className="block w-full aspect-video bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors">
                              {photoFile ? <div className="text-green-500 font-bold flex items-center gap-2 truncate px-4"><ImageIcon/> {photoFile.name.slice(0, 15)}...</div> : <div className="text-gray-400 flex flex-col items-center"><Plus className="mb-2"/> Choisir une image (JPG/PNG)</div>}
-                             {/* AJOUT ICI : Accept strict sans HEIC */}
                              <input type="file" accept="image/png, image/jpeg, image/jpg" onChange={handleFileChange} className="hidden"/>
                          </label>
                          <input type="text" placeholder="Légende..." value={photoCaption} onChange={(e) => setPhotoCaption(e.target.value)} className="w-full p-3 bg-gray-50 rounded-xl text-base focus:ring-2 focus:ring-rose-200" />
