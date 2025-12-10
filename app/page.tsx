@@ -146,9 +146,10 @@ const VoicePlayer = ({ day, onPlayStateChange }: { day: number, onPlayStateChang
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    onPlayStateChange(isPlaying);
+    if (onPlayStateChange) {
+      onPlayStateChange(isPlaying);
+    }
   }, [isPlaying, onPlayStateChange]);
-
   const togglePlay = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -2356,7 +2357,7 @@ export default function Home() {
                   {/* LECTEUR VOCAL AJOUTÉ ICI */}
                   <div className="border-t border-rose-200 mt-4 pt-4">
                     <VoicePlayer 
-                       day={selectedDay.day} 
+                      day={selectedDay.day} 
                       onPlayStateChange={setIsVoicePlaying} 
                     />
                 </div>
