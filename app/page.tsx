@@ -140,10 +140,14 @@ const TypewriterText = ({ text, speed = 30 }: { text: string, speed?: number }) 
 };
 
 // === VOICE PLAYER (LECTEUR VOCAL) ===
-const VoicePlayer = ({ day }: { day: number }) => {
+const VoicePlayer = ({ day, onPlayStateChange }: { day: number, onPlayStateChange: (isPlaying: boolean) => void }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    onPlayStateChange(isPlaying);
+  }, [isPlaying, onPlayStateChange]);
 
   const togglePlay = () => {
     if (!audioRef.current) return;
@@ -1487,6 +1491,7 @@ export default function Home() {
   const [currentView, setCurrentView] = useState<'home' | 'clicker' | 'fridge'>('home');
   // === GESTION INTELLIGENTE DU SON ===
   const [isInGame, setIsInGame] = useState(false);
+  const [isVoicePlaying, setIsVoicePlaying] = useState(false); // <--- AJOUTE ÇA
   
   // Détection du mobile (car iOS refuse le changement de volume par code)
   const isMobile = typeof navigator !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -1494,10 +1499,11 @@ export default function Home() {
   // Sur PC : On baisse le son à 10%.
   // Sur Mobile : On garde le volume normal (car on ne peut pas le toucher), mais on mettra PAUSE.
   const effectiveVolume = (isInGame && !isMobile) ? (volume * 0.1) : volume;
+  const shouldPlayMusic = isAuthenticated && playMusic && !(isInGame && isMobile) && !isVoicePlaying;
   
   // Si on est en jeu ET sur mobile => On coupe la musique (Pause).
   // Sinon => On joue selon les règles habituelles.
-  const shouldPlayMusic = isAuthenticated && playMusic && !(isInGame && isMobile); 
+// Modifie cette ligne pour ajouter "&& !isVoicePlaying" à la fin 
   
   // === NOUVEAUX ETATS ===
   const [kissCount, setKissCount] = useState(0);
@@ -1628,19 +1634,12 @@ export default function Home() {
   // === BLOQUAGE ZOOM IOS ===
   useEffect(() => {
     const handleGesture = (e: Event) => e.preventDefault();
-    let lastTouchEnd = 0;
-    const handleTouchEnd = (e: TouchEvent) => {
-      const now = new Date().getTime();
-      if (now - lastTouchEnd <= 300) e.preventDefault();
-      lastTouchEnd = now;
-    };
+    
     document.addEventListener('gesturestart', handleGesture, { passive: false });
     document.addEventListener('gesturechange', handleGesture, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, false);
     return () => {
       document.removeEventListener('gesturestart', handleGesture);
       document.removeEventListener('gesturechange', handleGesture);
-      document.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
 
@@ -2356,8 +2355,11 @@ export default function Home() {
                   
                   {/* LECTEUR VOCAL AJOUTÉ ICI */}
                   <div className="border-t border-rose-200 mt-4 pt-4">
-                    <VoicePlayer day={selectedDay.day} />
-                  </div>
+                    <VoicePlayer 
+                       day={selectedDay.day} 
+                      onPlayStateChange={setIsVoicePlaying} 
+                    />
+                </div>
                 </div>
 
                 <div className="post-it rounded-2xl p-6">
