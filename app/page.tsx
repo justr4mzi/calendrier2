@@ -145,44 +145,51 @@ const VoicePlayer = ({ day, onPlayStateChange }: { day: number, onPlayStateChang
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [error, setError] = useState(false);
 
+  // 1. Sécurité : Si le composant disparait, on remet la musique
   useEffect(() => {
-    if (onPlayStateChange) {
-      onPlayStateChange(isPlaying);
-    }
+    onPlayStateChange(isPlaying);
+    return () => onPlayStateChange(false); // <--- TRES IMPORTANT
   }, [isPlaying, onPlayStateChange]);
+
   const togglePlay = () => {
     if (!audioRef.current) return;
+    
     if (isPlaying) {
       audioRef.current.pause();
+      setIsPlaying(false); // On force l'état tout de suite
     } else {
+      // On met à jour l'état AVANT que le son ne sorte pour être réactif
+      setIsPlaying(true); 
       audioRef.current.play().catch((e) => {
         console.error("Erreur lecture:", e);
+        setIsPlaying(false); // On annule si ça plante
         setError(true);
       });
     }
-    setIsPlaying(!isPlaying);
   };
 
-  if (error) return null; // Cache le lecteur si pas de fichier
+  if (error) return null;
 
   return (
     <div className="mt-6 mb-6 bg-rose-50 rounded-2xl p-4 flex items-center gap-4 border border-rose-200 shadow-sm relative overflow-hidden">
       <audio
         ref={audioRef}
         src={`/voix_jour${day}.mp3`}
+        // On garde les écouteurs natifs pour la fin de piste
         onEnded={() => setIsPlaying(false)}
         onPause={() => setIsPlaying(false)}
         onPlay={() => setIsPlaying(true)}
         onError={() => setError(true)}
       />
       <button
-        onClick={togglePlay}
+        onClick={togglePlay} // Ici on garde onClick car c'est un vrai bouton
         className="relative z-10 w-12 h-12 flex items-center justify-center bg-rose-500 text-white rounded-full hover:bg-rose-600 transition-all shadow-md hover:scale-105 active:scale-95"
       >
         {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <Play className="w-5 h-5 ml-1 fill-current" />}
       </button>
       
-      <div className="flex-1 flex flex-col justify-center z-10">
+      {/* ... (La suite de ton design avec l'animation wave reste identique) ... */}
+       <div className="flex-1 flex flex-col justify-center z-10">
         <span className="text-xs font-bold text-rose-400 uppercase tracking-wider mb-1">Note Vocale</span>
         <div className="flex items-center gap-1 h-6">
           {[...Array(12)].map((_, i) => (
@@ -197,11 +204,8 @@ const VoicePlayer = ({ day, onPlayStateChange }: { day: number, onPlayStateChang
           ))}
         </div>
       </div>
-
-      {/* Déco de fond */}
       <div className="absolute right-0 top-0 h-full w-24 bg-gradient-to-l from-white/50 to-transparent pointer-events-none" />
-      
-      <style jsx>{`
+       <style jsx>{`
         @keyframes wave {
             0%, 100% { height: 6px; opacity: 0.6; }
             50% { height: 24px; opacity: 1; }
