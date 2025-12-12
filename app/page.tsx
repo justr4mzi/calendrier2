@@ -1064,7 +1064,7 @@ const CALENDAR_DATA = [
     gift: "Photo #10 (Finale)", 
     giftMessage: "Petite photo pour finir en beauté 💖", 
     keywords: [], 
-    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null,
+    hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "ALALALA LES COQUINS", photoDownload: true, extraPhoto1: null,
     perfumeAnswer: 3
   },
 ];
