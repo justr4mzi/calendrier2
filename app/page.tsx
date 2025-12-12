@@ -999,7 +999,7 @@ const CALENDAR_DATA = [
     letter: "LETTRE DU JOUR 16 (NOUVEL AN)", 
     hint: "Récupérer la lettre S", 
     gift: "Nuisette", 
-    giftMessage: "MESSAGE CADEAU NUISETTE (À remplir)", 
+    giftMessage: "Aujourd'hui une nouvelle série commence! Pour le premier jour j'aimerai parler de ta magnifique bouche. Tes lèvres sont tellement magnifiques elle t'embellisse d'une manière que tu ne peux pas meme pas imaginé. Tiens tu t'en souviens du jour ou tu m'as galoche tout partout le premier jour du rp meme ? mmmmhhhhh. Profite bien du cadeau je te souhaite une bonne année ma chérie inshAllah ca sera une année incroyable pour nous 2 et je suis sure qu'Allah va nous aidera a traversé toute les épreuves El hamdoullah.", 
     keywords: ["nuisette", "lingerie", "vêtement", "pyjama"], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
