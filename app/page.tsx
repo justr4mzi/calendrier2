@@ -1050,19 +1050,19 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2026-01-07", day: 22, 
-    letter: "LETTRE DU JOUR 22", 
+    letter: "Dernier jour de la série. Déborah la serie s'arrete aujourd'hui pas parce que j'ai plus d'idée, c'est juste qu'il n'y aurai jamais assez de case dans un 1 an pour décrire a quel point t'es magnifique : on pourrait parler de tes cheveux (brushing wavy me ghette ahhaha) nan sah ils sont incroyables , attend j'ai pas finis ya aussi tes sourcils incroyable , ton nez super beau, tes oreilles ou tes boucles d'oreilles te vont si bien, ta moustache faut pas l'oublier (je rigole promis), ton cou si doux si ou t'as envie de la tuer de sucon, tes bras magnifiques sans parler de tes maisn si douce si aaahh j'aime trop c'est la meilleure chose, ton ventre, tes hanches mamamama, ton pubis mmmhh avec ton minou , tes pieds sah bien l'été bien vernis c'est qlq chose hahaahaha avec tes petits mollets tout mignons la . Bref Déborah je pourrai jamais arreter de décrire a quel point t'es belle. Et on a parlé que du physique la frr t'imagines on parle de ta personne en toi nan c'est trop", 
     hint: "Récupérer la lettre X", 
     gift: "Schweppes Grenade", 
-    giftMessage: "MESSAGE CADEAU SCHWEPPES (À remplir)", 
+    giftMessage: "Tout droit venu d'Algérie papapa bonne soif", 
     keywords: ["schweppes", "grenade", "canette", "boisson"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-08", day: 23, 
-    letter: "LETTRE DU JOUR 23 (FINALE)", 
+    letter: "DERNIER JOUR ! Au final cette expérience m'a apprit tellements de trucs : ne jamais se décourager ne pas abandonner toujours apprendre de nouvelles choses, innovés et cherché des idées , et etre fiere de soit. Je le suis honnetement sans me jeter des fleurs avec tout ca. C'est la fin j'espere que ca t'a plu. Le site reste bien sur ouvert pour les jeux ou encore utilisé les dés mmmhmhhhhhh aller bisous ma chérie on se voit vite IRL inshALLAH", 
     hint: "Récupérer la lettre Y", 
     gift: "Photo #10 (Finale)", 
-    giftMessage: "MESSAGE CADEAU JOUR 23 (À remplir)", 
+    giftMessage: "Petite photo pour finir en beauté 💖", 
     keywords: [], 
     hasGuess: false, videoUrl: null, isSpecial: true, photoUrl: "/photo_jour_23.jpg", photoComment: "COMMENTAIRE_PHOTO_10_ICI", photoDownload: true, extraPhoto1: null,
     perfumeAnswer: 3
