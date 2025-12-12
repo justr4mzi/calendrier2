@@ -1005,46 +1005,46 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2026-01-02", day: 17, 
-    letter: "LETTRE DU JOUR 17", 
+    letter: "Jour 2 de la sérieee! Tu dois vraiment me manquer. Ca fait longtemps qu'on s'est pas revu et j'ai déjà hate. Aujourd'hui on va parler de tes yeux. Tu sais tes yeux qui pétille d'amour quand tu me vois. C'est la meilleure sensation du monde . T'as tellemnt l'impression d'être aimer c'est incroyable je les aimes du fond du coeur.", 
     hint: "Récupérer la lettre U", 
     gift: "Photo #8 + Petit chocolat Lindt", 
-    giftMessage: "MESSAGE CADEAU JOUR 17 (À remplir)", 
+    giftMessage: "Petite photo hehe à la patinoire incroyable. Petit bonus je te souhaite un bonne app. ", 
     keywords: [], 
-    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "COMMENTAIRE_PHOTO_8_ICI", photoDownload: true, extraPhoto1: null 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_17.jpg", photoComment: "Faudra qu'on y re aille quand même. Je te ferai des cours promis", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-03", day: 18, 
-    letter: "LETTRE DU JOUR 18", 
+    letter: "3eme jour de la serie!!! Aujourd'hui on va parler cash. Tes cuisses c'est le meilleur coussin sur lequel j'ai jamais dormis. C'est un nuage c'est incroyable vraiment c'est l'une des parties que je préfere chez toi c'est juste fou sah. Pour rien au monde faut que tu les changes ca serait du gachis. ", 
     hint: "Récupérer la lettre O", 
     gift: "Canette IZEM Cerise", 
-    giftMessage: "MESSAGE CADEAU IZEM (À remplir)", 
+    giftMessage: "Bois bien! hehe tu goutes izem. Bon y'a moyen t'aimes pas mais voila au moins tu goutes et ya de l'originalité dans les cadeaux bah oe frr tu crois quoi la ca commence a etre bcp faut essayer de varier.", 
     keywords: ["canette", "boisson", "ism", "izem", "cerise"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-04", day: 19, 
-    letter: "LETTRE DU JOUR 19", 
+    letter: "4eme jour de la série mmh ajd je parle de tes fesses ou de tes seins . Bon aujourd'hui ta poitrine et le reste pour demain. Ta poitrine alallala. Je bande juste en en parlant hahaha nan sah c'est une dingz d'avoir toutes ses parties du corps incroyable comme ca je te parle serieux tu peux tellement flex la fais la belle un peu t'attend quoi", 
     hint: "Récupérer la lettre V", 
     gift: "Photo #9 + Petit chocolat Lindt", 
-    giftMessage: "MESSAGE CADEAU JOUR 19 (À remplir)", 
+    giftMessage: "Petit bonus et chocolat ajd!!!!", 
     keywords: [], 
-    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "COMMENTAIRE_PHOTO_9_ICI", photoDownload: true, extraPhoto1: null 
+    hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: "/photo_jour_19.jpg", photoComment: "T'es juste WOW j'ai pas d'autres mots", photoDownload: true, extraPhoto1: null 
   },
   { 
     date: "2026-01-05", day: 20, 
-    letter: "LETTRE DU JOUR 20", 
+    letter: "YESSSS JOUR 5 DE LA SERIE . AJD C'EST LES FESSES . Avoue t'attendez ce jour avec impatience . Sah tu veux jte dise quoi enft juste a part que INTELLIGENTE ET CHARGE EN BAS. Nan sah t'as un GROS atout att mais wsh ca veut dire tout les jours tu te poses sur des chaises ca veut dire ca touche tes fesses et moi je peux meme pas. Je crois je commence a devenir fou la enft tellement c'est 😏", 
     hint: "Récupérer la lettre W", 
     gift: "Maillot de foot", 
-    giftMessage: "MESSAGE CADEAU MAILLOT (À remplir)", 
+    giftMessage: "POAPAPPAP il est là le fameux l'unique j'espère il t'ira a merveille papapa on va etre corda incroyable ", 
     keywords: ["maillot", "foot", "vêtement", "t-shirt"], 
     hasGuess: false, videoUrl: null, isSpecial: false, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
   { 
     date: "2026-01-06", day: 21, 
-    letter: "LETTRE DU JOUR 21 (TON RETOUR)", 
+    letter: "jour 6 DE LA SERIE et oe c bientot finit dommage hein c'est pas grave sah ajd cadeau je trouve très original . ATT on s'éloigne la ajd on va parler de ton visage. Ton visage est si doux si incroyable meme si toi tu l'aimes pas a cause de l'acné tu devrai. Je peux te faire des papouilles pendant tellments des heures c'est tellement doux sah", 
     hint: "Récupérer la lettre Z", 
     gift: "Visionneuse Photo", 
-    giftMessage: "MESSAGE EXPLICATIF VISIONNEUSE (À remplir)", 
+    giftMessage: "MET TON OEIL DEDANS TU VERRAS QUELQUE CHOSE (ferme bien ton oeil qui est pas dedans, comme un objectif d'un appareil photo) ET SOIT FACE A LA LUMIERE", 
     keywords: ["photo", "visionneuse", "viewer", "camera"], 
     hasGuess: true, videoUrl: null, isSpecial: true, photoUrl: null, photoComment: null, photoDownload: false, extraPhoto1: null 
   },
