@@ -1059,7 +1059,7 @@ const CALENDAR_DATA = [
   },
   { 
     date: "2026-01-08", day: 23, 
-    letter: "DERNIER JOUR ! Au final cette expérience m'a apprit tellements de trucs : ne jamais se décourager ne pas abandonner toujours apprendre de nouvelles choses, innovés et cherché des idées , et etre fiere de soit. Je le suis honnetement sans me jeter des fleurs avec tout ca. C'est la fin j'espere que ca t'a plu. Le site reste bien sur ouvert pour les jeux ou encore utilisé les dés mmmhmhhhhhh aller bisous ma chérie on se voit vite IRL inshALLAH", 
+    letter: "DERNIER JOUR ! Au final cette expérience m'a apprit tellements de trucs : ne jamais se décourager ne pas abandonner toujours apprendre de nouvelles choses, innovés et cherché des idées , et etre fiere de soit. Je le suis honnetement sans me jeter des fleurs avec tout ca. C'est la fin j'espere que ca t'a plu. Le site reste bien sur ouvert pour les jeux ou encore utilisé les dés mmmhmhhhhhh aller bisous ma chérie on se voit vite IRL inshALLAH et tu peux m'écrire ce que tu veux j'ai codé quelque chose expres hesite pas .", 
     hint: "Récupérer la lettre Y", 
     gift: "Photo #10 (Finale)", 
     giftMessage: "Petite photo pour finir en beauté 💖", 
