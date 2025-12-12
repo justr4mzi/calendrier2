@@ -212,7 +212,7 @@ export default function LoveClicker({ onClose }: { onClose: () => void }) {
                 <Sparkles className="w-16 h-16 text-yellow-500 mx-auto mb-4 animate-spin-slow" />
                 <h2 className="text-2xl font-black text-rose-600 mb-4">BRAVO MA CHÉRIE !</h2>
                 <p className="text-gray-600 mb-2">Objectif atteint en : <span className="font-bold">{formatTime(displayTime)}</span></p>
-                <button onClick={() => { setChestOpened(true); saveGame(); }} className="w-full bg-rose-500 text-white font-bold py-3 rounded-xl animate-pulse shadow-lg mt-4">OUVRIR CADEAU</button>
+                <button onClick={() => { setChestOpened(true); saveGame(); }} className="w-full bg-rose-500 text-white font-bold py-3 rounded-xl animate-pulse shadow-lg mt-4">OUVRE LE CADEAU "BONUS" (la lettre)</button>
               </div>
             ) : (
               <div className="max-w-sm w-full bg-indigo-900 rounded-3xl p-6 shadow-2xl border border-indigo-500 relative text-white">
