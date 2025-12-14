@@ -13,12 +13,11 @@ function cleanData(items: any[]) {
     }
   });
 
-  // 2. Conversion en tableau + Correction des coordonnées (NaN -> 0)
+  // 2. Conversion en tableau + Correction des coordonnées
   return Array.from(uniqueMap.values()).map((item: any) => ({
     ...item,
     x: (typeof item.x === 'number' && !isNaN(item.x)) ? item.x : 0,
     y: (typeof item.y === 'number' && !isNaN(item.y)) ? item.y : 0,
-    // On garde les propriétés essentielles
     type: item.type || 'note',
     content: item.content || '',
     rotation: item.rotation || 0,
@@ -27,7 +26,7 @@ function cleanData(items: any[]) {
 
 export async function GET() {
   try {
-    // Récupération PARALLÈLE (Beaucoup plus rapide et stable)
+    // Récupération PARALLÈLE des données
     const [fridgeRaw, credits, clicker, days, loginCount, time, lastConn, lastDev, kiss, msg] = await Promise.all([
       kv.get('fridge_items'),
       kv.get('fridge_credits'),
@@ -41,7 +40,6 @@ export async function GET() {
       kv.get('final_message')
     ]);
 
-    // Nettoyage avant envoi au client pour éviter le crash au chargement
     const fridge = cleanData(fridgeRaw as any[]);
 
     return NextResponse.json({
@@ -58,7 +56,6 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Sync GET Error:', error);
-    // En cas d'erreur grave, on renvoie des tableaux vides pour ne pas bloquer l'app
     return NextResponse.json({ fridge: [], foundDays: [] }, { status: 200 });
   }
 }
@@ -68,35 +65,40 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { action, fridgeItem, fridgeItemId, currentUser, clickerState, days, time, device, message } = body;
 
-    // --- 1. GESTION DU FRIGO ---
+    // --- 1. GESTION DU FRIGO & CRÉDITS (RESET ICI) ---
     
     if (action === 'add_fridge_item') {
       const currentItems = (await kv.get<any[]>('fridge_items')) || [];
       const cleanItems = cleanData(currentItems);
       
-      // Gestion des CRÉDITS (3 items par jour)
+      // === LOGIQUE DE RESET DE CRÉDIT JOURNALIER ===
       if (currentUser) {
          const credits: any = (await kv.get('fridge_credits')) || {};
-         const today = new Date().toDateString();
          
-         // Reset du jour si nécessaire
+         // On force la date en format Français (JJ/MM/AAAA) sur le fuseau horaire de Paris
+         // Cela garantit que le reset se fait à minuit heure française
+         const today = new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris' });
+         
+         // SI l'utilisateur n'existe pas OU SI la date enregistrée n'est pas "today"
+         // ALORS on remet le compteur à 0
          if (!credits[currentUser] || credits[currentUser].date !== today) {
              credits[currentUser] = { count: 0, date: today };
          }
          
+         // Vérification de la limite
          if (credits[currentUser].count >= 3) {
              return NextResponse.json({ error: 'Limite quotidienne atteinte' }, { status: 403 });
          }
          
-         // Incrément
+         // On valide l'ajout : on incrémente et on sauvegarde
          credits[currentUser].count += 1;
          await kv.set('fridge_credits', credits);
       }
 
-      // Ajout de l'item
+      // Ajout de l'item au frigo
       cleanItems.push(fridgeItem);
       
-      // Limite de sécurité (max 50 items pour pas faire laguer)
+      // Limite de sécurité (max 50 items pour éviter de surcharger)
       if (cleanItems.length > 50) cleanItems.shift(); 
       
       await kv.set('fridge_items', cleanItems);
@@ -106,12 +108,10 @@ export async function POST(req: Request) {
         const currentItems = (await kv.get<any[]>('fridge_items')) || [];
         let cleanItems = cleanData(currentItems);
 
-        // Mise à jour ciblée
         let updated = false;
         cleanItems = cleanItems.map((item: any) => {
             if (item.id === fridgeItemId) {
                 updated = true;
-                // Clamp serveur (sécurité supplémentaire 0-95%)
                 const safeX = Math.max(0, Math.min(fridgeItem.x, 2000)); 
                 const safeY = Math.max(0, Math.min(fridgeItem.y, 2000));
                 return { ...item, x: safeX, y: safeY };
@@ -123,13 +123,11 @@ export async function POST(req: Request) {
     }
 
     if (action === 'clear_fridge') {
-        // RADICAL : On vide tout
         await kv.set('fridge_items', []);
     }
 
     // --- 2. GESTION DU CLICKER ---
     if (action === 'update_clicker') {
-        // On écrase l'état du clicker sans toucher au reste
         await kv.set('clicker_state', clickerState);
     }
 
