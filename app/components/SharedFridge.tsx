@@ -395,7 +395,7 @@ export default function SharedFridge({ onClose, currentUser }: { onClose: () => 
       {/* BOUTON AJOUT */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[100]">
         <button onClick={() => setIsAdding(true)} disabled={dailyCount >= 3} className={`flex items-center gap-2 px-6 py-3 rounded-full shadow-2xl border-4 border-white font-bold text-lg transition-transform active:scale-95 ${dailyCount >= 3 ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-rose-500 to-pink-500 text-white'}`}>
-            <Plus className="w-6 h-6" /> {dailyCount >= 3 ? 'À demain !' : 'Ajouter'}
+            <Plus className="w-6 h-6" /> {dailyCount >= 3 ? 'Epuisé !' : 'Ajouter'}
         </button>
       </div>
 
